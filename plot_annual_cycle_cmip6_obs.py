@@ -103,9 +103,9 @@ time, pre_clim_samz_cmip6[11], time, pre_clim_samz_cmip6[12], time, pre_clim_sam
 time, pre_clim_samz_cmip6[15], time, pre_clim_samz_cmip6[16], time, pre_clim_samz_cmip6[17], time, pre_clim_samz_cmip6[18], 
 time, pre_clim_samz_cmip6[19], time, pre_clim_samz_cmip6[20], time, pre_clim_samz_cmip6[21], time, pre_clim_samz_cmip6[22], 
 time, pre_clim_samz_cmip5, time, pre_clim_samz_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(0, 16, 2))
-plt.title(u'(a) SAMZ', loc='left', fontweight='bold')
+plt.title(u'(a) SAMZ', loc='left', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(0, 18, 2), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -142,9 +142,9 @@ time, tas_clim_samz_cmip6[11], time, tas_clim_samz_cmip6[12], time, tas_clim_sam
 time, tas_clim_samz_cmip6[15], time, tas_clim_samz_cmip6[16], time, tas_clim_samz_cmip6[17], time, tas_clim_samz_cmip6[18], 
 time, tas_clim_samz_cmip6[19], time, tas_clim_samz_cmip6[20], time, tas_clim_samz_cmip6[21], time, tas_clim_samz_cmip6[22], 
 time, tas_clim_samz_cmip5, time, tas_clim_samz_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(12, 34, 2))
-plt.title(u'(b) SAMZ', loc='left', fontweight='bold')
+plt.title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(10, 36, 4), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -181,9 +181,10 @@ time, pre_clim_neb_cmip6[11], time, pre_clim_neb_cmip6[12], time, pre_clim_neb_c
 time, pre_clim_neb_cmip6[15], time, pre_clim_neb_cmip6[16], time, pre_clim_neb_cmip6[17], time, pre_clim_neb_cmip6[18], 
 time, pre_clim_neb_cmip6[19], time, pre_clim_neb_cmip6[20], time, pre_clim_neb_cmip6[21], time, pre_clim_neb_cmip6[22], 
 time, pre_clim_neb_cmip5, time, pre_clim_neb_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(0, 16, 2))
-plt.title(u'(c) NEB', loc='left', fontweight='bold')
+plt.title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
+plt.ylabel('Precipitation (mm d$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(0, 18, 2), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -220,9 +221,10 @@ time, tas_clim_neb_cmip6[11], time, tas_clim_neb_cmip6[12], time, tas_clim_neb_c
 time, tas_clim_neb_cmip6[15], time, tas_clim_neb_cmip6[16], time, tas_clim_neb_cmip6[17], time, tas_clim_neb_cmip6[18], 
 time, tas_clim_neb_cmip6[19], time, tas_clim_neb_cmip6[20], time, tas_clim_neb_cmip6[21], time, tas_clim_neb_cmip6[22], 
 time, tas_clim_neb_cmip5, time, tas_clim_neb_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(12, 34, 2))
-plt.title(u'(d) NEB', loc='left', fontweight='bold')
+plt.title(u'(d) NEB', loc='left', fontsize=8, fontweight='bold')
+plt.ylabel('Temperature (°C)', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(10, 36, 4), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -259,9 +261,10 @@ time, pre_clim_slpb_cmip6[11], time, pre_clim_slpb_cmip6[12], time, pre_clim_slp
 time, pre_clim_slpb_cmip6[15], time, pre_clim_slpb_cmip6[16], time, pre_clim_slpb_cmip6[17], time, pre_clim_slpb_cmip6[18], 
 time, pre_clim_slpb_cmip6[19], time, pre_clim_slpb_cmip6[20], time, pre_clim_slpb_cmip6[21], time, pre_clim_slpb_cmip6[22], 
 time, pre_clim_slpb_cmip5, time, pre_clim_slpb_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(0, 16, 2))
-plt.title(u'(e) SLPB', loc='left', fontweight='bold')
+plt.title(u'(e) SLPB', loc='left', fontsize=8, fontweight='bold')
+plt.xlabel('Months', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(0, 18, 2), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -298,9 +301,10 @@ time, tas_clim_slpb_cmip6[11], time, tas_clim_slpb_cmip6[12], time, tas_clim_slp
 time, tas_clim_slpb_cmip6[15], time, tas_clim_slpb_cmip6[16], time, tas_clim_slpb_cmip6[17], time, tas_clim_slpb_cmip6[18], 
 time, tas_clim_slpb_cmip6[19], time, tas_clim_slpb_cmip6[20], time, tas_clim_slpb_cmip6[21], time, tas_clim_slpb_cmip6[22], 
 time, tas_clim_slpb_cmip5, time, tas_clim_slpb_cru)
-plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'))
-plt.yticks(np.arange(12, 34, 2))
-plt.title(u'(f) SLPB', loc='left', fontweight='bold')
+plt.title(u'(f) SLPB', loc='left', fontsize=8, fontweight='bold')
+plt.xlabel('Months', fontsize=8, fontweight='bold')
+plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
+plt.yticks(np.arange(10, 36, 4), fontsize=8)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25 = annual_cycle
 plt.setp(l1)
@@ -333,7 +337,7 @@ legend = [cmip6[1][0],cmip6[2][0],cmip6[3][0],cmip6[4][0],cmip6[5][0],cmip6[6][0
 cmip6[7][0],cmip6[8][0],cmip6[9][0],cmip6[10][0],cmip6[11][0],cmip6[12][0],
 cmip6[13][0],cmip6[14][0],cmip6[15][0],cmip6[16][0],cmip6[17][0],cmip6[18][0],
 cmip6[19][0],cmip6[20][0],cmip6[21][0],cmip6[22][0],'CMIP6-MME','CMIP5-MME','CRU']
-plt.legend(annual_cycle, legend, loc=(1.019, -0.19))
+plt.legend(annual_cycle, legend, loc=(1.019, 0.5), fontsize=8)
 plt.subplots_adjust(left=0.15, bottom=0.15, right=0.93, top=0.93, wspace=0.20, hspace=0.35)
 
 # Path out to save figure
