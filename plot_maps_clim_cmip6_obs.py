@@ -11,9 +11,11 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
+from dict_name_cmip6 import cmip6
 from matplotlib.path import Path
 from matplotlib.patches import PathPatch
 from mpl_toolkits.basemap import Basemap
+
 
 def import_obs(param):
 	
@@ -31,10 +33,9 @@ def import_obs(param):
 	return lat, lon, mean1, mean2
 
 	
-def import_cmip(param, cmip, exp, date):
+def import_cmip(path, param, name, exp, date):
 	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip/{0}'.format(cmip)
-	arq   = '{0}/{1}_SA_Ayr_ensmean_{2}_historical_{3}_{4}_lonlat_mask.nc'.format(path, param, cmip, exp, date)	
+	arq   = '{0}/{1}_SA_Ayr_{2}_historical_{3}_{4}_lonlat_mask.nc'.format(path, param, name, exp, date)	
 		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
@@ -82,148 +83,165 @@ def basemap(lat, lon):
 	
 	return map, xx, yy
 	
-# Import regcm exps and obs database 
-var = 'pre'
+# Import cmip models and obs database 
+var = 'tmp'
+var_mdl = 'tas'
+cmip6_dt = '1961-2014'
+cmip5_path = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip/cmip5'
+cmip6_path = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip/cmip6'
+bias_cmip6 = []
 
 lat, lon, mean1_cru, mean2_cru = import_obs(var)
-lat, lon, mean_cmip5 = import_cmip(u'pr', u'cmip5', 'r1i1p1', '1961-2005')
-lat, lon, mean_cmip6 = import_cmip(u'pr', u'cmip6', 'r1i1p1f1_gn', '1961-2014')
-
-# Compute and plot bias
+lat, lon, mean_cmip5 = import_cmip(cmip5_path, var_mdl, u'ensmean_cmip5', 'r1i1p1', '1961-2005')
 bias_cmip5 = mean_cmip5 - mean1_cru
-bias_cmip6 = mean_cmip6 - mean2_cru
 
-fig = plt.figure(figsize=(7, 9))
-levs1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-levs2 = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+for i in range(1, 24):
+	lat, lon, mean_cmip = import_cmip(cmip6_path, var_mdl, cmip6[i][0], cmip6[i][1], cmip6_dt)
+	bias_cmip = mean_cmip - mean2_cru
+	bias_cmip6.append(bias_cmip)
 
+# Plot cmip models and obs database 
+fig = plt.figure(figsize=(7.5, 9.5))
+
+if var == 'pre':
+	levs1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+	levs2 = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+	color1=cm.Blues
+	color2=cm.BrBG
+else:
+	levs1 = [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+	levs2 = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+	color1=cm.Reds
+	color2=cm.bwr
+	
 ax = fig.add_subplot(5, 5, 1)  
 plt.title(u'(a) CRU', loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean1_cru, levels=levs1, latlon=True, cmap=cm.Blues, extend='max') 
+plt_map = map.contourf(xx, yy, mean1_cru, levels=levs1, latlon=True, cmap=color1, extend='max') 
 cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.92, 0.25, 0.02, 0.47]))
 cbar.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(5, 5, 2)  
-plt.title(u'(b) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(b) {0}'.format(cmip6[1][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG, extend='both') 
-cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.96, 0.25, 0.02, 0.47]))
+plt_map = map.contourf(xx, yy, bias_cmip6[0], levels=levs2, latlon=True, cmap=color2, extend='both') 
+cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.98, 0.25, 0.02, 0.47]))
 cbar.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(5, 5, 3)  
-plt.title(u'(c) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(c) {0}'.format(cmip6[2][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[1], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 4)  
-plt.title(u'(d) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(d) {0}'.format(cmip6[3][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[2], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 5)  
-plt.title(u'(e) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(e) {0}'.format(cmip6[4][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[3], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 6)  
-plt.title(u'(f) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(f) {0}'.format(cmip6[5][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[4], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 7)  
-plt.title(u'(g) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(g) {0}'.format(cmip6[6][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[5], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 8)  
-plt.title(u'(h) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(h) {0}'.format(cmip6[7][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[6], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 9)  
-plt.title(u'(i) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(i) {0}'.format(cmip6[8][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[7], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 10)  
-plt.title(u'(j) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(j) {0}'.format(cmip6[9][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[8], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 11)  
-plt.title(u'(k) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(k) {0}'.format(cmip6[10][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[9], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 12)  
-plt.title(u'(l) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(l) {0}'.format(cmip6[11][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[10], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 13)  
-plt.title(u'(m) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(m) {0}'.format(cmip6[12][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[11], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 14)  
-plt.title(u'(n) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(n) {0}'.format(cmip6[13][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[12], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 15)  
-plt.title(u'(o) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(o) {0}'.format(cmip6[14][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
+plt_map = map.contourf(xx, yy, bias_cmip6[13], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 16)  
-plt.title(u'(p) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(p) {0}'.format(cmip6[15][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[14], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 17)  
-plt.title(u'(q) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(q) {0}'.format(cmip6[16][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[15], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 18)  
-plt.title(u'(r) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(r) {0}'.format(cmip6[17][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[16], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 19)  
-plt.title(u'(s) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(s) {0}'.format(cmip6[18][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[17], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 20)  
-plt.title(u'(t) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(t) {0}'.format(cmip6[19][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[18], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 21)  
-plt.title(u'(u) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(u) {0}'.format(cmip6[20][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[19], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 22)  
-plt.title(u'(v) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(v) {0}'.format(cmip6[21][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[20], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 23)  
-plt.title(u'(w) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(w) {0}'.format(cmip6[22][0]), loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[21], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 24)  
 plt.title(u'(x) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip6[22], levels=levs2, latlon=True, cmap=color2) 
 
 ax = fig.add_subplot(5, 5, 25)  
-plt.title(u'(y) CMIP6-MME', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(y) CMIP5-MME', loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6, levels=levs2, latlon=True, cmap=cm.BrBG) 
+plt_map = map.contourf(xx, yy, bias_cmip5, levels=levs2, latlon=True, cmap=color2) 
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs'
