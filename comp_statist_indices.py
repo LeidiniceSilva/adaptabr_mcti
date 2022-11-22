@@ -11,19 +11,50 @@ import scipy.stats as st
 from scipy.stats import norm
 
 
-def compute_corr(model, obs):
+def compute_corr(model, obs, **kwargs):
 
     """
-    The input arrays must have the same dimentions
-    :Param model: Numpy array with model data
-    :Param obs: Numpy array with obs data
-    :Return: Pearson Linear Correlation
+	The input arrays must have the same dimensions
+	:Param model: Numpy array with model data
+	:Param obs: Numpy array with obs data
+    Return: Pearson correlation
     """
-   
-    corr = np.corrcoef(obs, model)[0][1]
-    
-    return corr
 
+    method = kwargs.pop('method', '3d')  # 1d ou 3d
+
+    if method == '1d':
+
+        corr, pvalue = st.pearsonr(model, obs)
+
+        return corr
+
+    elif method == '3d':
+
+        timelen = float(obs.shape[0])
+
+        obs_mean = np.nanmean(obs, axis=0)
+        obs_std = np.nanstd(obs, axis=0)
+
+        model_mean = np.nanmean(model, axis=0)
+        model_std = np.nanstd(model, axis=0)
+
+        x1 = (obs - obs_mean)/obs_std
+        y1 = (model - model_mean)/model_std
+
+        xymult = x1 * y1
+
+        xysum = np.nansum(xymult, axis=0)
+
+        corr = xysum/timelen
+
+        return corr
+
+    else:
+
+        print('ClimateStats.compute_pearson function')
+        print('Input data error')
+        exit(1)
+        
 
 def compute_r2(model, obs):
 

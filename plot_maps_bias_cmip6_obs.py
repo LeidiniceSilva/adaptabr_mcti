@@ -84,8 +84,8 @@ def basemap(lat, lon):
 	return map, xx, yy
 	
 # Import cmip models and obs database 
-var = 'tmp'
-var_mdl = 'tas'
+var = 'pre'
+var_mdl = 'pr'
 cmip6_dt = '1961-2014'
 cmip5_path = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip/cmip5'
 cmip6_path = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip/cmip6'
@@ -106,13 +106,13 @@ fig = plt.figure(figsize=(7.5, 9.5))
 if var == 'pre':
 	levs1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 	levs2 = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color1=cm.Blues
-	color2=cm.BrBG
+	color1 = cm.Blues
+	color2 = cm.BrBG
 else:
 	levs1 = [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
 	levs2 = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color1=cm.Reds
-	color2=cm.bwr
+	color1 = cm.Reds
+	color2 = cm.bwr
 	
 ax = fig.add_subplot(5, 5, 1)  
 plt.title(u'(a) CRU', loc='left', fontsize=8, fontweight='bold')
