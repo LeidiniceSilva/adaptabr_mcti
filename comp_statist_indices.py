@@ -196,6 +196,26 @@ def compute_kge(model, ob):
     kge = 1 - np.sqrt((1 - p1)**2 + (1 - p2)**2 + (1 - p5)**2)
 
 	return kge
+
+
+def compute_tss(model, ob):
+
+    """
+    The input arrays must have the same dimensions
+    Param model: Numpy array with model data
+    Param obs: Numpy array with obs data
+    Return: Taylor Skill Score
+    """
+
+    p1 = np.corrcoef(obs, model)[0][1]
+    p2 = np.std(model, ddof=1)
+    p3 = np.corrcoef(obs, model)[0][1]
+    p4 = 4 * (1 + p1)
+    p5 = p2 + (1/p2)**2
+    p6 = 1 + p3
+    tss = p4 / p5 * p6
+
+	return tss
 	
 	
 def compute_cdf(dataset):
