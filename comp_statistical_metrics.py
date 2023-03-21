@@ -2,8 +2,8 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Nov 14, 2022"
-__description__ = "Statistical metrics to assessment skill of the models"
+__date__        = "Mar 01, 2023"
+__description__ = "Compute statistical metrics"
 
 import numpy as np
 import scipy.stats as st

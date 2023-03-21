@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "02/13/2023"
+__date__        = 'Dec 01, 2022'
 __description__ = "This script plot figures to adapta_br-mcti report"
 
 import os
@@ -68,7 +68,6 @@ if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
-
 
 print('Read data')
 # Read data
@@ -194,7 +193,6 @@ exit
 
 print('Plot figure')
 # Plot figure 
-
 fig = plt.figure(figsize=(6, 10))
 
 ax = fig.add_subplot(3, 1, 1)

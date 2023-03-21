@@ -2,8 +2,8 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Nov 14, 2022"
-__description__ = "This script plot annual climatology maps from cmip6"
+__date__        = "Mar 01, 2023"
+__description__ = "This script plot tss of cmip6 models"
 
 import os
 import netCDF4
@@ -11,10 +11,10 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
-from dict_name_cmip6 import cmip6
 from matplotlib.path import Path
 from matplotlib.patches import PathPatch
 from mpl_toolkits.basemap import Basemap
+from dict_cmip6_models_name import cmip6
 
 
 def import_obs(param):

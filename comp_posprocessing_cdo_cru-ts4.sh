@@ -2,8 +2,8 @@
 
 #__author__      = 'Leidinice Silva'
 #__email__       = 'leidinicesilva@gmail.com'
-#__date__        = '03/13/2023'
-#__description__ = 'Posprocessing the CRU-ts4.06 dataset'
+#__date__        = 'Mar 01, 2023'
+#__description__ = 'Posprocessing the CRU-ts4.06 obs dataset'
 
 echo
 echo "--------------- INIT POSPROCESSING OBS ----------------"

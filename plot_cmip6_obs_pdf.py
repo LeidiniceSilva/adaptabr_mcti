@@ -2,16 +2,16 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Nov 14, 2022"
-__description__ = "This script plot annual cycle from cmip6"
+__date__        = "Mar 01, 2023"
+__description__ = "This script plot pdf of cmip6 models"
 
 import os
 import netCDF4
 import numpy as np
 import matplotlib.pyplot as plt
 
-from dict_name_cmip6 import cmip6
-from comp_statist_indices import compute_pdf
+from dict_cmip6_models_name import cmip6
+from comp_statistical_metrics import compute_pdf
 
 
 def import_obs(param, area):
