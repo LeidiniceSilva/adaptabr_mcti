@@ -8,10 +8,13 @@
 echo
 echo "--------------- INIT POSPROCESSING OBS ----------------"
 
-# Variable name
-var = 'pr'     
+# Variable 
+var='tmn'  
 
-path="/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs"
+# Date
+dt='1980-2014'
+
+path="/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs/"
 cd ${path}
 
 echo
@@ -19,40 +22,75 @@ echo ${path}
 
 echo 
 echo "1. Select date"
-cdo seldate,1981-01-01T00:00:00,2014-12-31T00:00:00 ${var}_ts4.06.1901.2021.pre.dat.nc ${var}_CRU_ts4_1981-2014.nc
+cdo seldate,1980-01-01T00:00:00,2014-12-31T00:00:00 cru_ts4.06.1901.2021.${var}.dat.nc ${var}_CRU_ts4_${dt}.nc
 
 echo
-echo "2. Convert calendar"
-cdo setcalendar,standard ${var}_CRU_ts4_1981-2014.nc ${var}_CRU_ts4_mon_1981-2014.nc
+echo "2. Conventing calendar"
+cdo setcalendar,standard ${var}_CRU_ts4_${dt}.nc ${var}_CRU_ts4_mon_${dt}.nc
 
 echo
-echo "3. Remapbil"
-/home/nice/Documents/github_projects/shell/regcm_pos/./regrid ${var}_CRU_ts4_mon_1981-2014.nc -20,10,0.25 -85,-15,0.25 bil
+echo "3. Conventing grade"
+/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_CRU_ts4_mon_${dt}.nc -60,15,0.5 -85,-30,0.5 bil
 
 echo 
-echo "4. Convention unit"
-
-# Member name
-if [ ${var} == 'pr' ]
+echo "4. Conventing unit"
+if [ ${var} == 'pre' ]
 then
-cdo divc,30.5 ${var}_CRU_ts4_mon_1981-2014_lonlat.nc ${var}_SA_CRU_ts4_mon_1981-2014_lonlat.nc
+cdo divc,30.5 ${var}_CRU_ts4_mon_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc
 else
-cp ${var}_CRU_ts4_mon_1981-2014_lonlat.nc ${var}_SA_CRU_ts4_mon_1981-2014_lonlat.nc
+cp ${var}_CRU_ts4_mon_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc
 fi
 
 echo
-echo "5. Select subdomain"
-cdo sellonlatbox,-68,-52,-12,-3 pre_SA_CRU_ts4_mon_1981-2014_lonlat.nc pre_SAMZ_CRU_ts4_mon_1981-2014_lonlat.nc
-cdo sellonlatbox,-40,-35,-16,-3 pre_SA_CRU_ts4_mon_1981-2014_lonlat.nc pre_NAMZ_CRU_ts4_mon_1981-2014_lonlat.nc
-cdo sellonlatbox,-68,-52,-12,-3 pre_SA_CRU_ts4_mon_1981-2014_lonlat.nc pre_SAM_CRU_ts4_mon_1981-2014_lonlat.nc
-cdo sellonlatbox,-40,-35,-16,-3 pre_SA_CRU_ts4_mon_1981-2014_lonlat.nc pre_NEB_CRU_ts4_mon_1981-2014_lonlat.nc
-cdo sellonlatbox,-50.5,-42.5,-15,-2.5 pre_SA_CRU_ts4_mon_1981-2014_lonlat.nc pre_LPB_CRU_ts4_mon_1981-2014_lonlat.nc
+echo "5. Calculate periods"
+cdo -yearavg ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo -r -timselavg,3 -selmon,1,2,12 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo -r -timselavg,3 -selmon,3,4,5 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo -r -timselavg,3 -selmon,6,7,8 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo -r -timselavg,3 -selmon,9,10,11 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc
+
+echo
+echo "6. Select subregion"
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_MON_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc ${var}_NAMZ_CRU_ts4_SON_${dt}_lonlat.nc
+
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_MON_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc ${var}_SAMZ_CRU_ts4_SON_${dt}_lonlat.nc
+
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_MON_${dt}_lonlat.nc
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc ${var}_NEB_CRU_ts4_SON_${dt}_lonlat.nc
+
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_MON_${dt}_lonlat.nc
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc ${var}_SAM_CRU_ts4_SON_${dt}_lonlat.nc
+
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_MON_${dt}_lonlat.nc
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_ANN_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_ANN_${dt}_lonlat.nc
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_DJF_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_DJF_${dt}_lonlat.nc
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_MAM_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_MAM_${dt}_lonlat.nc
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_JJA_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_JJA_${dt}_lonlat.nc
+cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_CRU_ts4_SON_${dt}_lonlat.nc ${var}_LPB_CRU_ts4_SON_${dt}_lonlat.nc
 
 echo 
 echo "6. Deleting file"
-rm ${var}_CRU_ts4_1981-2014.nc
-rm ${var}_CRU_ts4_mon_1981-2014.nc
-rm ${var}_CRU_ts4_mon_1981-2014_lonlat.nc
+rm ${var}_CRU_ts4_${dt}.nc
+rm ${var}_CRU_ts4_mon_${dt}.nc
+rm ${var}_CRU_ts4_mon_${dt}_lonlat.nc
 
 echo
 echo "--------------- END POSPROCESSING OBS ----------------"
