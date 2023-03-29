@@ -59,30 +59,30 @@ for var in ${var_list[@]}; do
 		echo
 		echo ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc
 		
-		#~ echo "1. Select date"
-		#~ cdo seldate,1980-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
+		echo "1. Select date"
+		cdo seldate,1980-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
 
-		#~ echo
-		#~ echo "2. Conventing calendar"
-		#~ cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_${model}_${exp}_${member}_${dt}.nc
+		echo
+		echo "2. Conventing calendar"
+		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_${model}_${exp}_${member}_${dt}.nc
 		
-		#~ echo
-		#~ echo "3. Conventing grade"
-		#~ /home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${model}_${exp}_${member}_${dt}.nc -60,15,0.5 -85,-30,0.5 bil
+		echo
+		echo "3. Conventing grade"
+		/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${model}_${exp}_${member}_${dt}.nc -60,15,0.5 -85,-30,0.5 bil
 
-		#~ echo 
-		#~ echo "4. Conventing unit"
-		#~ if [ ${var} == 'pr' ]
-		#~ then
-		#~ cdo mulc,86400 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		#~ else
-		#~ cdo subc,273.15 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		#~ fi
+		echo 
+		echo "4. Conventing unit"
+		if [ ${var} == 'pr' ]
+		then
+		cdo mulc,86400 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		else
+		cdo subc,273.15 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		fi
 
-		#~ echo
-		#~ echo "5. Creating mask"
-		#~ cdo -f nc -remapnn,${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc -gtc,0 -topo ${var}_${model}_seamask.nc
-		#~ cdo ifthen ${var}_${model}_seamask.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		echo
+		echo "5. Creating mask"
+		cdo -f nc -remapnn,${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc -gtc,0 -topo ${var}_${model}_seamask.nc
+		cdo ifthen ${var}_${model}_seamask.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
 		
 		echo
 		echo "6. Calculate periods"
