@@ -54,35 +54,35 @@ for var in ${var_list[@]}; do
 		fi
 		
 		# Datetime
-		dt='198001-201412'
+		dt='1980-2014'
 		
 		echo
 		echo ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc
 		
-		echo "1. Select date"
-		cdo seldate,1980-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
+		#~ echo "1. Select date"
+		#~ cdo seldate,1980-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
 
-		echo
-		echo "2. Conventing calendar"
-		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_${model}_${exp}_${member}_${dt}.nc
+		#~ echo
+		#~ echo "2. Conventing calendar"
+		#~ cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_${model}_${exp}_${member}_${dt}.nc
 		
-		echo
-		echo "3. Conventing grade"
-		/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${model}_${exp}_${member}_${dt}.nc -60,15,0.5 -85,-30,0.5 bil
+		#~ echo
+		#~ echo "3. Conventing grade"
+		#~ /home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${model}_${exp}_${member}_${dt}.nc -60,15,0.5 -85,-30,0.5 bil
 
-		echo 
-		echo "4. Conventing unit"
-		if [ ${var} == 'pr' ]
-		then
-		cdo mulc,86400 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		else
-		cdo subc,273.15 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		fi
+		#~ echo 
+		#~ echo "4. Conventing unit"
+		#~ if [ ${var} == 'pr' ]
+		#~ then
+		#~ cdo mulc,86400 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		#~ else
+		#~ cdo subc,273.15 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		#~ fi
 
-		echo
-		echo "5. Creating mask"
-		cdo -f nc -remapnn,${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc -gtc,0 -topo ${var}_${model}_seamask.nc
-		cdo ifthen ${var}_${model}_seamask.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		#~ echo
+		#~ echo "5. Creating mask"
+		#~ cdo -f nc -remapnn,${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc -gtc,0 -topo ${var}_${model}_seamask.nc
+		#~ cdo ifthen ${var}_${model}_seamask.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
 		
 		echo
 		echo "6. Calculate periods"
@@ -94,48 +94,48 @@ for var in ${var_list[@]}; do
 
 		echo
 		echo "7. Select subregion"
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NAMZ_MON_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NAMZ_ANN_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_NAMZ_DJF_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_NAMZ_MAM_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_NAMZ_JJA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_NAMZ_SON_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_SON_${dt}_lonlat.nc
 
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAMZ_MON_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAMZ_ANN_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_SAMZ_DJF_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_SAMZ_MAM_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_SAMZ_JJA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_SAMZ_SON_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc
+		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_SON_${dt}_lonlat.nc
 
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NEB_MON_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NEB_ANN_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_NEB_DJF_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_NEB_MAM_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_NEB_JJA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_NEB_SON_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc
+		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_SON_${dt}_lonlat.nc
 				
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAM_MON_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAM_ANN_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_SAM_DJF_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_SAM_MAM_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_SAM_JJA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_SAM_SON_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc
+		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_SON_${dt}_lonlat.nc
 
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_LPB_MON_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_LPB_ANN_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_LBP_DJF_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_LPB_MAM_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_LPB_JJA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_LPB_SON_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_DJF_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_MAM_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_JJA_${dt}_lonlat.nc
+		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_SON_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_SON_${dt}_lonlat.nc
 
-		echo 
-		echo "8. Deleting file"
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
-		rm ${var}_${model}_${exp}_${member}_${dt}.nc
-		rm ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc
-		rm ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		rm ${var}_${model}_seamask.nc
+		#~ echo 
+		#~ echo "8. Deleting file"
+		#~ rm ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
+		#~ rm ${var}_${model}_${exp}_${member}_${dt}.nc
+		#~ rm ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc
+		#~ rm ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		#~ rm ${var}_${model}_seamask.nc
 	
 	done
 done
