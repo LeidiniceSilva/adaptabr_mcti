@@ -6,7 +6,6 @@ __date__        = "Mar 01, 2023"
 __description__ = "This script plot annual climatology maps of cmip6 models"
 
 import os
-import cmocean
 import netCDF4
 import numpy as np
 import matplotlib.cm as cm
@@ -62,8 +61,7 @@ def basemap(lat, lon):
 	new_lat = lat
 	new_lon = lon[::-1]
 
-	map = Basemap(projection='cyl', llcrnrlon=-80., llcrnrlat=-40., urcrnrlon=-30.,urcrnrlat=10., resolution='c')
-	map.drawmapboundary(color='white')
+	map = Basemap(projection='cyl', llcrnrlon=-76., llcrnrlat=-36., urcrnrlon=-32.,urcrnrlat=7., resolution='c')
 	lons, lats = np.meshgrid(new_lon, new_lat)
 	xx, yy = map(lons,lats)
 
@@ -85,9 +83,10 @@ def basemap(lat, lon):
 	
 	return map, xx, yy
 	
+	
 # Import cmip models and obs database 
-var_obs = 'pre'
-var_cmip6 = 'pr'
+var_obs = 'tmp'
+var_cmip6 = 'tas'
 dt = '1980-2014'
 
 lat, lon, mean_obs = import_obs(var_obs, dt)
@@ -98,25 +97,24 @@ for i in range(1, 19):
 	lat, lon, mean_cmip = import_cmip(var_cmip6, cmip6[i][0], cmip6[i][1], dt)
 	mean_cmip6.append(mean_cmip)
 
-print('Plot figure')
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(7, 9))
 
 if var_cmip6 == 'pr':
-	levs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-	color = cm.YlGnBu
+	levs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+	color = cm.gist_rainbow
 	legend = 'Precipitação (mm d⁻¹)'
 
 else:
-	levs = [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-	color = cm.YlOrRd
+	levs = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+	color = cm.jet
 	legend = 'Temperatura (°C)'
 	
 ax = fig.add_subplot(5, 4, 1)  
 plt.title(u'(a) CRU', loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, mean_obs, levels=levs, latlon=True, cmap=color, extend='max') 
-cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.92, 0.25, 0.02, 0.47]))
+cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.92, 0.28, 0.02, 0.43]))
 cbar.set_label('{0}'.format(legend), fontsize=8, fontweight='bold')
 cbar.ax.tick_params(labelsize=8)
 
@@ -210,7 +208,6 @@ plt.title(u'(s) {0}'.format(cmip6[18][0]), loc='left', fontsize=8, fontweight='b
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, mean_cmip6[17], levels=levs, latlon=True, cmap=color) 
 
-print('Save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
 name_out = 'pyplt_maps_clim_ann_cmip6_{0}_{1}.png'.format(var_cmip6, dt)

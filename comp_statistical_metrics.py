@@ -161,7 +161,7 @@ def compute_ioa(model, obs):
     return ioa
       
     
-def compute_ivs(model, ob):
+def compute_ivs(obs, model):
 
     """
     The input arrays must have the same dimensions
@@ -181,39 +181,39 @@ def compute_ivs(model, ob):
 
 def compute_kge(model, ob):
 
-    """
-    The input arrays must have the same dimensions
-    Param model: Numpy array with model data
-    Param obs: Numpy array with obs data
-    Return: Kling-Gupta Efficiency
-    """
+	"""
+	The input arrays must have the same dimensions
+	Param model: Numpy array with model data
+	Param obs: Numpy array with obs data
+	Return: Kling-Gupta Efficiency
+	"""
 
-    p1 = np.corrcoef(obs, model)[0][1]
-    p2 = np.nanmean(model) / np.nanmean(obs)
-    p3 = np.std(model, ddof=1) / np.mean(model) * 100 
-    p4 = np.std(obs, ddof=1) / np.mean(obs) * 100 
-    p5 = p3/p4
-    kge = 1 - np.sqrt((1 - p1)**2 + (1 - p2)**2 + (1 - p5)**2)
+	p1 = np.corrcoef(obs, model)[0][1]
+	p2 = np.nanmean(model) / np.nanmean(obs)
+	p3 = np.std(model, ddof=1) / np.mean(model) * 100 
+	p4 = np.std(obs, ddof=1) / np.mean(obs) * 100 
+	p5 = p3/p4
+	kge = 1 - np.sqrt((1 - p1)**2 + (1 - p2)**2 + (1 - p5)**2)
 
 	return kge
 
 
 def compute_tss(model, ob):
 
-    """
-    The input arrays must have the same dimensions
-    Param model: Numpy array with model data
-    Param obs: Numpy array with obs data
-    Return: Taylor Skill Score
-    """
+	"""
+	The input arrays must have the same dimensions
+	Param model: Numpy array with model data
+	Param obs: Numpy array with obs data
+	Return: Taylor Skill Score
+	"""
 
-    p1 = np.corrcoef(obs, model)[0][1]
-    p2 = np.std(model, ddof=1)
-    p3 = np.corrcoef(obs, model)[0][1]
-    p4 = 4 * (1 + p1)
-    p5 = p2 + (1/p2)**2
-    p6 = 1 + p3
-    tss = p4 / p5 * p6
+	p1 = np.corrcoef(obs, model)[0][1]
+	p2 = np.std(model, ddof=1)
+	p3 = np.corrcoef(obs, model)[0][1]
+	p4 = 4 * (1 + p1)
+	p5 = p2 + (1/p2)**2
+	p6 = 1 + p3
+	tss = p4 / p5 * p6
 
 	return tss
 	

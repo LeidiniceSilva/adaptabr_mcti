@@ -9,7 +9,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------"
 
 # Variable 
-var='tmn'  
+var='tmp'  
 
 # Date
 dt='1980-2014'
@@ -36,7 +36,7 @@ echo
 echo "4. Conventing unit"
 if [ ${var} == 'pre' ]
 then
-cdo divc,30.5 ${var}_CRU_ts4_mon_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc
+cdo divc,30 ${var}_CRU_ts4_mon_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc
 else
 cp ${var}_CRU_ts4_mon_${dt}_lonlat.nc ${var}_SA_CRU_ts4_MON_${dt}_lonlat.nc
 fi

@@ -97,13 +97,14 @@ ivs_cmip6 = np.array([ivs_lpb_cmip6,ivs_sam_cmip6,ivs_neb_cmip6,ivs_samz_cmip6,i
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(9, 3))
-norm = colors.BoundaryNorm(boundaries=np.arange(0, 11, 1), ncolors=256)
+norm = colors.BoundaryNorm(boundaries=np.arange(0, 5.5, 0.5), ncolors=256)
 xlabels = legend
 ylabels = [u'LPB', u'SAM', u'NEB', u'SAMZ', u'NAMZ']
 
 if var_cmip6 == 'pr':
 	color = cm.Blues
 	title = 'IVS de precipitação'
+
 else:
 	color = cm.Reds
 	title = 'IVS de temperatura'
