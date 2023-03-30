@@ -19,46 +19,36 @@ from comp_statistical_metrics import compute_ivs
 def import_obs(param, area, date):
 	
 	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_CRU_ts4_MON_{3}_lonlat.nc'.format(path, param, area, date)	
+	arq   = '{0}/{1}_{2}_CRU_ts4_ANN_{3}_lonlat.nc'.format(path, param, area, date)	
 		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-
 	obs_data = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	obs_clim = []
-	for mon in range(0, 11 + 1):
-		obs = np.nanmean(obs_data[mon::12], axis=0)
-		obs_clim.append(obs)
 		
-	return lat, lon, obs_clim
+	return lat, lon, obs_data
 
 	
 def import_cmip(param, area, model, exp, date):
 	
 	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_MON_{5}_lonlat.nc'.format(path, param, area, model, exp, date)	
+	arq   = '{0}/{1}_{2}_{3}_historical_{4}_ANN_{5}_lonlat.nc'.format(path, param, area, model, exp, date)	
 				
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-
 	mdl_data = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	mdl_clim = []
-	for mon in range(0, 11 + 1):
-		mdl = np.nanmean(mdl_data[mon::12], axis=0)
-		mdl_clim.append(mdl)
 	
-	return lat, lon, mdl_clim
+	return lat, lon, mdl_data
 	              
                
 # Import cmip models and obs database 
-var_obs = 'pre'
-var_cmip6 = 'pr'
+var_obs = 'tmp'
+var_cmip6 = 'tas'
 dt = '1980-2014'
 
 clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)
@@ -103,29 +93,27 @@ ylabels = [u'LPB', u'SAM', u'NEB', u'SAMZ', u'NAMZ']
 
 if var_cmip6 == 'pr':
 	color = cm.Blues
-	title = 'IVS de precipitação'
-
 else:
 	color = cm.Reds
-	title = 'IVS de temperatura'
 
 ax = fig.add_subplot(1, 1, 1)  
-pcm = ax.pcolormesh(ivs_cmip6, edgecolors ='k', linewidths = 1., norm=norm, cmap=color)
-ax.set_title(u'(a) {0}'.format(title), loc='left', fontweight='bold', fontsize=8)
+pcm = ax.pcolormesh(ivs_cmip6, edgecolors ='white', linewidths = 2., norm=norm, cmap=color)
+ax.set_title(u'(a) IVS', loc='left', fontweight='bold', fontsize=8)
 ax.set_xticks(np.arange(ivs_cmip6.shape[1]) + 0.5)
 ax.set_yticks(np.arange(ivs_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
-clb=fig.colorbar(pcm, ax=ax, extend='max')
+clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
+clb.ax.tick_params(labelsize=8)
 for y in range(ivs_cmip6.shape[0]):
     for x in range(ivs_cmip6.shape[1]):
-        ax.text(x + 0.5, y + 0.5, '%.1f' % ivs_cmip6[y, x],
-                 ha="center", va="center", color='k')
+        ax.text(x + 0.5, y + 0.5, '%.2f' % ivs_cmip6[y, x],
+                 ha="center", va="center", color='k', size=8)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_ivs_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_portrait_ivs_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')

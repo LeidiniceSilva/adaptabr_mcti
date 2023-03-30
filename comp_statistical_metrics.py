@@ -11,7 +11,7 @@ import scipy.stats as st
 from scipy.stats import norm
 
 
-def compute_corr(model, obs):
+def compute_pcc(obs, model):
 
     """
 	The input arrays must have the same dimensions
@@ -20,12 +20,12 @@ def compute_corr(model, obs):
     Return: Pearson Correlation Coefficient
     """
     
-    corr, pvalue = st.pearsonr(obs, model)
+    pcc, pvalue = st.pearsonr(obs, model)
     
-    return corr, pvalue
+    return pcc
            
 
-def compute_r2(model, obs):
+def compute_r2(obs, model):
 
 	"""
 	The input arrays must have the same dimensions
@@ -34,11 +34,25 @@ def compute_r2(model, obs):
 	Return: R-squared
 	"""
 
-	corr, pvalue = st.pearsonr(obs, model)
-	r2 = corr ** 2
+	pcc, pvalue = st.pearsonr(obs, model)
+	r2 = pcc ** 2
 
 	return r2
 
+
+def compute_mbe(model, obs):
+
+    """
+    The input arrays must have the same dimensions
+    Param model: Numpy array with model data
+    Param obs: Numpy array with obs data
+    Return: Mean Bias Error
+    """
+
+    mbe = np.nanmean(np.array(model) - np.array(obs))
+    
+    return mbe
+    
     
 def compute_mae(model, obs):
 
@@ -67,21 +81,7 @@ def compute_rmse(model, obs):
     
     return rmse
     
-     
-def compute_mbe(model, obs):
-
-    """
-    The input arrays must have the same dimensions
-    Param model: Numpy array with model data
-    Param obs: Numpy array with obs data
-    Return: Mean Bias Error
-    """
-
-    mbe = np.nanmean(np.array(model) - np.array(obs))
-    
-    return mbe
-
-
+   
 def compute_pbias(model, obs):
 
     """
@@ -179,7 +179,7 @@ def compute_ivs(obs, model):
     return ivs    
     
 
-def compute_kge(model, ob):
+def compute_kge(obs, model):
 
 	"""
 	The input arrays must have the same dimensions
@@ -198,7 +198,7 @@ def compute_kge(model, ob):
 	return kge
 
 
-def compute_tss(model, ob):
+def compute_tss(obs, model):
 
 	"""
 	The input arrays must have the same dimensions
