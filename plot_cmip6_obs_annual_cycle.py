@@ -11,7 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from dict_cmip6_models_name import cmip6
-from comp_statistical_metrics import compute_corr
 
 
 def import_obs(param, area, date):
@@ -55,8 +54,8 @@ def import_cmip(param, area, model, exp, date):
 	              
                
 # Import cmip models and obs database 
-var_obs = 'tmp'
-var_cmip6 = 'tas'
+var_obs = 'pre'
+var_cmip6 = 'pr'
 dt = '1980-2014'
 
 clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)
@@ -97,8 +96,8 @@ if var_cmip6 == 'pr':
 	plt.yticks(np.arange(0, 18, 2), fontsize=8)
 	plt.ylim(0, 16)
 else:
-	plt.yticks(np.arange(16, 34, 2), fontsize=8)
-	plt.ylim(16, 32)
+	plt.yticks(np.arange(13, 35, 2), fontsize=8)
+	plt.ylim(13, 33)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19 = annual_cycle
 plt.setp(l1)
@@ -133,8 +132,8 @@ if var_cmip6 == 'pr':
 	plt.yticks(np.arange(0, 18, 2), fontsize=8)
 	plt.ylim(0, 16)
 else:
-	plt.yticks(np.arange(16, 34, 2), fontsize=8)
-	plt.ylim(16, 32)
+	plt.yticks(np.arange(13, 35, 2), fontsize=8)
+	plt.ylim(13, 33)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19 = annual_cycle
 plt.setp(l1)
@@ -171,8 +170,8 @@ if var_cmip6 == 'pr':
 	plt.ylim(0, 16)
 else:
 	plt.ylabel('Temperatura (°C)', fontsize=8, fontweight='bold')
-	plt.yticks(np.arange(16, 34, 2), fontsize=8)
-	plt.ylim(16, 32)
+	plt.yticks(np.arange(13, 35, 2), fontsize=8)
+	plt.ylim(13, 33)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19 = annual_cycle
 plt.setp(l1)
@@ -210,8 +209,8 @@ if var_cmip6 == 'pr':
 	plt.ylim(0, 16)
 else:
 	plt.ylabel('Temperatura (°C)', fontsize=8, fontweight='bold')
-	plt.yticks(np.arange(16, 34, 2), fontsize=8)
-	plt.ylim(16, 32)
+	plt.yticks(np.arange(13, 35, 2), fontsize=8)
+	plt.ylim(13, 33)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19 = annual_cycle
 plt.setp(l1)
@@ -247,8 +246,8 @@ if var_cmip6 == 'pr':
 	plt.yticks(np.arange(0, 18, 2), fontsize=8)
 	plt.ylim(0, 16)
 else:
-	plt.yticks(np.arange(16, 34, 2), fontsize=8)
-	plt.ylim(16, 32)
+	plt.yticks(np.arange(13, 35, 2), fontsize=8)
+	plt.ylim(13, 33)
 plt.grid(linestyle='--')
 l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19 = annual_cycle
 plt.setp(l1)
