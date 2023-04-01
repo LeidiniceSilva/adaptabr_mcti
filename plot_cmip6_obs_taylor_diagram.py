@@ -148,7 +148,7 @@ plt.subplots_adjust(top=0.95)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_tayor_diagram_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_talyor_diagram_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300)
