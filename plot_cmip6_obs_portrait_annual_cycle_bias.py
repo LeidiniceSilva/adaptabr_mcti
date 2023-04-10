@@ -65,49 +65,56 @@ clim_neb_obs  = import_obs(var_obs, 'NEB', dt)
 clim_sam_obs = import_obs(var_obs, 'SAM', dt)
 clim_lpb_obs = import_obs(var_obs, 'LPB', dt)
 
-clim_namz_cmip6 = []
-clim_samz_cmip6 = []
-clim_neb_cmip6 = []
-clim_sam_cmip6 = []
-clim_lpb_cmip6 = []
+be_namz_cmip6 = []
+be_samz_cmip6 = []
+be_neb_cmip6 = []
+be_sam_cmip6 = []
+be_lpb_cmip6 = []
 legend = []
 
 for i in range(1, 19):
 
 	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
-	clim_namz_cmip6.append(clim_namz_cmip)
-	
+	be_namz_cmip = np.array(clim_namz_cmip) - np.array(clim_namz_obs)
+	be_namz_cmip6.append(be_namz_cmip)
+		
 	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
-	clim_samz_cmip6.append(clim_samz_cmip)
+	be_samz_cmip = np.array(clim_samz_cmip) - np.array(clim_samz_obs)
+	be_samz_cmip6.append(be_samz_cmip)
 
 	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
-	clim_neb_cmip6.append(clim_neb_cmip)
+	be_neb_cmip = np.array(clim_neb_cmip) - np.array(clim_neb_obs)
+	be_neb_cmip6.append(be_neb_cmip)
 
 	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
-	clim_sam_cmip6.append(clim_sam_cmip)
-
+	be_sam_cmip = np.array(clim_sam_cmip) - np.array(clim_sam_obs)
+	be_sam_cmip6.append(be_sam_cmip)
+	
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
-	clim_lpb_cmip6.append(clim_lpb_cmip)
+	be_lpb_cmip = np.array(clim_lpb_cmip) - np.array(clim_lpb_obs)
+	be_lpb_cmip6.append(be_lpb_cmip)
 
-namz_cmip6 = np.array([clim_namz_obs, clim_namz_cmip6[0], clim_namz_cmip6[1], clim_namz_cmip6[2], clim_namz_cmip6[3], clim_namz_cmip6[4], 
-clim_namz_cmip6[5], clim_namz_cmip6[6], clim_namz_cmip6[7], clim_namz_cmip6[8], clim_namz_cmip6[9], clim_namz_cmip6[10], clim_namz_cmip6[11],
-clim_namz_cmip6[12], clim_namz_cmip6[13], clim_namz_cmip6[14], clim_namz_cmip6[15], clim_namz_cmip6[16], clim_namz_cmip6[17]])
+	legend.append(cmip6[i][0])
+
+namz_cmip6 = np.array([be_namz_cmip6[0], be_namz_cmip6[1], be_namz_cmip6[2], be_namz_cmip6[3], be_namz_cmip6[4], be_namz_cmip6[5], 
+be_namz_cmip6[6], be_namz_cmip6[7], be_namz_cmip6[8], be_namz_cmip6[9], be_namz_cmip6[10], be_namz_cmip6[11], be_namz_cmip6[12], 
+be_namz_cmip6[13], be_namz_cmip6[14], be_namz_cmip6[15], be_namz_cmip6[16], be_namz_cmip6[17]])
  
-samz_cmip6 = np.array([clim_samz_obs, clim_samz_cmip6[0], clim_samz_cmip6[1], clim_samz_cmip6[2], clim_samz_cmip6[3], clim_samz_cmip6[4], 
-clim_samz_cmip6[5], clim_samz_cmip6[6], clim_samz_cmip6[7], clim_samz_cmip6[8], clim_samz_cmip6[9], clim_samz_cmip6[10], clim_samz_cmip6[11],
-clim_samz_cmip6[12], clim_samz_cmip6[13], clim_samz_cmip6[14], clim_samz_cmip6[15], clim_samz_cmip6[16], clim_samz_cmip6[17]])
+samz_cmip6 = np.array([be_samz_cmip6[0], be_samz_cmip6[1], be_samz_cmip6[2], be_samz_cmip6[3], be_samz_cmip6[4], be_samz_cmip6[5], 
+be_samz_cmip6[6], be_samz_cmip6[7], be_samz_cmip6[8], be_samz_cmip6[9], be_samz_cmip6[10], be_samz_cmip6[11], be_samz_cmip6[12], 
+be_samz_cmip6[13], be_samz_cmip6[14], be_samz_cmip6[15], be_samz_cmip6[16], be_samz_cmip6[17]])
 
-neb_cmip6 = np.array([clim_neb_obs, clim_neb_cmip6[0], clim_neb_cmip6[1], clim_neb_cmip6[2], clim_neb_cmip6[3], clim_neb_cmip6[4], 
-clim_neb_cmip6[5], clim_neb_cmip6[6], clim_neb_cmip6[7], clim_neb_cmip6[8], clim_neb_cmip6[9], clim_neb_cmip6[10], clim_neb_cmip6[11],
-clim_neb_cmip6[12], clim_neb_cmip6[13], clim_neb_cmip6[14], clim_neb_cmip6[15], clim_neb_cmip6[16], clim_neb_cmip6[17]])
+neb_cmip6 = np.array([be_neb_cmip6[0], be_neb_cmip6[1], be_neb_cmip6[2], be_neb_cmip6[3], be_neb_cmip6[4], be_neb_cmip6[5], 
+be_neb_cmip6[6], be_neb_cmip6[7], be_neb_cmip6[8], be_neb_cmip6[9], be_neb_cmip6[10], be_neb_cmip6[11], be_neb_cmip6[12], 
+be_neb_cmip6[13], be_neb_cmip6[14], be_neb_cmip6[15], be_neb_cmip6[16], be_neb_cmip6[17]])
 
-sam_cmip6 = np.array([clim_sam_obs, clim_sam_cmip6[0], clim_sam_cmip6[1], clim_sam_cmip6[2], clim_sam_cmip6[3], clim_sam_cmip6[4], 
-clim_sam_cmip6[5], clim_sam_cmip6[6], clim_sam_cmip6[7], clim_sam_cmip6[8], clim_sam_cmip6[9], clim_sam_cmip6[10], clim_sam_cmip6[11],
-clim_sam_cmip6[12], clim_sam_cmip6[13], clim_sam_cmip6[14], clim_sam_cmip6[15], clim_sam_cmip6[16], clim_sam_cmip6[17]])
+sam_cmip6 = np.array([be_sam_cmip6[0], be_sam_cmip6[1], be_sam_cmip6[2], be_sam_cmip6[3], be_sam_cmip6[4], be_sam_cmip6[5], 
+be_sam_cmip6[6], be_sam_cmip6[7], be_sam_cmip6[8], be_sam_cmip6[9], be_sam_cmip6[10], be_sam_cmip6[11], be_sam_cmip6[12], 
+be_sam_cmip6[13], be_sam_cmip6[14], be_sam_cmip6[15], be_sam_cmip6[16], be_sam_cmip6[17]])
 
-lpb_cmip6 = np.array([clim_lpb_obs, clim_lpb_cmip6[0], clim_lpb_cmip6[1], clim_lpb_cmip6[2], clim_lpb_cmip6[3], clim_lpb_cmip6[4], 
-clim_lpb_cmip6[5], clim_lpb_cmip6[6], clim_lpb_cmip6[7], clim_lpb_cmip6[8], clim_lpb_cmip6[9], clim_lpb_cmip6[10], clim_lpb_cmip6[11],
-clim_lpb_cmip6[12], clim_lpb_cmip6[13], clim_lpb_cmip6[14], clim_lpb_cmip6[15], clim_lpb_cmip6[16], clim_lpb_cmip6[17]])
+lpb_cmip6 = np.array([be_lpb_cmip6[0], be_lpb_cmip6[1], be_lpb_cmip6[2], be_lpb_cmip6[3], be_lpb_cmip6[4], be_lpb_cmip6[5], 
+be_lpb_cmip6[6], be_lpb_cmip6[7], be_lpb_cmip6[8], be_lpb_cmip6[9], be_lpb_cmip6[10], be_lpb_cmip6[11], be_lpb_cmip6[12], 
+be_lpb_cmip6[13], be_lpb_cmip6[14], be_lpb_cmip6[15], be_lpb_cmip6[16], be_lpb_cmip6[17]])
 
 namz_cmip6 = np.transpose(namz_cmip6)
 samz_cmip6 = np.transpose(samz_cmip6)
@@ -118,17 +125,15 @@ lpb_cmip6 = np.transpose(lpb_cmip6)
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(6, 10))
 
-xlabels = ['CRU', 'ACCESS-CM2', 'BCC-CSM2-MR', 'CanESM5', 'CMCC-ESM2', 'CNRM-CM6-1', 
-'CNRM-CM6-1-HR', 'CNRM-ESM2-1', 'GFDL-ESM4', 'INM-CM4-8', 'INM-CM5-0', 'KIOST-ESM', 
-'MIROC6', 'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM', 'MME-CMIP6']
+xlabels = legend
 ylabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
 if var_cmip6 == 'pr':
-	norm = colors.BoundaryNorm(boundaries=np.arange(0, 18, 2), ncolors=256)
-	color = cm.Blues
+	norm = colors.BoundaryNorm(boundaries=np.arange(-5, 6, 1), ncolors=256)
+	color = cm.BrBG
 else:
-	norm = colors.BoundaryNorm(boundaries=np.arange(18, 36, 2), ncolors=256)
-	color = cm.Reds	
+	norm = colors.BoundaryNorm(boundaries=np.arange(-5, 6, 1), ncolors=256)
+	color = cm.bwr	
 	
 ax = fig.add_subplot(5, 1, 1)  
 pcm = ax.pcolormesh(namz_cmip6, edgecolors='white', linewidths=2., norm=norm, cmap=color)
@@ -138,7 +143,7 @@ ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
-clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
+clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
 if var_cmip6 == 'pr':
@@ -154,7 +159,7 @@ ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
-clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
+clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
 if var_cmip6 == 'pr':
@@ -170,7 +175,7 @@ ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
-clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
+clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
 if var_cmip6 == 'pr':
@@ -186,7 +191,7 @@ ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
-clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
+clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
 if var_cmip6 == 'pr':
@@ -201,7 +206,7 @@ ax.set_xticks(np.arange(lpb_cmip6.shape[1]) + 0.5)
 ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
-clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
+clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
 if var_cmip6 == 'pr':
@@ -211,7 +216,7 @@ else:
 	
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_portrait_annual_cycle_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_portrait_annual_cycle_bias_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')

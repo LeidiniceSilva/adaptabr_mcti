@@ -101,13 +101,13 @@ for i in range(1, 19):
 fig = plt.figure(figsize=(7, 9))
 
 if var_cmip6 == 'pr':
-	levs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-	color = cm.gist_rainbow
+	levs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+	color = cm.Blues
 	legend = 'Precipitação (mm d⁻¹)'
 
 else:
-	levs = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-	color = cm.jet
+	levs = [12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+	color = cm.Reds
 	legend = 'Temperatura (°C)'
 	
 ax = fig.add_subplot(5, 4, 1)  

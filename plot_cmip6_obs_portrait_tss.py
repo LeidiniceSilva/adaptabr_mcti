@@ -27,15 +27,15 @@ def import_obs(param, area, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]	
-	obs = np.nanmean(value, axis=0)
+	fld_mean = np.nanmean(value, axis=0)
 	
-	latlon_obs = []
-	for i in range(0, obs.shape[0]):
-		for ii in obs[i]:
-			latlon_obs.append(ii)
-	latlon_obs = np.array(latlon_obs)
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
 			
-	return lat, lon, latlon_obs
+	return ts_latlon
 
 	
 def import_cmip(param, area, model, exp, date):
@@ -48,15 +48,15 @@ def import_cmip(param, area, model, exp, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	mdl = np.nanmean(value, axis=0)
-
-	latlon_mdl = []
-	for i in range(0, mdl.shape[0]):
-		for ii in mdl[i]:
-			latlon_mdl.append(ii)
-	latlon_mdl = np.array(latlon_mdl)
+	fld_mean = np.nanmean(value, axis=0)
 	
-	return lat, lon, latlon_mdl
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
 	              
                
 # Import cmip models and obs database 
@@ -80,19 +80,19 @@ legend = []
 for i in range(1, 19):
 
 	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
-	tss_namz_cmip6.append(compute_tss(clim_namz_obs[2], clim_namz_cmip[2]))
+	tss_namz_cmip6.append(compute_tss(clim_namz_obs, clim_namz_cmip))
 	
 	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
-	tss_samz_cmip6.append(compute_tss(clim_samz_obs[2], clim_samz_cmip[2]))
+	tss_samz_cmip6.append(compute_tss(clim_samz_obs, clim_samz_cmip))
 	
 	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
-	tss_neb_cmip6.append(compute_tss(clim_neb_obs[2], clim_neb_cmip[2]))
+	tss_neb_cmip6.append(compute_tss(clim_neb_obs, clim_neb_cmip))
 		
 	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
-	tss_sam_cmip6.append(compute_tss(clim_sam_obs[2], clim_sam_cmip[2]))
+	tss_sam_cmip6.append(compute_tss(clim_sam_obs, clim_sam_cmip))
 		
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
-	tss_lpb_cmip6.append(compute_tss(clim_lpb_obs[2], clim_lpb_cmip[2]))
+	tss_lpb_cmip6.append(compute_tss(clim_lpb_obs, clim_lpb_cmip))
 	
 	legend.append(cmip6[i][0])
 

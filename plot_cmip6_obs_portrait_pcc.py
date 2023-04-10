@@ -33,7 +33,7 @@ def import_obs(param, area, date):
 		obs = np.nanmean(obs_data[mon::12], axis=0)
 		obs_clim.append(obs)
 		
-	return lat, lon, obs_clim
+	return obs_clim
 
 	
 def import_cmip(param, area, model, exp, date):
@@ -53,7 +53,7 @@ def import_cmip(param, area, model, exp, date):
 		mdl = np.nanmean(mdl_data[mon::12], axis=0)
 		mdl_clim.append(mdl)
 	
-	return lat, lon, mdl_clim
+	return mdl_clim
 	              
                
 # Import cmip models and obs database 
@@ -77,19 +77,19 @@ legend = []
 for i in range(1, 19):
 
 	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
-	corr_namz_cmip6.append(compute_pcc(clim_namz_obs[2], clim_namz_cmip[2]))
+	corr_namz_cmip6.append(compute_pcc(clim_namz_obs, clim_namz_cmip))
 	
 	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
-	corr_samz_cmip6.append(compute_pcc(clim_samz_obs[2], clim_samz_cmip[2]))
+	corr_samz_cmip6.append(compute_pcc(clim_samz_obs, clim_samz_cmip))
 	
 	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
-	corr_neb_cmip6.append(compute_pcc(clim_neb_obs[2], clim_neb_cmip[2]))
+	corr_neb_cmip6.append(compute_pcc(clim_neb_obs, clim_neb_cmip))
 		
 	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
-	corr_sam_cmip6.append(compute_pcc(clim_sam_obs[2], clim_sam_cmip[2]))
+	corr_sam_cmip6.append(compute_pcc(clim_sam_obs, clim_sam_cmip))
 		
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
-	corr_lpb_cmip6.append(compute_pcc(clim_lpb_obs[2], clim_lpb_cmip[2]))
+	corr_lpb_cmip6.append(compute_pcc(clim_lpb_obs, clim_lpb_cmip))
 	
 	legend.append(cmip6[i][0])
 

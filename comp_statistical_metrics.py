@@ -5,6 +5,7 @@ __email__       = "leidinicesilva@gmail.com"
 __date__        = "Mar 01, 2023"
 __description__ = "Compute statistical metrics"
 
+import math  
 import numpy as np
 import numpy.ma as ma
 import scipy.stats as st
@@ -64,7 +65,7 @@ def compute_mae(model, obs):
     Return: Mean Absoluty Error
     """
 
-    mae = np.mean(np.abs(np.array(model) - np.array(obs)))
+    mae = np.nanmean(np.abs(np.array(model) - np.array(obs)))
     
     return mae
     
@@ -77,10 +78,11 @@ def compute_rmse(model, obs):
     Param obs: Numpy array with obs data
     Return: Root Mean Square Error
     """
-
-    rmse = np.sqrt(((np.array(model) - np.array(obs)) ** 2).mean()) 
     
-    return rmse
+    mse = np.nanmean(np.square(np.subtract(obs, model)))
+    rsme = math.sqrt(mse)
+    
+    return rsme
     
    
 def compute_pbias(model, obs):

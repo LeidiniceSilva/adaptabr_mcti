@@ -26,9 +26,15 @@ def import_obs(param, area, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	obs_data = np.nanmean(np.nanmean(value, axis=1), axis=1)
-		
-	return lat, lon, obs_data
+	fld_mean = np.nanmean(value, axis=0)
+	
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
 
 	
 def import_cmip(param, area, model, exp, date):
@@ -41,9 +47,15 @@ def import_cmip(param, area, model, exp, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	mdl_data = np.nanmean(np.nanmean(value, axis=1), axis=1)
+	fld_mean = np.nanmean(value, axis=0)
 	
-	return lat, lon, mdl_data
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
 	              
                
 # Import cmip models and obs database 
@@ -74,24 +86,24 @@ legend = []
 for i in range(1, 19):
 
 	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
-	mbe_namz_cmip6.append(compute_mbe(clim_namz_cmip[2], clim_namz_obs[2]))
-	rmse_namz_cmip6.append(compute_rmse(clim_namz_cmip[2], clim_namz_obs[2]))
+	mbe_namz_cmip6.append(compute_mbe(clim_namz_cmip, clim_namz_obs))
+	rmse_namz_cmip6.append(compute_rmse(clim_namz_cmip, clim_namz_obs))
 
 	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
-	mbe_samz_cmip6.append(compute_mbe(clim_samz_cmip[2], clim_samz_obs[2]))
-	rmse_samz_cmip6.append(compute_rmse(clim_samz_cmip[2], clim_samz_obs[2]))
+	mbe_samz_cmip6.append(compute_mbe(clim_samz_cmip, clim_samz_obs))
+	rmse_samz_cmip6.append(compute_rmse(clim_samz_cmip, clim_samz_obs))
 
 	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
-	mbe_neb_cmip6.append(compute_mbe(clim_neb_cmip[2], clim_neb_obs[2]))
-	rmse_neb_cmip6.append(compute_rmse(clim_neb_cmip[2], clim_neb_obs[2]))
+	mbe_neb_cmip6.append(compute_mbe(clim_neb_cmip, clim_neb_obs))
+	rmse_neb_cmip6.append(compute_rmse(clim_neb_cmip, clim_neb_obs))
 
 	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
-	mbe_sam_cmip6.append(compute_mbe(clim_sam_cmip[2], clim_sam_obs[2]))
-	rmse_sam_cmip6.append(compute_rmse(clim_sam_cmip[2], clim_sam_obs[2]))
+	mbe_sam_cmip6.append(compute_mbe(clim_sam_cmip, clim_sam_obs))
+	rmse_sam_cmip6.append(compute_rmse(clim_sam_cmip, clim_sam_obs))
 
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
-	mbe_lpb_cmip6.append(compute_mbe(clim_lpb_cmip[2], clim_lpb_obs[2]))
-	rmse_lpb_cmip6.append(compute_rmse(clim_lpb_cmip[2], clim_lpb_obs[2]))
+	mbe_lpb_cmip6.append(compute_mbe(clim_lpb_cmip, clim_lpb_obs))
+	rmse_lpb_cmip6.append(compute_rmse(clim_lpb_cmip, clim_lpb_obs))
 
 	legend.append(cmip6[i][0])
 

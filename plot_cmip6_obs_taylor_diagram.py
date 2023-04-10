@@ -14,9 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import mpl_toolkits.axisartist as axisartist
 
-from taylor_diagram import TaylorDiagram
 from dict_cmip6_models_name import cmip6
-from comp_statistical_metrics import compute_tss
+from comp_taylor_diagram import TaylorDiagram
 
 
 def import_obs(param, area, date):
@@ -29,15 +28,15 @@ def import_obs(param, area, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]	
-	obs = np.nanmean(value, axis=0)
+	fld_mean = np.nanmean(value, axis=0)
 	
-	latlon_obs = []
-	for i in range(0, obs.shape[0]):
-		for ii in obs[i]:
-			latlon_obs.append(ii)
-	latlon_obs = np.array(latlon_obs)
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
 			
-	return lat, lon, latlon_obs
+	return ts_latlon
 
 	
 def import_cmip(param, area, model, exp, date):
@@ -50,20 +49,20 @@ def import_cmip(param, area, model, exp, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	mdl = np.nanmean(value, axis=0)
-
-	latlon_mdl = []
-	for i in range(0, mdl.shape[0]):
-		for ii in mdl[i]:
-			latlon_mdl.append(ii)
-	latlon_mdl = np.array(latlon_mdl)
+	fld_mean = np.nanmean(value, axis=0)
 	
-	return lat, lon, latlon_mdl
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
 	              
                
 # Import cmip models and obs database 
-var_obs = 'pre'
-var_cmip6 = 'pr'
+var_obs = 'tmp'
+var_cmip6 = 'tas'
 dt = '1980-2014'
 
 clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)
@@ -72,11 +71,11 @@ clim_neb_obs  = import_obs(var_obs, 'NEB', dt)
 clim_sam_obs = import_obs(var_obs, 'SAM', dt)
 clim_lpb_obs = import_obs(var_obs, 'LPB', dt)
 
-std_namz_obs = np.nanstd(clim_namz_obs[2], ddof=0)
-std_samz_obs = np.nanstd(clim_samz_obs[2], ddof=0)
-std_neb_obs = np.nanstd(clim_neb_obs[2], ddof=0)
-std_sam_obs = np.nanstd(clim_sam_obs[2], ddof=0)
-std_lpb_obs = np.nanstd(clim_lpb_obs[2], ddof=0)
+std_namz_obs = np.nanstd(clim_namz_obs, ddof=0)
+std_samz_obs = np.nanstd(clim_samz_obs, ddof=0)
+std_neb_obs = np.nanstd(clim_neb_obs, ddof=0)
+std_sam_obs = np.nanstd(clim_sam_obs, ddof=0)
+std_lpb_obs = np.nanstd(clim_lpb_obs, ddof=0)
 	
 std_namz_cmip6 = []
 std_samz_cmip6 = []
@@ -95,24 +94,24 @@ legend = []
 for i in range(1, 19):
 
 	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
-	pcc_namz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_namz_obs[2]), ma.masked_invalid(clim_namz_cmip[2]))[0][1])
-	std_namz_cmip6.append(np.nanstd(clim_namz_cmip[2], ddof=0))
+	pcc_namz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_namz_obs), ma.masked_invalid(clim_namz_cmip))[0][1])
+	std_namz_cmip6.append(np.nanstd(clim_namz_cmip, ddof=0))
 
 	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
-	pcc_samz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_samz_obs[2]), ma.masked_invalid(clim_samz_cmip[2]))[0][1])
-	std_samz_cmip6.append(np.nanstd(clim_samz_cmip[2], ddof=0))
+	pcc_samz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_samz_obs), ma.masked_invalid(clim_samz_cmip))[0][1])
+	std_samz_cmip6.append(np.nanstd(clim_samz_cmip, ddof=0))
 	
 	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
-	pcc_neb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_neb_obs[2]), ma.masked_invalid(clim_neb_cmip[2]))[0][1])
-	std_neb_cmip6.append(np.nanstd(clim_neb_cmip[2], ddof=0))
+	pcc_neb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_neb_obs), ma.masked_invalid(clim_neb_cmip))[0][1])
+	std_neb_cmip6.append(np.nanstd(clim_neb_cmip, ddof=0))
 		
 	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
-	pcc_sam_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_sam_obs[2]), ma.masked_invalid(clim_sam_cmip[2]))[0][1])
-	std_sam_cmip6.append(np.nanstd(clim_sam_cmip[2], ddof=0))
+	pcc_sam_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_sam_obs), ma.masked_invalid(clim_sam_cmip))[0][1])
+	std_sam_cmip6.append(np.nanstd(clim_sam_cmip, ddof=0))
 		
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
-	pcc_lpb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_lpb_obs[2]), ma.masked_invalid(clim_lpb_cmip[2]))[0][1])
-	std_lpb_cmip6.append(np.nanstd(clim_lpb_cmip[2], ddof=0))
+	pcc_lpb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_lpb_obs), ma.masked_invalid(clim_lpb_cmip))[0][1])
+	std_lpb_cmip6.append(np.nanstd(clim_lpb_cmip, ddof=0))
 	
 	legend.append(cmip6[i][0])
 
@@ -148,7 +147,7 @@ plt.subplots_adjust(top=0.95)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_talyor_diagram_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_taylor_diagram_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300)
