@@ -28,6 +28,9 @@ map.drawmapboundary(fill_color='skyblue')
 map.drawparallels(np.arange(-60., 30., 15.), labels=[1,0,0,0], linewidth=0.5, color='black')
 map.drawmeridians(np.arange(-85., -30., 15.), labels=[0,0,0,1], linewidth=0.5, color='black')
 
+attributes = [1,5,2]
+plt.pie(attributes, center=map(-58, 0), colors = ["tab:purple", "tab:blue", "tab:red"], radius= 2)
+    
 x1,i1 = map(-70,-5)
 x2,i2 = map(-70,5)
 x3,i3 = map(-45,5)
@@ -64,11 +67,6 @@ poly5 = Polygon([(yy1,jj1),(yy2,jj2),(yy3,jj3),(yy4,jj4)], facecolor='none', edg
 plt.gca().add_patch(poly5)
 
 plt.text(-37, -53, u'\u25B2 \nN', color='gray', fontweight='bold')
-plt.text(-68, -4, u'NAMZ', color='gray', fontweight='bold')
-plt.text(-55, -8, u'SAMZ', color='gray', fontweight='bold')
-plt.text(-44, -6, u'NEB', color='gray', fontweight='bold')
-plt.text(-54, -19, u'SAM', color='gray', fontweight='bold')
-plt.text(-52, -34, u'LPB', color='gray', fontweight='bold')
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'

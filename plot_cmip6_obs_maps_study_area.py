@@ -23,7 +23,7 @@ plt.figure(figsize=(6, 7))
 
 ax = plt.subplot(111)
 map = Basemap(projection='cyl', llcrnrlon=-85., llcrnrlat=-60., urcrnrlon=-30.,urcrnrlat=15., resolution='c')
-sa.bedrock.plot.pcolormesh(cmap=cmocean.cm.topo, cbar_kwargs=dict(pad=0.01, aspect=30, label='Elevation (m)'), ax=ax)
+sa.bedrock.plot.pcolormesh(cmap=cmocean.cm.topo, cbar_kwargs=dict(pad=0.01, aspect=30, label='Topografia (m)'), ax=ax)
 ax.set_xlabel(u'Longitude', fontweight='bold')
 ax.set_ylabel(u'Latitude', fontweight='bold')
 
@@ -63,11 +63,11 @@ poly5 = Polygon([(yy1,jj1),(yy2,jj2),(yy3,jj3),(yy4,jj4)], facecolor='none', edg
 plt.gca().add_patch(poly5)
 
 plt.text(-37, -53, u'\u25B2 \nN', color='black', fontweight='bold')
-plt.text(-68, -4, u'NAMZ', color='black', fontweight='bold')
-plt.text(-68, -11, u'SAMZ', color='black', fontweight='bold')
-plt.text(-44, -6, u'NEB', color='black', fontweight='bold')
-plt.text(-54, -19, u'SAM', color='black', fontweight='bold')
-plt.text(-59, -23, u'LPB', color='black', fontweight='bold')
+plt.text(-68, -4, u'NAMZ', color='gray', fontweight='bold')
+plt.text(-55, -8, u'SAMZ', color='gray', fontweight='bold')
+plt.text(-44, -6, u'NEB', color='gray', fontweight='bold')
+plt.text(-54, -19, u'SAM', color='gray', fontweight='bold')
+plt.text(-52, -34, u'LPB', color='gray', fontweight='bold')
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
