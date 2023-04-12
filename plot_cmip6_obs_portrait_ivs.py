@@ -61,8 +61,8 @@ def sort_list(data_list):
 	
 	           
 # Import cmip models and obs database 
-var_obs = 'pre'
-var_cmip6 = 'pr'
+var_obs = 'tmp'
+var_cmip6 = 'tas'
 dt = '1980-2014'
 
 clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)

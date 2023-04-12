@@ -134,16 +134,14 @@ def import_cmip_ann(param, area, model, exp, period, date):
 	
 def compute_cri(p1, p2, p3, p4, p5):
 
-	i = p1 + p2 + p3 + p4 + p5
-	ii = i / 90
-	cri = 1 - ii
+	cri = (p1 + p2 + p3 + p4 + p5) / 90
 
 	return cri
 	
 	     
 # Import cmip models and obs database 
-var_obs = 'pre'
-var_cmip6 = 'pr'
+var_obs = 'tmp'
+var_cmip6 = 'tas'
 dt = '1980-2014'
 
 namz_obs_latlon = import_obs_latlon(var_obs, 'NAMZ', 'ANN', dt)
@@ -237,7 +235,7 @@ cri_cmip6 = np.array([cri_lpb_cmip6,cri_sam_cmip6,cri_neb_cmip6,cri_samz_cmip6,c
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(9, 3))
-norm = colors.BoundaryNorm(boundaries=np.arange(0, 1., 0.1), ncolors=256)
+norm = colors.BoundaryNorm(boundaries=np.arange(0, 0.475, 0.025), ncolors=256)
 xlabels = legend
 ylabels = [u'LPB', u'SAM', u'NEB', u'SAMZ', u'NAMZ']
 
