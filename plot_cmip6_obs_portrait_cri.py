@@ -132,11 +132,9 @@ def import_cmip_ann(param, area, model, exp, period, date):
 	return ts_ann
 	
 	
-def compute_cri(p1, p2, p3, p4, p5):
+def compute_cri(p1):
 
-	i = p1 + p2 + p3 + p4 + p5
-	ii = i / 90
-	cri = 1 - ii
+	cri = 1 - (p1 / 90)
 
 	return cri
 	
