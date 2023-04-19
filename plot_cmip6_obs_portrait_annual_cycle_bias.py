@@ -17,7 +17,7 @@ from dict_cmip6_models_name import cmip6
 def import_obs(param, area, date):
 	
 	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_CRU_ts4_MON_{3}_lonlat.nc'.format(path, param, area, date)	
+	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_MON_{3}_lonlat.nc'.format(path, param, area, date)	
 		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
@@ -64,6 +64,7 @@ clim_samz_obs = import_obs(var_obs, 'SAMZ', dt)
 clim_neb_obs  = import_obs(var_obs, 'NEB', dt)
 clim_sam_obs = import_obs(var_obs, 'SAM', dt)
 clim_lpb_obs = import_obs(var_obs, 'LPB', dt)
+clim_lpb_obs = import_obs(var_obs, 'BR', dt)
 
 be_namz_cmip6 = []
 be_samz_cmip6 = []
@@ -94,6 +95,10 @@ for i in range(1, 19):
 	be_lpb_cmip = np.array(clim_lpb_cmip) - np.array(clim_lpb_obs)
 	be_lpb_cmip6.append(be_lpb_cmip)
 
+	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
+	be_lpb_cmip = np.array(clim_lpb_cmip) - np.array(clim_lpb_obs)
+	be_lpb_cmip6.append(be_lpb_cmip)
+	
 	legend.append(cmip6[i][0])
 
 namz_cmip6 = np.array([be_namz_cmip6[0], be_namz_cmip6[1], be_namz_cmip6[2], be_namz_cmip6[3], be_namz_cmip6[4], be_namz_cmip6[5], 

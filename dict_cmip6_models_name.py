@@ -37,5 +37,4 @@ cmip6 = {1	:['ACCESS-CM2',    'r1i1p1f1_gn'],
 		 14	:['MPI-ESM1-2-LR', 'r1i1p1f1_gn'],
 		 15	:['MRI-ESM2-0',    'r1i1p1f1_gn'],
 		 16	:['NESM3',         'r1i1p1f1_gn'],
-		 17	:['NorESM2-MM',    'r1i1p1f1_gn'],
-		 18	:['MME-CMIP6',     'r1i1p1f1_gn']}
+		 17	:['NorESM2-MM',    'r1i1p1f1_gn']}

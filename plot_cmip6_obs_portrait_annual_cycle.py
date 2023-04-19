@@ -17,7 +17,7 @@ from dict_cmip6_models_name import cmip6
 def import_obs(param, area, date):
 	
 	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_CRU_ts4_MON_{3}_lonlat.nc'.format(path, param, area, date)	
+	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_MON_{3}_lonlat.nc'.format(path, param, area, date)	
 		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
@@ -64,12 +64,14 @@ clim_samz_obs = import_obs(var_obs, 'SAMZ', dt)
 clim_neb_obs  = import_obs(var_obs, 'NEB', dt)
 clim_sam_obs = import_obs(var_obs, 'SAM', dt)
 clim_lpb_obs = import_obs(var_obs, 'LPB', dt)
+clim_lpb_obs = import_obs(var_obs, 'BR', dt)
 
 clim_namz_cmip6 = []
 clim_samz_cmip6 = []
 clim_neb_cmip6 = []
 clim_sam_cmip6 = []
 clim_lpb_cmip6 = []
+clim_br_cmip6 = []
 legend = []
 
 for i in range(1, 19):
@@ -89,6 +91,9 @@ for i in range(1, 19):
 	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
 	clim_lpb_cmip6.append(clim_lpb_cmip)
 
+	clim_br_cmip = import_cmip(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], dt)
+	clim_br_cmip6.append(clim_br_cmip)
+	
 namz_cmip6 = np.array([clim_namz_obs, clim_namz_cmip6[0], clim_namz_cmip6[1], clim_namz_cmip6[2], clim_namz_cmip6[3], clim_namz_cmip6[4], 
 clim_namz_cmip6[5], clim_namz_cmip6[6], clim_namz_cmip6[7], clim_namz_cmip6[8], clim_namz_cmip6[9], clim_namz_cmip6[10], clim_namz_cmip6[11],
 clim_namz_cmip6[12], clim_namz_cmip6[13], clim_namz_cmip6[14], clim_namz_cmip6[15], clim_namz_cmip6[16], clim_namz_cmip6[17]])
@@ -109,18 +114,27 @@ lpb_cmip6 = np.array([clim_lpb_obs, clim_lpb_cmip6[0], clim_lpb_cmip6[1], clim_l
 clim_lpb_cmip6[5], clim_lpb_cmip6[6], clim_lpb_cmip6[7], clim_lpb_cmip6[8], clim_lpb_cmip6[9], clim_lpb_cmip6[10], clim_lpb_cmip6[11],
 clim_lpb_cmip6[12], clim_lpb_cmip6[13], clim_lpb_cmip6[14], clim_lpb_cmip6[15], clim_lpb_cmip6[16], clim_lpb_cmip6[17]])
 
+lpb_cmip6 = np.array([clim_lpb_obs, clim_lpb_cmip6[0], clim_lpb_cmip6[1], clim_lpb_cmip6[2], clim_lpb_cmip6[3], clim_lpb_cmip6[4], 
+clim_lpb_cmip6[5], clim_lpb_cmip6[6], clim_lpb_cmip6[7], clim_lpb_cmip6[8], clim_lpb_cmip6[9], clim_lpb_cmip6[10], clim_lpb_cmip6[11],
+clim_lpb_cmip6[12], clim_lpb_cmip6[13], clim_lpb_cmip6[14], clim_lpb_cmip6[15], clim_lpb_cmip6[16], clim_lpb_cmip6[17]])
+
+br_cmip6 = np.array([clim_br_obs, clim_br_cmip6[0], clim_br_cmip6[1], clim_br_cmip6[2], clim_br_cmip6[3], clim_br_cmip6[4], 
+clim_br_cmip6[5], clim_br_cmip6[6], clim_br_cmip6[7], clim_br_cmip6[8], clim_br_cmip6[9], clim_br_cmip6[10], clim_br_cmip6[11],
+clim_br_cmip6[12], clim_br_cmip6[13], clim_br_cmip6[14], clim_br_cmip6[15], clim_br_cmip6[16], clim_lbr_cmip6[17]])
+
 namz_cmip6 = np.transpose(namz_cmip6)
 samz_cmip6 = np.transpose(samz_cmip6)
 neb_cmip6 = np.transpose(neb_cmip6)
 sam_cmip6 = np.transpose(sam_cmip6)
 lpb_cmip6 = np.transpose(lpb_cmip6)
+br_cmip6 = np.transpose(br_cmip6)
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(6, 10))
 
-xlabels = ['CRU', 'ACCESS-CM2', 'BCC-CSM2-MR', 'CanESM5', 'CMCC-ESM2', 'CNRM-CM6-1', 
+xlabels = ['BR-DWGD', 'ACCESS-CM2', 'BCC-CSM2-MR', 'CanESM5', 'CMCC-ESM2', 'CNRM-CM6-1', 
 'CNRM-CM6-1-HR', 'CNRM-ESM2-1', 'GFDL-ESM4', 'INM-CM4-8', 'INM-CM5-0', 'KIOST-ESM', 
-'MIROC6', 'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM', 'MME-CMIP6']
+'MIROC6', 'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM']
 ylabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
 if var_cmip6 == 'pr':

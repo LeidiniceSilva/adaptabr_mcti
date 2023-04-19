@@ -20,7 +20,7 @@ from dict_cmip6_models_name import cmip6
 def import_obs(param, date):
 	
 	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_SA_CRU_ts4_ANN_{2}_lonlat.nc'.format(path, param, date)	
+	arq   = '{0}/{1}_SA_BR-DWGD_UFES_UTEXAS_v_3.0_ANN_{2}_lonlat.nc'.format(path, param, date)	
 		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
@@ -85,14 +85,14 @@ def basemap(lat, lon):
 	
 	
 # Import cmip models and obs database 
-var_obs = 'tmp'
-var_cmip6 = 'tas'
-dt = '1980-2014'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
+dt = '1986-2005'
 
 lat, lon, mean_obs = import_obs(var_obs, dt)
 
 mean_cmip6 = []
-for i in range(1, 19):
+for i in range(1, 18):
 	print(cmip6[i][0])
 	lat, lon, mean_cmip = import_cmip(var_cmip6, cmip6[i][0], cmip6[i][1], dt)
 	mean_cmip6.append(mean_cmip)
@@ -104,14 +104,17 @@ if var_cmip6 == 'pr':
 	levs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 	color = cm.Blues
 	legend = 'Precipitação (mm d⁻¹)'
-
-else:
-	levs = [12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+elif var_cmip6 == 'tasmax':
+	levs = [18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
 	color = cm.Reds
-	legend = 'Temperatura (°C)'
+	legend = 'Temperatura máxima (°C)'
+else:
+	levs = [14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34]
+	color = cm.Reds
+	legend = 'Temperatura mínima (°C)'
 	
 ax = fig.add_subplot(5, 4, 1)  
-plt.title(u'(a) CRU', loc='left', fontsize=8, fontweight='bold')
+plt.title(u'(a) BR-DWGD', loc='left', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, mean_obs, levels=levs, latlon=True, cmap=color, extend='max') 
 cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.92, 0.28, 0.02, 0.43]))
@@ -203,16 +206,9 @@ plt.title(u'(r) {0}'.format(cmip6[17][0]), loc='left', fontsize=8, fontweight='b
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, mean_cmip6[16], levels=levs, latlon=True, cmap=color) 
 
-ax = fig.add_subplot(5, 4, 19)  
-plt.title(u'(s) {0}'.format(cmip6[18][0]), loc='left', fontsize=8, fontweight='bold')
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[17], levels=levs, latlon=True, cmap=color) 
-
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
 name_out = 'pyplt_maps_clim_ann_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
-if not os.path.exists(path_out):
-	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
 exit()
