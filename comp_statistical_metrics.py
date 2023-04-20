@@ -211,12 +211,14 @@ def compute_tss(obs, model):
 	"""
 
 	p1 = ma.corrcoef(ma.masked_invalid(obs), ma.masked_invalid(model))[0][1]
-	p2 = np.nanstd(model, ddof=1)
-	p3 = (1 + p1)**4
-	p4 = 1/p2
-	p5 = (p2 + p4)**2
-	p6 = 4*p5
-	tss = p3 / p6
+	p2 = np.nanstd(obs, ddof=0)
+	p3 = np.nanstd(model, ddof=0)
+	p4 = p3/p2
+	p5 = (1 + p1)**4
+	p6 = 1/p4
+	p7 = (p4 + p6)**2
+	p8 = 4*p7
+	tss = p5 / p8
 
 	return tss
 	

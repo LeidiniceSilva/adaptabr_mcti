@@ -85,8 +85,8 @@ def basemap(lat, lon):
 	
 
 # Import cmip models and obs database 
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
+var_obs = 'pr'
+var_cmip6 = 'pr'
 dt = '1986-2005'
 
 lat, lon, mean_obs = import_obs(var_obs, dt)
@@ -105,7 +105,7 @@ if var_cmip6 == 'pr':
 	levs0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 	color0 = cm.Blues
 	levs = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color = cm.RdBu
+	color = cm.BrBG
 elif var_cmip6 == 'tasmax':
 	levs0 = [18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
 	color0 = cm.Reds
