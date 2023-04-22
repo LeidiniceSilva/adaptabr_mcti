@@ -12,7 +12,7 @@ def TaylorDiagram(
     corrcoef,
     refstd,
     fig=None,
-    rect=325,
+    rect=326,
     title=None,
     titleprops_dict=dict(),
     colors=None,
@@ -140,7 +140,7 @@ def TaylorDiagram(
     # Radial axis range
     smin = 0
     if smax is None:
-        smax = max(2.0, 1.1 * stddev.max())
+        smax = max(3., 1.1 * stddev.max())
 
     # add the curvilinear grid
     ghelper = FA.GridHelperCurveLinear(
@@ -164,7 +164,7 @@ def TaylorDiagram(
 
     if radial_axis_title is None:
         if normalize:
-            radial_axis_title = "Normalized standard deviation"
+            radial_axis_title = "SD (Normalized)"
         else:
             radial_axis_title = "Standard deviation"
 

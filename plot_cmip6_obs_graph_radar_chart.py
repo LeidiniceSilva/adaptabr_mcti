@@ -70,9 +70,7 @@ plt.text(-37, -53, u'\u25B2 \nN', color='gray', fontweight='bold')
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_maps_cri_cmip6_pr_tas_1980-2014.png'
-if not os.path.exists(path_out):
-	create_path(path_out)
+name_out = 'pyplt_radar_chart_cri_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
 exit()
