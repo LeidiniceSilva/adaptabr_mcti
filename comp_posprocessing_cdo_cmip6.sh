@@ -12,7 +12,7 @@ echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 var_list=( 'pr' 'tasmax' 'tasmin' )     
 
 # Models list
-model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-CM6-1-HR' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' )
+model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' )
 
 for var in ${var_list[@]}; do
 
@@ -31,9 +31,6 @@ for var in ${var_list[@]}; do
 		if [ ${model} == 'CNRM-CM6-1' ]
 		then
 		member='r1i1p1f2_gr'
-		elif [ ${model} == 'CNRM-CM6-1-HR' ]
-		then
-		member='r1i1p1f2_gr'
 		elif [ ${model} == 'CNRM-ESM2-1' ]
 		then
 		member='r1i1p1f2_gr'
@@ -49,6 +46,9 @@ for var in ${var_list[@]}; do
 		elif [ ${model} == 'KIOST-ESM' ]
 		then
 		member='r1i1p1f1_gr1'
+		elif [ ${model} == 'MIROC-ES2L' ]
+		then
+		member='r1i1p1f2_gn'
 		else
 		member='r1i1p1f1_gn'
 		fi

@@ -147,7 +147,7 @@ fig = plt.figure(figsize=(12,8))
 titleprops_dict = dict(loc='left', fontweight='bold', x=0.0, y=1.05)
 
 fig, ax1 = TaylorDiagram(std_namz, pcc_namz, std_namz_obs, fig=fig, rect=231, title='(a) NAMZ', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
-fig, ax2 = TaylorDiagram(std_samz, pcc_namz, std_samz_obs, fig=fig, rect=232, title='(b) SAMZ', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax2 = TaylorDiagram(std_samz, pcc_samz, std_samz_obs, fig=fig, rect=232, title='(b) SAMZ', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
 fig, ax3 = TaylorDiagram(std_neb, pcc_neb, std_neb_obs, fig=fig, rect=233, title='(c) NEB', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
 fig, ax4 = TaylorDiagram(std_sam, pcc_sam, std_sam_obs, fig=fig, rect=234, title='(d) SAM', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
 fig, ax5 = TaylorDiagram(std_lpb, pcc_lpb, std_lpb_obs, fig=fig, rect=235, title='(e) LPB', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')

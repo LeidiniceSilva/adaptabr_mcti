@@ -173,8 +173,8 @@ def compute_ivs(obs, model):
     Return: Interannual Variability Skill Score
     """
 
-    p1 = np.nanstd(obs)
-    p2 = np.nanstd(model)
+    p1 = np.nanstd(obs, axis=0)
+    p2 = np.nanstd(model, axis=0)
     p3 = p2 / p1
     p4 = p1 / p2
     ivs = (p3 - p4)**2  
@@ -193,8 +193,8 @@ def compute_kge(obs, model):
 
 	p1 = np.corrcoef(obs, model)[0][1]
 	p2 = np.nanmean(model) / np.nanmean(obs)
-	p3 = np.nanstd(model, ddof=1) / np.nanmean(model) * 100 
-	p4 = np.nanstd(obs, ddof=1) / np.nanmean(obs) * 100 
+	p3 = np.nanstd(model, ddof=0) / np.nanmean(model) * 100 
+	p4 = np.nanstd(obs, ddof=0) / np.nanmean(obs) * 100 
 	p5 = p3/p4
 	kge = 1 - np.sqrt((1 - p1)**2 + (1 - p2)**2 + (1 - p5)**2)
 

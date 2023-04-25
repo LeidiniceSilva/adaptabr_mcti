@@ -32,7 +32,7 @@ def import_obs(param, area, date):
 	for mon in range(0, 11 + 1):
 		obs = np.nanmean(obs_data[mon::12], axis=0)
 		obs_clim.append(obs)
-		
+
 	return obs_clim
 
 	

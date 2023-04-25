@@ -71,9 +71,8 @@ def import_obs_ann(param, area, period, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	ts_ann = np.nanmean(np.nanmean(value, axis=1), axis=1)
 	
-	return ts_ann
+	return value
 	
 	
 def import_cmip_latlon(param, area, model, exp, period, date):
@@ -127,9 +126,8 @@ def import_cmip_ann(param, area, model, exp, period, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	ts_ann = np.nanmean(np.nanmean(value, axis=1), axis=1)
 	
-	return ts_ann
+	return value
 	
 
 def sort_list(data_list):
@@ -147,7 +145,7 @@ def sort_list(data_list):
 	
 	
 # Import cmip models and obs database 
-idx = 'pcc'
+idx = 'ivs'
 var_obs = 'Tmin'
 var_cmip6 = 'tasmin'
 dt = '1986-2005'
@@ -238,38 +236,44 @@ for i in range(1, 18):
 	rmse_namz_cmip6.append(compute_rmse(namz_cmip_latlon, namz_obs_latlon))	
 	tss_namz_cmip6.append(compute_tss(namz_obs_latlon, namz_cmip_latlon))
 	pcc_namz_cmip6.append(compute_pcc(namz_obs_mon_ts, namz_cmip_mon_ts))
-	ivs_namz_cmip6.append(compute_ivs(namz_obs_ann_ts, namz_cmip_ann_ts))
-
+	ivs_namz_cmip = compute_ivs(namz_obs_ann_ts, namz_cmip_ann_ts)
+	ivs_namz_cmip6.append(np.nanmean(ivs_namz_cmip))
+	
 	mbe_samz_cmip6.append(compute_mbe(samz_cmip_latlon, samz_obs_latlon))
 	rmse_samz_cmip6.append(compute_rmse(samz_cmip_latlon, samz_obs_latlon))
 	tss_samz_cmip6.append(compute_tss(samz_obs_latlon, samz_cmip_latlon))
 	pcc_samz_cmip6.append(compute_pcc(samz_obs_mon_ts, samz_cmip_mon_ts))
-	ivs_samz_cmip6.append(compute_ivs(samz_obs_ann_ts, samz_cmip_ann_ts))
-	
+	ivs_samz_cmip = compute_ivs(samz_obs_ann_ts, samz_cmip_ann_ts)
+	ivs_samz_cmip6.append(np.nanmean(ivs_samz_cmip))
+		
 	mbe_neb_cmip6.append(compute_mbe(neb_cmip_latlon, neb_obs_latlon))
 	rmse_neb_cmip6.append(compute_rmse(neb_cmip_latlon, neb_obs_latlon))
 	tss_neb_cmip6.append(compute_tss(neb_obs_latlon, neb_cmip_latlon))
 	pcc_neb_cmip6.append(compute_pcc(neb_obs_mon_ts, neb_cmip_mon_ts))
-	ivs_neb_cmip6.append(compute_ivs(neb_obs_ann_ts, neb_cmip_ann_ts))
-	
+	ivs_neb_cmip = compute_ivs(neb_obs_ann_ts, neb_cmip_ann_ts)
+	ivs_neb_cmip6.append(np.nanmean(ivs_neb_cmip))
+		
 	mbe_sam_cmip6.append(compute_mbe(sam_cmip_latlon, sam_obs_latlon))
 	rmse_sam_cmip6.append(compute_rmse(sam_cmip_latlon, sam_obs_latlon))
 	tss_sam_cmip6.append(compute_tss(sam_obs_latlon, sam_cmip_latlon))
 	pcc_sam_cmip6.append(compute_pcc(sam_obs_mon_ts, sam_cmip_mon_ts))
-	ivs_sam_cmip6.append(compute_ivs(sam_obs_ann_ts, sam_cmip_ann_ts))
-	
+	ivs_sam_cmip = compute_ivs(sam_obs_ann_ts, sam_cmip_ann_ts)
+	ivs_sam_cmip6.append(np.nanmean(ivs_sam_cmip))
+		
 	mbe_lpb_cmip6.append(compute_mbe(lpb_cmip_latlon, lpb_obs_latlon))
 	rmse_lpb_cmip6.append(compute_rmse(lpb_cmip_latlon, lpb_obs_latlon))
 	tss_lpb_cmip6.append(compute_tss(lpb_obs_latlon, lpb_cmip_latlon))
 	pcc_lpb_cmip6.append(compute_pcc(lpb_obs_mon_ts, lpb_cmip_mon_ts))
-	ivs_lpb_cmip6.append(compute_ivs(lpb_obs_ann_ts, lpb_cmip_ann_ts))
-
+	ivs_lpb_cmip = compute_ivs(lpb_obs_ann_ts, lpb_cmip_ann_ts)
+	ivs_lpb_cmip6.append(np.nanmean(ivs_lpb_cmip))
+	
 	mbe_br_cmip6.append(compute_mbe(br_cmip_latlon, br_obs_latlon))
 	rmse_br_cmip6.append(compute_rmse(br_cmip_latlon, br_obs_latlon))
 	tss_br_cmip6.append(compute_tss(br_obs_latlon, br_cmip_latlon))
 	pcc_br_cmip6.append(compute_pcc(br_obs_mon_ts, br_cmip_mon_ts))
-	ivs_br_cmip6.append(compute_ivs(br_obs_ann_ts, br_cmip_ann_ts))
-	
+	ivs_br_cmip = compute_ivs(br_obs_ann_ts, br_cmip_ann_ts)
+	ivs_br_cmip6.append(np.nanmean(ivs_br_cmip))
+
 	legend.append(cmip6[i][0])
 
 if idx == 'mbe':

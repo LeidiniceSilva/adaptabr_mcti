@@ -132,9 +132,9 @@ br_cmip6 = np.transpose(br_cmip6)
 fig = plt.figure(figsize=(9, 7))
 
 xlabels = ['BR-DWGD', 'ACCESS-CM2', 'BCC-CSM2-MR', 'CanESM5', 'CMCC-ESM2', 'CNRM-CM6-1', 
-'CNRM-CM6-1-HR', 'CNRM-ESM2-1', 'GFDL-ESM4', 'INM-CM4-8', 'INM-CM5-0', 'KIOST-ESM', 
-'MIROC6', 'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM']
-ylabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+'CNRM-ESM2-1', 'GFDL-ESM4', 'INM-CM4-8', 'INM-CM5-0', 'KIOST-ESM', 'MIROC6', 'MIROC-ES2L',
+'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM']
+ylabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 
 if var_cmip6 == 'pr':
 	norm = colors.BoundaryNorm(boundaries=np.arange(0, 18, 2), ncolors=256)
@@ -152,8 +152,8 @@ else:
 ax = fig.add_subplot(3, 2, 1)  
 pcm = ax.pcolormesh(namz_cmip6, edgecolors='white', linewidths=2., norm=norm, cmap=color)
 ax.set_title(u'(a) NAMZ', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(lpb_cmip6.shape[1]) + 0.5)
-ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
+ax.set_xticks(np.arange(namz_cmip6.shape[1]) + 0.5)
+ax.set_yticks(np.arange(namz_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -165,8 +165,8 @@ clb.set_label(u'{0}'.format(legend), size=8, fontweight='bold', rotation=90)
 ax = fig.add_subplot(3, 2, 2)  
 pcm = ax.pcolormesh(samz_cmip6, edgecolors='white', linewidths=2., norm=norm, cmap=color)
 ax.set_title(u'(b) SAMZ', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(lpb_cmip6.shape[1]) + 0.5)
-ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
+ax.set_xticks(np.arange(samz_cmip6.shape[1]) + 0.5)
+ax.set_yticks(np.arange(samz_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -178,8 +178,8 @@ clb.set_label(u'{0}'.format(legend), size=8, fontweight='bold', rotation=90)
 ax = fig.add_subplot(3, 2, 3)  
 pcm = ax.pcolormesh(neb_cmip6, edgecolors='white', linewidths=2., norm=norm, cmap=color)
 ax.set_title(u'(c) NEB', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(lpb_cmip6.shape[1]) + 0.5)
-ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
+ax.set_xticks(np.arange(neb_cmip6.shape[1]) + 0.5)
+ax.set_yticks(np.arange(neb_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -191,8 +191,8 @@ clb.set_label(u'{0}'.format(legend), size=8, fontweight='bold', rotation=90)
 ax = fig.add_subplot(3, 2, 4)  
 pcm = ax.pcolormesh(sam_cmip6, edgecolors='white', linewidths=2., norm=norm, cmap=color)
 ax.set_title(u'(d) SAM', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(lpb_cmip6.shape[1]) + 0.5)
-ax.set_yticks(np.arange(lpb_cmip6.shape[0]) + 0.5)
+ax.set_xticks(np.arange(sam_cmip6.shape[1]) + 0.5)
+ax.set_yticks(np.arange(sam_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
