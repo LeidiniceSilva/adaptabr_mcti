@@ -10,7 +10,7 @@ Dictionary CMIP6 models name
 
 > {model}
 
-    Index and name:
+    Index and name: 
 
     where:
 
@@ -38,3 +38,24 @@ cmip6 = {1	:['ACCESS-CM2',    'r1i1p1f1_gn'],
 		 15	:['MRI-ESM2-0',    'r1i1p1f1_gn'],
 		 16	:['NESM3',         'r1i1p1f1_gn'],
 		 17	:['NorESM2-MM',    'r1i1p1f1_gn']}
+		 
+cmip6_i = {1 :['ACCESS-CM2',    'r1i1p1f1_gn'],
+		 2	:['BCC-CSM2-MR',   'r1i1p1f1_gn'],
+		 3	:['CANESM5',       'r1i1p1f1_gn'],
+		 4	:['CMCC-ESM2',     'r1i1p1f1_gn'],
+		 5	:['CNRM-CM6-1',    'r1i1p1f2_gr'],
+		 6	:['CNRM-ESM2-1',   'r1i1p1f2_gr'],
+		 7	:['GFDL-ESM4',     'r1i1p1f1_gr1'],
+		 8	:['INM-CM4-8',     'r1i1p1f1_gr1'],
+		 9	:['INM-CM5-0',     'r1i1p1f1_gr1'],
+		 10	:['KIOST-ESM',     'r1i1p1f1_gr1'],
+		 11	:['MIROC6',        'r1i1p1f1_gn'],
+		 12 :['MIROCES2L',     'r1i1p1f2_gn'],
+		 13	:['MPI-ESM1-2-HR', 'r1i1p1f1_gn'],
+		 14	:['MPI-ESM1-2-LR', 'r1i1p1f1_gn'],
+		 15	:['MRI-ESM2-0',    'r1i1p1f1_gn'],
+		 16	:['NESM3',         'r1i1p1f1_gn'],
+		 17	:['NORESM2-MM',    'r1i1p1f1_gn']}
+		 
+		 
+

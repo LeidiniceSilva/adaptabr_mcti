@@ -145,7 +145,7 @@ def sort_list(data_list):
 	
 	
 # Import cmip models and obs database 
-idx = 'ivs'
+idx = 'mbe'
 var_obs = 'Tmin'
 var_cmip6 = 'tasmin'
 dt = '1986-2005'
@@ -316,7 +316,7 @@ else:
 	lpb_cmip6 = ivs_lpb_cmip6
 	br_cmip6 = ivs_br_cmip6
 	idx_label = 'IVS'
-			
+		
 sort_list_namz = sort_list(namz_cmip6)
 model_list_namz = []
 value_list_namz = []
@@ -358,7 +358,7 @@ value_list_br = []
 for vi in sort_list_br:
 	model_list_br.append(cmip6[vi+1][0])
 	value_list_br.append(br_cmip6[vi])
-	
+
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(10, 8))
 
