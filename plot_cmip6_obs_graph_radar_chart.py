@@ -13,147 +13,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 from dict_cmip6_models_name import cmip6, cmip6_i
-from comp_statistical_metrics import compute_mbe
-from comp_statistical_metrics import compute_rmse
-from comp_statistical_metrics import compute_tss
-from comp_statistical_metrics import compute_pcc
-from comp_statistical_metrics import compute_ivs
-
-
-def import_obs_latlon(param, area, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	fld_mean = np.nanmean(value, axis=0)
-	
-	latlon = []
-	for i in range(0, fld_mean.shape[0]):
-		for ii in fld_mean[i]:
-			latlon.append(ii)
-	ts_latlon = np.array(latlon)
-	
-	return ts_latlon
-	
-	
-def import_obs_mon(param, area, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	mon_mean = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	
-	ts_mon = []
-	for i in range(0, 11 + 1):
-		clim = np.nanmean(mon_mean[i::12], axis=0)
-		ts_mon.append(clim)
-	
-	return ts_mon
-
-
-def import_obs_ann(param, area, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	
-	return value
-	
-	
-def import_cmip_latlon(param, area, model, exp, period, date):
-
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	fld_mean = np.nanmean(value, axis=0)
-	
-	latlon = []
-	for i in range(0, fld_mean.shape[0]):
-		for ii in fld_mean[i]:
-			latlon.append(ii)
-	ts_latlon = np.array(latlon)
-	
-	return ts_latlon
-	              
-
-def import_cmip_mon(param, area, model, exp, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	mon_mean = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	
-	ts_mon = []
-	for i in range(0, 11 + 1):
-		clim = np.nanmean(mon_mean[i::12], axis=0)
-		ts_mon.append(clim)
-	
-	return ts_mon
-	
-
-def import_cmip_ann(param, area, model, exp, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	
-	return value
-	
-
-def sort_list(data_list):
-	
-	li = []
-	for i in range(len(data_list)):
-		li.append([data_list[i], i])
-	  
-	li.sort()
-	sort_index = []
-	for x in li:
-		sort_index.append(x[1])
-
-	model_list = []
-	value_list = []
-	for ii in sort_index:
-		model_list.append(cmip6_i[ii+1][0])
-		value_list.append(data_list[ii])
-	
-	data_argsort = np.argsort(model_list)
-
-	data_argsort_i = []
-	for idx in data_argsort:
-		data_argsort_i.append(idx+1)
-
-	return data_argsort_i
 
 
 def sort_list_reverse(data_list):
@@ -192,174 +51,9 @@ def compute_cri(rank1,rank2,rank3,rank4):
 	
 	
 # Import cmip models and obs database 
-area_cmip6 = 'namz'
-var_obs = 'pr'
-var_cmip6 = 'pr'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
 dt = '1986-2005'
-
-namz_obs_latlon = import_obs_latlon(var_obs, 'NAMZ', 'ANN', dt)
-samz_obs_latlon = import_obs_latlon(var_obs, 'SAMZ', 'ANN', dt)
-neb_obs_latlon = import_obs_latlon(var_obs, 'NEB', 'ANN', dt)
-sam_obs_latlon = import_obs_latlon(var_obs, 'SAM', 'ANN', dt)
-lpb_obs_latlon = import_obs_latlon(var_obs, 'LPB', 'ANN', dt)
-br_obs_latlon = import_obs_latlon(var_obs, 'BR', 'ANN', dt)
-
-namz_obs_mon_ts = import_obs_mon(var_obs, 'NAMZ', 'MON', dt)
-samz_obs_mon_ts = import_obs_mon(var_obs, 'SAMZ', 'MON', dt)
-neb_obs_mon_ts  = import_obs_mon(var_obs, 'NEB', 'MON', dt)
-sam_obs_mon_ts = import_obs_mon(var_obs, 'SAM', 'MON', dt)
-lpb_obs_mon_ts = import_obs_mon(var_obs, 'LPB', 'MON', dt)
-br_obs_mon_ts = import_obs_mon(var_obs, 'BR', 'MON', dt)
-
-namz_obs_ann_ts = import_obs_ann(var_obs, 'NAMZ', 'ANN', dt)
-samz_obs_ann_ts = import_obs_ann(var_obs, 'SAMZ', 'ANN', dt)
-neb_obs_ann_ts  = import_obs_ann(var_obs, 'NEB', 'ANN', dt)
-sam_obs_ann_ts = import_obs_ann(var_obs, 'SAM', 'ANN', dt)
-lpb_obs_ann_ts = import_obs_ann(var_obs, 'LPB', 'ANN', dt)
-br_obs_ann_ts = import_obs_ann(var_obs, 'BR', 'ANN', dt)
-
-mbe_namz_cmip6 = []
-rmse_namz_cmip6 = []
-tss_namz_cmip6 = []
-pcc_namz_cmip6 = []
-ivs_namz_cmip6 = []
-
-mbe_samz_cmip6 = []
-rmse_samz_cmip6 = []
-tss_samz_cmip6 = []
-pcc_samz_cmip6 = []
-ivs_samz_cmip6 = []
-
-mbe_neb_cmip6 = []
-rmse_neb_cmip6 = []
-tss_neb_cmip6 = []
-pcc_neb_cmip6 = []
-ivs_neb_cmip6 = []
-
-mbe_sam_cmip6 = []
-rmse_sam_cmip6 = []
-tss_sam_cmip6 = []
-pcc_sam_cmip6 = []
-ivs_sam_cmip6 = []
-
-mbe_lpb_cmip6 = []
-rmse_lpb_cmip6 = []
-tss_lpb_cmip6 = []
-pcc_lpb_cmip6 = []
-ivs_lpb_cmip6 = []
-
-mbe_br_cmip6 = []
-rmse_br_cmip6 = []
-tss_br_cmip6 = []
-pcc_br_cmip6 = []
-ivs_br_cmip6 = []
-
-legend = []
-
-for i in range(1, 18):
-
-	namz_cmip_latlon = import_cmip_latlon(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	samz_cmip_latlon = import_cmip_latlon(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	neb_cmip_latlon = import_cmip_latlon(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	sam_cmip_latlon = import_cmip_latlon(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	lpb_cmip_latlon = import_cmip_latlon(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	br_cmip_latlon = import_cmip_latlon(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	
-	namz_cmip_mon_ts = import_cmip_mon(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	samz_cmip_mon_ts = import_cmip_mon(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	neb_cmip_mon_ts = import_cmip_mon(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	sam_cmip_mon_ts = import_cmip_mon(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	lpb_cmip_mon_ts = import_cmip_mon(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	br_cmip_mon_ts = import_cmip_mon(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	
-	namz_cmip_ann_ts = import_cmip_ann(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	samz_cmip_ann_ts = import_cmip_ann(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	neb_cmip_ann_ts = import_cmip_ann(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	sam_cmip_ann_ts = import_cmip_ann(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	lpb_cmip_ann_ts = import_cmip_ann(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	br_cmip_ann_ts = import_cmip_ann(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-			
-	mbe_namz_cmip6.append(compute_mbe(namz_cmip_latlon, namz_obs_latlon))
-	rmse_namz_cmip6.append(compute_rmse(namz_cmip_latlon, namz_obs_latlon))	
-	tss_namz_cmip6.append(compute_tss(namz_obs_latlon, namz_cmip_latlon))
-	pcc_namz_cmip6.append(compute_pcc(namz_obs_mon_ts, namz_cmip_mon_ts))
-	ivs_namz_cmip = compute_ivs(namz_obs_ann_ts, namz_cmip_ann_ts)
-	ivs_namz_cmip6.append(np.nanmean(ivs_namz_cmip))
-	
-	mbe_samz_cmip6.append(compute_mbe(samz_cmip_latlon, samz_obs_latlon))
-	rmse_samz_cmip6.append(compute_rmse(samz_cmip_latlon, samz_obs_latlon))
-	tss_samz_cmip6.append(compute_tss(samz_obs_latlon, samz_cmip_latlon))
-	pcc_samz_cmip6.append(compute_pcc(samz_obs_mon_ts, samz_cmip_mon_ts))
-	ivs_samz_cmip = compute_ivs(samz_obs_ann_ts, samz_cmip_ann_ts)
-	ivs_samz_cmip6.append(np.nanmean(ivs_samz_cmip))
-		
-	mbe_neb_cmip6.append(compute_mbe(neb_cmip_latlon, neb_obs_latlon))
-	rmse_neb_cmip6.append(compute_rmse(neb_cmip_latlon, neb_obs_latlon))
-	tss_neb_cmip6.append(compute_tss(neb_obs_latlon, neb_cmip_latlon))
-	pcc_neb_cmip6.append(compute_pcc(neb_obs_mon_ts, neb_cmip_mon_ts))
-	ivs_neb_cmip = compute_ivs(neb_obs_ann_ts, neb_cmip_ann_ts)
-	ivs_neb_cmip6.append(np.nanmean(ivs_neb_cmip))
-		
-	mbe_sam_cmip6.append(compute_mbe(sam_cmip_latlon, sam_obs_latlon))
-	rmse_sam_cmip6.append(compute_rmse(sam_cmip_latlon, sam_obs_latlon))
-	tss_sam_cmip6.append(compute_tss(sam_obs_latlon, sam_cmip_latlon))
-	pcc_sam_cmip6.append(compute_pcc(sam_obs_mon_ts, sam_cmip_mon_ts))
-	ivs_sam_cmip = compute_ivs(sam_obs_ann_ts, sam_cmip_ann_ts)
-	ivs_sam_cmip6.append(np.nanmean(ivs_sam_cmip))
-		
-	mbe_lpb_cmip6.append(compute_mbe(lpb_cmip_latlon, lpb_obs_latlon))
-	rmse_lpb_cmip6.append(compute_rmse(lpb_cmip_latlon, lpb_obs_latlon))
-	tss_lpb_cmip6.append(compute_tss(lpb_obs_latlon, lpb_cmip_latlon))
-	pcc_lpb_cmip6.append(compute_pcc(lpb_obs_mon_ts, lpb_cmip_mon_ts))
-	ivs_lpb_cmip = compute_ivs(lpb_obs_ann_ts, lpb_cmip_ann_ts)
-	ivs_lpb_cmip6.append(np.nanmean(ivs_lpb_cmip))
-	
-	mbe_br_cmip6.append(compute_mbe(br_cmip_latlon, br_obs_latlon))
-	rmse_br_cmip6.append(compute_rmse(br_cmip_latlon, br_obs_latlon))
-	tss_br_cmip6.append(compute_tss(br_obs_latlon, br_cmip_latlon))
-	pcc_br_cmip6.append(compute_pcc(br_obs_mon_ts, br_cmip_mon_ts))
-	ivs_br_cmip = compute_ivs(br_obs_ann_ts, br_cmip_ann_ts)
-	ivs_br_cmip6.append(np.nanmean(ivs_br_cmip))
-
-	legend.append(cmip6[i][0])
-
-if area_cmip6 == 'namz':
-	argsort_rmse = sort_list(rmse_namz_cmip6)
-	argsort_tss = sort_list_reverse(tss_namz_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_namz_cmip6)
-	argsort_ivs = sort_list(ivs_namz_cmip6)
-elif area_cmip6 == 'samz':
-	argsort_rmse = sort_list(rmse_samz_cmip6)
-	argsort_tss = sort_list_reverse(tss_samz_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_samz_cmip6)
-	argsort_ivs = sort_list(ivs_samz_cmip6)
-elif area_cmip6 == 'neb':
-	argsort_rmse = sort_list(rmse_neb_cmip6)
-	argsort_tss = sort_list_reverse(tss_neb_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_neb_cmip6)
-	argsort_ivs = sort_list(ivs_neb_cmip6)
-elif area_cmip6 == 'sam':
-	argsort_rmse = sort_list(rmse_sam_cmip6)
-	argsort_tss = sort_list_reverse(tss_sam_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_sam_cmip6)
-	argsort_ivs = sort_list(ivs_sam_cmip6)
-elif area_cmip6 == 'lpb':
-	argsort_rmse = sort_list(rmse_lpb_cmip6)
-	argsort_tss = sort_list_reverse(tss_lpb_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_lpb_cmip6)
-	argsort_ivs = sort_list(ivs_lpb_cmip6)
-else:
-	argsort_rmse = sort_list(rmse_br_cmip6)
-	argsort_tss = sort_list_reverse(tss_br_cmip6)
-	argsort_pcc = sort_list_reverse(pcc_br_cmip6)
-	argsort_ivs = sort_list(ivs_br_cmip6)
-
-# ~ print()
-# ~ print('rmse_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_rmse)
-# ~ print('tss_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_tss)
-# ~ print('pcc_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_pcc)
-# ~ print('ivs_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_ivs)
-# ~ print()
 
 rmse_namz_pr = [9, 16, 15, 7, 11, 10, 8, 4, 3, 17, 6, 1, 13, 14, 2, 12, 5]
 tss_namz_pr = [4, 11, 1, 6, 17, 16, 10, 14, 15, 13, 7, 2, 12, 8, 5, 3, 9]
@@ -495,29 +189,101 @@ for i in range(0, 17):
 	cri_lpb_tasmin.append(compute_cri(rmse_lpb_tasmin[i],tss_lpb_tasmin[i],pcc_lpb_tasmin[i],ivs_lpb_tasmin[i]))
 	cri_br_tasmin.append(compute_cri(rmse_br_tasmin[i],tss_br_tasmin[i],pcc_br_tasmin[i],ivs_br_tasmin[i]))
 
-sort_cri_namz_pr = sort_list_reverse(cri_namz_pr)
-sort_cri_samz_pr = sort_list_reverse(cri_samz_pr)
-sort_cri_neb_pr = sort_list_reverse(cri_neb_pr)
-sort_cri_sam_pr = sort_list_reverse(cri_sam_pr)
-sort_cri_lpb_pr = sort_list_reverse(cri_lpb_pr)
-sort_cri_br_pr = sort_list_reverse(cri_br_pr)
+if var_cmip6 == 'pr':
+	sort_cri_namz = sort_list_reverse(cri_namz_pr)
+	sort_cri_samz = sort_list_reverse(cri_samz_pr)
+	sort_cri_neb = sort_list_reverse(cri_neb_pr)
+	sort_cri_sam = sort_list_reverse(cri_sam_pr)
+	sort_cri_lpb = sort_list_reverse(cri_lpb_pr)
+	sort_cri_br = sort_list_reverse(cri_br_pr)
+elif var_cmip6 == 'tasmax':
+	sort_cri_namz = sort_list_reverse(cri_namz_tasmax)
+	sort_cri_samz = sort_list_reverse(cri_samz_tasmax)
+	sort_cri_neb = sort_list_reverse(cri_neb_tasmax)
+	sort_cri_sam = sort_list_reverse(cri_sam_tasmax)
+	sort_cri_lpb = sort_list_reverse(cri_lpb_tasmax)
+	sort_cri_br = sort_list_reverse(cri_br_tasmax)
+else:
+	sort_cri_namz = sort_list_reverse(cri_namz_tasmin)
+	sort_cri_samz = sort_list_reverse(cri_samz_tasmin)
+	sort_cri_neb = sort_list_reverse(cri_neb_tasmin)
+	sort_cri_sam = sort_list_reverse(cri_sam_tasmin)
+	sort_cri_lpb = sort_list_reverse(cri_lpb_tasmin)
+	sort_cri_br = sort_list_reverse(cri_br_tasmin)
+	
+# Plot cmip models and obs database 
+fig = plt.figure(figsize=(9, 7))
 
-sort_cri_namz_tasmax = sort_list_reverse(cri_namz_tasmax)
-sort_cri_samz_tasmax = sort_list_reverse(cri_samz_tasmax)
-sort_cri_neb_tasmax = sort_list_reverse(cri_neb_tasmax)
-sort_cri_sam_tasmax = sort_list_reverse(cri_sam_tasmax)
-sort_cri_lpb_tasmax = sort_list_reverse(cri_lpb_tasmax)
-sort_cri_br_tasmax = sort_list_reverse(cri_br_tasmax)
+if var_cmip6 == 'pr':
+	cm = plt.get_cmap('jet')
+	colors = cm(np.linspace(0.1, 0.9, 17))
+elif var_cmip6 == 'tasmax':
+	cm = plt.get_cmap('jet')
+	colors = cm(np.linspace(0.1, 0.9, 17))
+else:
+	cm = plt.get_cmap('jet')
+	colors = cm(np.linspace(0.1, 0.9, 17))
 
-sort_cri_namz_tasmin = sort_list_reverse(cri_namz_tasmin)
-sort_cri_samz_tasmin = sort_list_reverse(cri_samz_tasmin)
-sort_cri_neb_tasmin = sort_list_reverse(cri_neb_tasmin)
-sort_cri_sam_tasmin = sort_list_reverse(cri_sam_tasmin)
-sort_cri_lpb_tasmin = sort_list_reverse(cri_lpb_tasmin)
-sort_cri_br_tasmin = sort_list_reverse(cri_br_tasmin)
+ax = fig.add_subplot(231, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_namz)) 
+bars = ax.bar(theta, sort_cri_namz, color=colors, width=0.4)
+ax.set_title(u'(a) NAMZ', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
 
-print(sort_cri_br_tasmin)
+ax = fig.add_subplot(232, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_samz)) 
+bars = bars = ax.bar(theta, sort_cri_samz, color=colors, width=0.4)
+ax.set_title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
+
+ax = fig.add_subplot(233, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_neb)) 
+bars = ax.bar(theta, sort_cri_neb, color=colors, width=0.4)
+ax.set_title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
+
+ax = fig.add_subplot(234, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_neb)) 
+bars = ax.bar(theta, sort_cri_neb, color=colors, width=0.4)
+ax.set_title(u'(d) SAM', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
+
+ax = fig.add_subplot(235, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_lpb)) 
+bars = ax.bar(theta, sort_cri_lpb, color=colors, width=0.4)
+ax.set_title(u'(e) LPB', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
+
+ax = fig.add_subplot(236, polar=True)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_br)) 
+bars = ax.bar(theta, sort_cri_br, color=colors, width=0.4)
+ax.set_title(u'(f) BR', loc='left', fontsize=8, fontweight='bold')
+ax.set_xticks(theta)
+ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
+ax.yaxis.grid(True)
+
+legend = ['ACCESS-CM2', 'BCC-CSM2-MR', 'CanESM5', 'CMCC-ESM2', 'CNRM-CM6-1', 
+'CNRM-ESM2-1', 'GFDL-ESM4', 'INM-CM4-8', 'INM-CM5-0', 'KIOST-ESM', 'MIROC6', 'MIROC-ES2L',
+'MPI-ESM1-2-HR', 'MPI-ESM1-2-LR', 'MRI-ESM2-0', 'NESM3', 'NorESM2-MM']
+plt.legend(bars, legend, ncol=6, loc=(-2.53, -0.43), fontsize=8)
+
+# Path out to save figure
+path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
+name_out = 'pyplt_radar_rank_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
+plt.show()
 exit()
+
 
 
 

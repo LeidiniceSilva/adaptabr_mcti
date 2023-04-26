@@ -3,16 +3,13 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Mar 01, 2023"
-__description__ = "This script plot rank of cmip6 models"
+__description__ = "This script rank indices of cmip6 models"
 
 import os
 import netCDF4
 import numpy as np
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 
-from dict_cmip6_models_name import cmip6
+from dict_cmip6_models_name import cmip6, cmip6_i
 from comp_statistical_metrics import compute_mbe
 from comp_statistical_metrics import compute_rmse
 from comp_statistical_metrics import compute_tss
@@ -140,14 +137,61 @@ def sort_list(data_list):
 	sort_index = []
 	for x in li:
 		sort_index.append(x[1])
+
+	model_list = []
+	value_list = []
+	for ii in sort_index:
+		model_list.append(cmip6_i[ii+1][0])
+		value_list.append(data_list[ii])
 	
-	return sort_index
+	data_argsort = np.argsort(model_list)
+
+	data_argsort_i = []
+	for idx in data_argsort:
+		data_argsort_i.append(idx+1)
+
+	return data_argsort_i
+
+
+def sort_list_reverse(data_list):
+	
+	li = []
+	for i in range(len(data_list)):
+		li.append([data_list[i], i])
+	  
+	li.sort(reverse=True)
+	sort_index = []
+	for x in li:
+		sort_index.append(x[1])
+
+	model_list = []
+	value_list = []
+	for ii in sort_index:
+		model_list.append(cmip6_i[ii+1][0])
+		value_list.append(data_list[ii])
+
+	data_argsort = np.argsort(model_list)
+	
+	data_argsort_i = []
+	for idx in data_argsort:
+		data_argsort_i.append(idx+1)
+	
+	return data_argsort_i
+		
+
+def compute_cri(rank1,rank2,rank3,rank4):
+	
+	p1 = (rank1+rank2+rank3+rank4)
+	p2 = p1/68
+	cri = 1 - p2
+	
+	return cri
 	
 	
 # Import cmip models and obs database 
-idx = 'mbe'
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
+area_cmip6 = 'namz'
+var_obs = 'pr'
+var_cmip6 = 'pr'
 dt = '1986-2005'
 
 namz_obs_latlon = import_obs_latlon(var_obs, 'NAMZ', 'ANN', dt)
@@ -276,213 +320,57 @@ for i in range(1, 18):
 
 	legend.append(cmip6[i][0])
 
-if idx == 'mbe':
-	namz_cmip6 = mbe_namz_cmip6
-	samz_cmip6 = mbe_samz_cmip6
-	neb_cmip6 = mbe_neb_cmip6
-	sam_cmip6 = mbe_sam_cmip6
-	lpb_cmip6 = mbe_lpb_cmip6
-	br_cmip6 = mbe_br_cmip6
-	idx_label = 'MBE'
-elif idx == 'rmse':
-	namz_cmip6 = rmse_namz_cmip6
-	samz_cmip6 = rmse_samz_cmip6
-	neb_cmip6 = rmse_neb_cmip6
-	sam_cmip6 = rmse_sam_cmip6
-	lpb_cmip6 = rmse_lpb_cmip6
-	br_cmip6 = rmse_br_cmip6
-	idx_label = 'RMSE'
-elif idx == 'tss':
-	namz_cmip6 = tss_namz_cmip6
-	samz_cmip6 = tss_samz_cmip6
-	neb_cmip6 = tss_neb_cmip6
-	sam_cmip6 = tss_sam_cmip6
-	lpb_cmip6 = tss_lpb_cmip6
-	br_cmip6 = tss_br_cmip6
-	idx_label = 'TSS'
-elif idx == 'pcc':
-	namz_cmip6 = pcc_namz_cmip6
-	samz_cmip6 = pcc_samz_cmip6
-	neb_cmip6 = pcc_neb_cmip6
-	sam_cmip6 = pcc_sam_cmip6
-	lpb_cmip6 = pcc_lpb_cmip6
-	br_cmip6 = pcc_br_cmip6
-	idx_label = 'PCC'
+if area_cmip6 == 'namz':
+	argsort_rmse = sort_list(rmse_namz_cmip6)
+	argsort_tss = sort_list_reverse(tss_namz_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_namz_cmip6)
+	argsort_ivs = sort_list(ivs_namz_cmip6)
+elif area_cmip6 == 'samz':
+	argsort_rmse = sort_list(rmse_samz_cmip6)
+	argsort_tss = sort_list_reverse(tss_samz_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_samz_cmip6)
+	argsort_ivs = sort_list(ivs_samz_cmip6)
+elif area_cmip6 == 'neb':
+	argsort_rmse = sort_list(rmse_neb_cmip6)
+	argsort_tss = sort_list_reverse(tss_neb_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_neb_cmip6)
+	argsort_ivs = sort_list(ivs_neb_cmip6)
+elif area_cmip6 == 'sam':
+	argsort_rmse = sort_list(rmse_sam_cmip6)
+	argsort_tss = sort_list_reverse(tss_sam_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_sam_cmip6)
+	argsort_ivs = sort_list(ivs_sam_cmip6)
+elif area_cmip6 == 'lpb':
+	argsort_rmse = sort_list(rmse_lpb_cmip6)
+	argsort_tss = sort_list_reverse(tss_lpb_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_lpb_cmip6)
+	argsort_ivs = sort_list(ivs_lpb_cmip6)
 else:
-	namz_cmip6 = ivs_namz_cmip6
-	samz_cmip6 = ivs_samz_cmip6
-	neb_cmip6 = ivs_neb_cmip6
-	sam_cmip6 = ivs_sam_cmip6
-	lpb_cmip6 = ivs_lpb_cmip6
-	br_cmip6 = ivs_br_cmip6
-	idx_label = 'IVS'
-		
-sort_list_namz = sort_list(namz_cmip6)
-model_list_namz = []
-value_list_namz = []
-for i in sort_list_namz:
-	model_list_namz.append(cmip6[i+1][0])
-	value_list_namz.append(namz_cmip6[i])
+	argsort_rmse = sort_list(rmse_br_cmip6)
+	argsort_tss = sort_list_reverse(tss_br_cmip6)
+	argsort_pcc = sort_list_reverse(pcc_br_cmip6)
+	argsort_ivs = sort_list(ivs_br_cmip6)
 
-sort_list_samz = sort_list(samz_cmip6)
-model_list_samz = []
-value_list_samz = []
-for ii in sort_list_samz:
-	model_list_samz.append(cmip6[ii+1][0])
-	value_list_samz.append(samz_cmip6[ii])
+print()
+print('rmse_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_rmse)
+print('tss_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_tss)
+print('pcc_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_pcc)
+print('ivs_{0}_{1} ='.format(area_cmip6, var_cmip6), argsort_ivs)
+print()
 
-sort_list_neb = sort_list(neb_cmip6)
-model_list_neb = []
-value_list_neb = []
-for iii in sort_list_neb:
-	model_list_neb.append(cmip6[iii+1][0])
-	value_list_neb.append(neb_cmip6[iii])
 
-sort_list_sam = sort_list(sam_cmip6)
-model_list_sam = []
-value_list_sam = []
-for iv in sort_list_sam:
-	model_list_sam.append(cmip6[iv+1][0])
-	value_list_sam.append(sam_cmip6[iv])
 
-sort_list_lpb = sort_list(lpb_cmip6)
-model_list_lpb = []
-value_list_lpb = []
-for v in sort_list_lpb:
-	model_list_lpb.append(cmip6[v+1][0])
-	value_list_lpb.append(lpb_cmip6[v])
 
-sort_list_br = sort_list(br_cmip6)
-model_list_br = []
-value_list_br = []
-for vi in sort_list_br:
-	model_list_br.append(cmip6[vi+1][0])
-	value_list_br.append(br_cmip6[vi])
 
-# Plot cmip models and obs database 
-fig = plt.figure(figsize=(10, 8))
 
-if var_cmip6 == 'pr':
-	color = 'blue'
-else:
-	color = 'red'
+
+
+
+
+
+
+
+
 	
-ax = fig.add_subplot(3, 2, 1)  
-ax.barh(model_list_namz, value_list_namz, color=color, edgecolor='white')
-plt.title(u'(a) NAMZ', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	             
-ax = fig.add_subplot(3, 2, 2)  
-ax.barh(model_list_samz, value_list_samz, color=color, edgecolor='white')
-plt.title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 3)  
-ax.barh(model_list_neb, value_list_neb, color=color, edgecolor='white')
-plt.title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 4)  
-ax.barh(model_list_sam, value_list_sam, color=color, edgecolor='white')
-plt.title(u'(d) SAM', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 5)  
-ax.barh(model_list_lpb, value_list_lpb, color=color, edgecolor='white')
-plt.title(u'(e) LPB', loc='left', fontsize=8, fontweight='bold')
-plt.xlabel('{0}'.format(idx_label), fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	
-ax = fig.add_subplot(3, 2, 6)  
-ax.barh(model_list_br, value_list_br, color=color, edgecolor='white')
-plt.title(u'(f) BR', loc='left', fontsize=8, fontweight='bold')
-plt.xlabel('{0}'.format(idx_label), fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
 
-plt.subplots_adjust(wspace=0.35)
-                    	                
-# Path out to save figure
-path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_rank_{0}_cmip6_{1}_{2}.png'.format(idx, var_cmip6, dt)
-plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
-plt.show()
-exit()
 
