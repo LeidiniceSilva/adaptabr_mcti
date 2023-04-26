@@ -102,7 +102,7 @@ for i in range(1, 18):
 		
 	legend.append(cmip6[i][0])
 
-ivs_cmip6 = np.array([tss_br_cmip6,tss_lpb_cmip6,tss_sam_cmip6,tss_neb_cmip6,tss_samz_cmip6,tss_namz_cmip6])
+tss_cmip6 = np.array([tss_br_cmip6,tss_lpb_cmip6,tss_sam_cmip6,tss_neb_cmip6,tss_samz_cmip6,tss_namz_cmip6])
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(9, 3))
@@ -116,10 +116,10 @@ else:
 	color = cm.Reds
 
 ax = fig.add_subplot(1, 1, 1)  
-pcm = ax.pcolormesh(ivs_cmip6, edgecolors ='white', linewidths = 2., norm=norm, cmap=color)
+pcm = ax.pcolormesh(tss_cmip6, edgecolors ='white', linewidths = 2., norm=norm, cmap=color)
 ax.set_title(u'(a) TSS', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ivs_cmip6.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ivs_cmip6.shape[0]) + 0.5)
+ax.set_xticks(np.arange(tss_cmip6.shape[1]) + 0.5)
+ax.set_yticks(np.arange(tss_cmip6.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)

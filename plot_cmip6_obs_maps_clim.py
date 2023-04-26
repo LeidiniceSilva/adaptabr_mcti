@@ -27,7 +27,7 @@ def import_obs(param, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	mean = np.nanmean(value[:,:,:], axis=0)
+	mean = np.nanmean(value, axis=0)
 
 	return lat, lon, mean
 
@@ -42,7 +42,7 @@ def import_cmip(param, model, exp, date):
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	mean = np.nanmean(value[:,:,:], axis=0)
+	mean = np.nanmean(value, axis=0)
 	
 	return lat, lon, mean
 		
