@@ -81,8 +81,7 @@ for var in ${var_list[@]}; do
 
 		echo
 		echo "5. Creating mask"
-		cdo -f nc -remapnn,${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc -gtc,0 -topo ${var}_${model}_seamask.nc
-		cdo ifthen ${var}_${model}_seamask.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
+		cdo ifthen mask_br.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
 		
 		echo
 		echo "6. Calculate periods"
@@ -114,7 +113,6 @@ for var in ${var_list[@]}; do
 		rm ${var}_${model}_${exp}_${member}_${dt}.nc
 		rm ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		rm ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
-		rm ${var}_${model}_seamask.nc
 	
 	done
 done

@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 from dict_cmip6_models_name import cmip6
-from comp_statistical_metrics import compute_tss
+from comp_stats_metrics import compute_tss
 
 
 def import_obs(param, area, date):
@@ -125,9 +125,9 @@ ax.set_yticklabels(ylabels, fontsize=8)
 clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
-for y in range(ivs_cmip6.shape[0]):
-    for x in range(ivs_cmip6.shape[1]):
-        ax.text(x + 0.5, y + 0.5, '%.2f' % ivs_cmip6[y, x],
+for y in range(tss_cmip6.shape[0]):
+    for x in range(tss_cmip6.shape[1]):
+        ax.text(x + 0.5, y + 0.5, '%.2f' % tss_cmip6[y, x],
                  ha="center", va="center", color='k', size=8)
 
 # Path out to save figure

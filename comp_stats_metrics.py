@@ -64,9 +64,9 @@ def compute_ivs(obs, model):
     Param obs: Numpy array with obs data
     Return: Interannual Variability Skill Score
     """
-
-    p1 = np.nanstd(obs, axis=0)
-    p2 = np.nanstd(model, axis=0)
+    
+    p1 = np.nanstd(obs, ddof=0)
+    p2 = np.nanstd(model, ddof=0)
     p3 = p2 / p1
     p4 = p1 / p2
     ivs = (p3 - p4)**2  

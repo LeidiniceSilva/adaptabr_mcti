@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 from dict_cmip6_models_name import cmip6
-from comp_statistical_metrics import compute_mbe, compute_rmse
+from comp_stats_metrics import compute_mbe, compute_rmse
 
 
 def import_obs(param, area, date):
