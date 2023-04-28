@@ -54,8 +54,8 @@ def import_cmip(param, area, model, exp, date):
 	              
                
 # Import cmip models and obs database 
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
+var_obs = 'pr'
+var_cmip6 = 'pr'
 dt = '1986-2005'
 
 clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)

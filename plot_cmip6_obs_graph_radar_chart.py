@@ -51,7 +51,7 @@ def compute_cri(rank1,rank2,rank3,rank4,rank5):
 	
 	
 # Import cmip models and obs database 
-var_cmip6 = 'tasmin'
+var_cmip6 = 'pr'
 dt = '1986-2005'
 
 mbe_namz_pr = [9, 16, 15, 7, 11, 10, 8, 2, 6, 17, 4, 3, 12, 14, 1, 13, 5]
