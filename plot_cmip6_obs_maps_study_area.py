@@ -76,22 +76,3 @@ plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
 exit()
 
-
-
-# Plot cmip models and obs database 
-fig = plt.figure()
-
-ax = fig.add_subplot(1, 1, 1)  
-map = Basemap(projection='cyl', llcrnrlon=-85., llcrnrlat=-60., urcrnrlon=-30.,urcrnrlat=15., resolution='c')
-path = '/home/nice/Documentos/github_projects/shp'
-map.readshapefile('{0}/shp_america_sul/america_sul'.format(path), 'world', drawbounds=True, color='gray', linewidth=.8)
-map.fillcontinents(color='beige', lake_color='wheat')
-map.drawmapboundary(fill_color='skyblue')
-map.drawparallels(np.arange(-60., 30., 15.), labels=[1,0,0,0], linewidth=0.5, color='black')
-map.drawmeridians(np.arange(-85., -30., 15.), labels=[0,0,0,1], linewidth=0.5, color='black')
-
-
-
-
-
-
