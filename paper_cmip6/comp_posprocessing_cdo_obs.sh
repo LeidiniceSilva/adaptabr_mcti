@@ -9,41 +9,39 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'mslp' 'ps' 'q' 't2m' 't' 'u' 'v' 'z')     
+var_list=( 'mslp' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
 
 # Database
 type='era5'
 
 # Date
-dt='1981-2014'
+dt='1961-2014'
 
 for var in ${var_list[@]}; do
 
-	path="/home/nice/Downloads/paper_cmip6/data/era5"
+	path="/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/obs"
 	cd ${path}
 
 	echo
 	echo ${path}
 
-	echo ${var}_${type}_mon_1961-2014.nc
+	echo ${var}_${type}_mon_${dt}.nc
 	echo
 		
-	echo 
-	echo "1. Select date"
-	cdo seldate,1981-01-01T00:00:00,2014-12-31T00:00:00 ${var}_${type}_mon_1961-2014.nc ${var}_${type}_mon_${dt}.nc
-
 	echo
-	echo "2. Conventing calendar"
+	echo "1. Conventing calendar"
 	cdo setcalendar,standard ${var}_${type}_mon_${dt}.nc ${var}_sa_${type}_mon_${dt}.nc
 
 	echo
-	echo "3. Conventing grade"
-	/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_sa_${type}_mon_${dt}.nc -60,15,0.25 -85,-30,0.25 bil
+	echo "2. Conventing grade"
+	/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_sa_${type}_mon_${dt}.nc -60,15,0.25 -100,-20,0.25 bil
 
 	echo 
-	echo "6. Deleting file"
+	echo "3. Deleting file"
 	rm ${var}_${type}_mon_${dt}.nc
 	rm ${var}_sa_${type}_mon_${dt}.nc
+
+done
 
 echo
 echo "--------------- END POSPROCESSING OBS ----------------"
