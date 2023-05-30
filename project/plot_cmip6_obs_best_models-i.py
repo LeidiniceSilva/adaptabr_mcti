@@ -152,29 +152,29 @@ plt.title(u'(f) MRI-ESM2-0 \n Rank 5', loc='left', fontsize=7, fontweight='bold'
 ax = fig.add_subplot(2, 6, 8)  
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, bias_cmip6[0], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(g) Rank 1', loc='left', fontsize=7, fontweight='bold')
+plt.title(u'(g) NorESM2-MM \n Rank 1', loc='left', fontsize=7, fontweight='bold')
 cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.97, 0.28, 0.02, 0.43]))
 cbar.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(2, 6, 9)  
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, bias_cmip6[1], levels=levs, latlon=True, cmap=color, extend='max') 
-plt.title(u'(h) Rank 2', loc='left', fontsize=7, fontweight='bold')
+plt.title(u'(h) GFDL-ESM4 \n Rank 2', loc='left', fontsize=7, fontweight='bold')
 
 ax = fig.add_subplot(2, 6, 10)  
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, bias_cmip6[2], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(i) Rank 3', loc='left', fontsize=7, fontweight='bold')
+plt.title(u'(i) MPI-ESM1-2-HR \n Rank 3', loc='left', fontsize=7, fontweight='bold')
 
 ax = fig.add_subplot(2, 6, 11)  
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, bias_cmip6[3], levels=levs, latlon=True, cmap=color, extend='max') 
-plt.title(u'(j) Rank 4', loc='left', fontsize=7, fontweight='bold')
+plt.title(u'(j) INM-CM5-0 \n Rank 4', loc='left', fontsize=7, fontweight='bold')
 
 ax = fig.add_subplot(2, 6, 12)  
 map, xx, yy = basemap(lat, lon)
 plt_map = map.contourf(xx, yy, bias_cmip6[4], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(l) Rank 5', loc='left', fontsize=7, fontweight='bold')
+plt.title(u'(l) MRI-ESM2-0 \n Rank 5', loc='left', fontsize=7, fontweight='bold')
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/project/figs/figs_report-II'

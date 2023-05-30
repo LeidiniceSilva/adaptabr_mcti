@@ -3,185 +3,165 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Mar 01, 2023"
-__description__ = "This script plot annual bias maps of cmip6 models"
+__description__ = "This script plot taylor diagram of cmip6 models"
 
 import os
 import netCDF4
 import numpy as np
-import xarray as xr
+import numpy.ma as ma
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import mpl_toolkits.axisartist as axisartist
 
-from matplotlib.path import Path
-from matplotlib.patches import PathPatch
-from mpl_toolkits.basemap import Basemap
 from dict_cmip6_models_name import cmip6
+from comp_taylor_diagram import TaylorDiagram
 
 
-def import_obs(param, date):
-
-	arq = xr.open_dataset('/home/nice/Documentos/AdaptaBrasil_MCTI/project/database/obs/' + '{0}_SA_BR-DWGD_UFES_UTEXAS_v_3.0_MON_{1}_lonlat.nc'.format(param, date))
-	data = arq[param]
-	time = data.sel(time=slice('1986-01-01','2005-12-31'))
-	var = time.groupby('time.year').mean('time')
-	lat = var.lat
-	lon = var.lon
-	mean = np.nanmean(var.values, axis=0)
+def import_obs(param, area, date):
 	
-	return lat, lon, mean
-	
-	
-def import_cmip(param, model, exp, date):
-
-	arq = xr.open_dataset('/home/nice/Documentos/AdaptaBrasil_MCTI/project/database/cmip6/' + '{0}_SA_{1}_historical_{2}_MON_{3}_lonlat.nc'.format(param, model, exp, date))
-	data = arq[param]
-	time = data.sel(time=slice('1986-01-01','2005-12-31'))
-	var = time.groupby('time.year').mean('time')
-	lat = var.lat
-	lon = var.lon
-	mean = np.nanmean(var.values, axis=0)
+	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/project/database/obs'
+	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_ANN_{3}_lonlat.nc'.format(path, param, area, date)	
 		
-	return lat, lon, mean
-
-
-def basemap(lat, lon):
+	data  = netCDF4.Dataset(arq)
+	var   = data.variables[param][:] 
+	lat   = data.variables['lat'][:]
+	lon   = data.variables['lon'][:]
+	value = var[:][:,:,:]	
+	fld_mean = np.nanmean(value, axis=0)
 	
-	aux_lon1 = []
-	aux_lon2 = []
-	for l in lon:
-		if l <= 180:
-			aux_lon1.append(l)
-		else:
-			aux_lon2.append(l-360)
-		
-	lon = np.array(aux_lon1[::-1] + aux_lon2[::-1])
-	new_lat = lat
-	new_lon = lon[::-1]
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
 
-	map = Basemap(projection='cyl', llcrnrlon=-76., llcrnrlat=-36., urcrnrlon=-32.,urcrnrlat=7., resolution='c')
-	lons, lats = np.meshgrid(new_lon, new_lat)
-	xx, yy = map(lons,lats)
-
-	# Import shapefile 
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
-	x0, x1 = plt.xlim()
-	y0, y1 = plt.ylim()
-	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-	polys = [map_edges]
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
-	polys = polys + getattr(map, 'lim_unid_fed2')
-	codes = [[Path.MOVETO] + [Path.LINETO for p in p[1:]] for p in polys] # creating a PathPatch
-	polys_lin = [v for p in polys for v in p]
-	codes_lin = [cdg for cdgs in codes for cdg in cdgs]
-	path  = Path(polys_lin, codes_lin)
-	patch = PathPatch(path, facecolor='white', lw=0)
-	plt.gca().add_patch(patch)
 	
-	return map, xx, yy
+def import_cmip(param, area, model, exp, date):
 	
-
+	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/project/database/cmip6'
+	arq   = '{0}/{1}_{2}_{3}_historical_{4}_ANN_{5}_lonlat.nc'.format(path, param, area, model, exp, date)	
+				
+	data  = netCDF4.Dataset(arq)
+	var   = data.variables[param][:] 
+	lat   = data.variables['lat'][:]
+	lon   = data.variables['lon'][:]
+	value = var[:][:,:,:]
+	fld_mean = np.nanmean(value, axis=0)
+	
+	latlon = []
+	for i in range(0, fld_mean.shape[0]):
+		for ii in fld_mean[i]:
+			latlon.append(ii)
+	ts_latlon = np.array(latlon)
+			
+	return ts_latlon
+	              
+               
 # Import cmip models and obs database 
 var_obs = 'pr'
 var_cmip6 = 'pr'
 dt = '1986-2005'
 
-lat, lon, mean_obs = import_obs(var_obs, dt)
+clim_namz_obs = import_obs(var_obs, 'NAMZ', dt)
+clim_samz_obs = import_obs(var_obs, 'SAMZ', dt)
+clim_neb_obs  = import_obs(var_obs, 'NEB', dt)
+clim_sam_obs = import_obs(var_obs, 'SAM', dt)
+clim_lpb_obs = import_obs(var_obs, 'LPB', dt)
+clim_br_obs = import_obs(var_obs, 'BR', dt)
 
-mean_cmip6 = []
-bias_cmip6 = []
+std_namz_obs = np.nanstd(clim_namz_obs, ddof=0)
+std_samz_obs = np.nanstd(clim_samz_obs, ddof=0)
+std_neb_obs = np.nanstd(clim_neb_obs, ddof=0)
+std_sam_obs = np.nanstd(clim_sam_obs, ddof=0)
+std_lpb_obs = np.nanstd(clim_lpb_obs, ddof=0)
+std_br_obs = np.nanstd(clim_br_obs, ddof=0)
+
+std_namz_cmip6 = []
+std_samz_cmip6 = []
+std_neb_cmip6 = []
+std_sam_cmip6 = []
+std_lpb_cmip6 = []
+std_br_cmip6 = []
+
+pcc_namz_cmip6 = []
+pcc_samz_cmip6 = []
+pcc_neb_cmip6 = []
+pcc_sam_cmip6 = []
+pcc_lpb_cmip6 = []
+pcc_br_cmip6 = []
+
+legend = []
 
 best_models = [17, 7, 13, 9, 15]
 for i in best_models:
-	print(cmip6[i][0])
-	lat, lon, mean_cmip = import_cmip(var_cmip6, cmip6[i][0], cmip6[i][1], dt)
-	mean_cmip6.append(mean_cmip)
-	bias_cmip6.append(mean_cmip - mean_obs)
+
+	clim_namz_cmip = import_cmip(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], dt)
+	pcc_namz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_namz_obs), ma.masked_invalid(clim_namz_cmip))[0][1])
+	std_namz_cmip6.append(np.nanstd(clim_namz_cmip, ddof=0))
+
+	clim_samz_cmip = import_cmip(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], dt)
+	pcc_samz_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_samz_obs), ma.masked_invalid(clim_samz_cmip))[0][1])
+	std_samz_cmip6.append(np.nanstd(clim_samz_cmip, ddof=0))
+	
+	clim_neb_cmip = import_cmip(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], dt)
+	pcc_neb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_neb_obs), ma.masked_invalid(clim_neb_cmip))[0][1])
+	std_neb_cmip6.append(np.nanstd(clim_neb_cmip, ddof=0))
+		
+	clim_sam_cmip = import_cmip(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], dt)
+	pcc_sam_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_sam_obs), ma.masked_invalid(clim_sam_cmip))[0][1])
+	std_sam_cmip6.append(np.nanstd(clim_sam_cmip, ddof=0))
+		
+	clim_lpb_cmip = import_cmip(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], dt)
+	pcc_lpb_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_lpb_obs), ma.masked_invalid(clim_lpb_cmip))[0][1])
+	std_lpb_cmip6.append(np.nanstd(clim_lpb_cmip, ddof=0))
+
+	clim_br_cmip = import_cmip(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], dt)
+	pcc_br_cmip6.append(ma.corrcoef(ma.masked_invalid(clim_br_obs), ma.masked_invalid(clim_br_cmip))[0][1])
+	std_br_cmip6.append(np.nanstd(clim_br_cmip, ddof=0))
+	
+	legend.append(cmip6[i][0])
+
+pcc_namz = np.array(pcc_namz_cmip6)
+std_namz = np.array(std_namz_cmip6)
+
+pcc_samz = np.array(pcc_samz_cmip6)
+std_samz = np.array(std_samz_cmip6)
+
+pcc_neb = np.array(pcc_neb_cmip6)
+std_neb = np.array(std_neb_cmip6)
+
+pcc_sam = np.array(pcc_sam_cmip6)
+std_sam = np.array(std_sam_cmip6)
+
+pcc_lpb = np.array(pcc_lpb_cmip6)
+std_lpb = np.array(std_lpb_cmip6)
+
+pcc_br = np.array(pcc_br_cmip6)
+std_br = np.array(std_br_cmip6)
 
 # Plot cmip models and obs database 
-fig = plt.figure(figsize=(8, 4))
+fig = plt.figure(figsize=(12,8))
 
-if var_cmip6 == 'pr':
-	levs0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-	color0 = cm.Blues
-	levs = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color = cm.BrBG
-elif var_cmip6 == 'tasmax':
-	levs0 = [18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
-	color0 = cm.Reds
-	levs = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color = cm.bwr
-else:
-	levs0 = [14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34]
-	color0 = cm.Reds
-	levs = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-	color = cm.bwr
+titleprops_dict = dict(loc='left', fontweight='bold', x=0.0, y=1.05)
 
-ax = fig.add_subplot(2, 6, 1)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_obs, levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(a) BR-DWGD', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 2)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[0], levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(b) NorESM2-MM', loc='left', fontsize=8, fontweight='bold')
-cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.90, 0.28, 0.02, 0.43]))
-cbar.ax.tick_params(labelsize=8)
-
-ax = fig.add_subplot(2, 6, 3)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[1], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(c) MBE', loc='left', fontsize=8, fontweight='bold')
-cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.98, 0.28, 0.02, 0.43]))
-cbar.ax.tick_params(labelsize=8)
-
-ax = fig.add_subplot(2, 6, 5)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[2], levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(d) GFDL-ESM4', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 6)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[3], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(e) MBE', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 8)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, mean_cmip6[4], levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(f) MPI-ESM1-2-HR', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 9)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6[0], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(g) MBE', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 11)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6[1], levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(h) INM-CM5-0', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 12)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6[2], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(i) MBE', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 14)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6[3], levels=levs0, latlon=True, cmap=color0, extend='max') 
-plt.title(u'(j) MRI-ESM2-0', loc='left', fontsize=8, fontweight='bold')
-
-ax = fig.add_subplot(2, 6, 15)  
-map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, bias_cmip6[4], levels=levs, latlon=True, cmap=color, extend='both') 
-plt.title(u'(l) MBE', loc='left', fontsize=8, fontweight='bold')
+fig, ax1 = TaylorDiagram(std_namz, pcc_namz, std_namz_obs, fig=fig, rect=231, title='(a) NAMZ', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax2 = TaylorDiagram(std_samz, pcc_samz, std_samz_obs, fig=fig, rect=232, title='(b) SAMZ', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax3 = TaylorDiagram(std_neb, pcc_neb, std_neb_obs, fig=fig, rect=233, title='(c) NEB', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax4 = TaylorDiagram(std_sam, pcc_sam, std_sam_obs, fig=fig, rect=234, title='(d) SAM', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax5 = TaylorDiagram(std_lpb, pcc_lpb, std_lpb_obs, fig=fig, rect=235, title='(e) LPB', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+fig, ax6 = TaylorDiagram(std_br, pcc_br, std_br_obs, fig=fig, rect=236, title='(e) BR', titleprops_dict=titleprops_dict, normalize=True, labels=legend, ref_label='Reference')
+						
+ax6.legend(bbox_to_anchor=(-2.5, -0.165), loc='upper left', ncol=6)
+plt.subplots_adjust(hspace=0.9)
+plt.subplots_adjust(bottom=0.15)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/project/figs/figs_report-II'
-name_out = 'pyplt_maps_bias_best_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_taylor_diagram_best_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
 exit()
-
-
 
