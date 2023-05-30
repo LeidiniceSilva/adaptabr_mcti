@@ -9,21 +9,22 @@ echo
 echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 
 # Models list
-model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' )
+model_list=( 'CNRM-ESM2-1' )
+#~ model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
-var_list=('hus' 'ps' 'psl' 'tas' 'ta' 'ua' 'va' 'gz')     
+var_list=( 'hus' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
 
-for var in ${var_list[@]}; do
+for model in ${model_list[@]}; do
 
-    for model in ${model_list[@]}; do
+	for var in ${var_list[@]}; do
 
-		path="/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6/"${model}
+		path="/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/cmip6/"${model}
 		cd ${path}
-		
+
 		echo
 		echo ${path}
-		
+
 		# Experiment name
 		exp='historical'
 
@@ -52,70 +53,88 @@ for var in ${var_list[@]}; do
 		else
 		member='r1i1p1f1_gn'
 		fi
-		
+
 		# Datetime
-		dt='1981-2014'
-		
-		echo ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc
-		echo
-		
-		echo "1. Select date"
-		cdo seldate,1981-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_185001-201412.nc ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
-
-		echo
-		echo "2. Conventing calendar"
-		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_${model}_${exp}_${member}_${dt}.nc
-		
-		echo
-		echo "3. Conventing grade"
-		/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${model}_${exp}_${member}_${dt}.nc -60,15,0.25 -85,-30,0.25 bil
-
-		echo 
-		echo "4. Conventing unit"
-		if [ ${var} == 'pr' ]
+		if [ ${model} == 'ACCESS-CM2' ]
 		then
-		cdo mulc,86400 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		dt0='195001-201412'
+		elif [ ${model} == 'NorESM2-MM' ]
+		then
+		dt0='196001-201412'
 		else
-		cdo subc,273.15 ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		dt0='185001-201412'
+		fi
+		dt1='196101-201412'
+
+		echo ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc
+
+		echo
+		echo "1. Select date"
+		cdo seldate,1961-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
+
+		echo
+		echo "2. Select levels"
+		if [ ${var} == 'hus' ]
+		then
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		elif [ ${var} == 'ta' ]
+		then
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		elif [ ${var} == 'ua' ]
+		then
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		elif [ ${var} == 'va' ]
+		then
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		elif [ ${var} == 'zg' ]
+		then
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		else
+		mv ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		fi
 
 		echo
-		echo "5. Creating mask"
-		cdo ifthen mask_br.nc ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		
-		echo
-		echo "6. Calculate periods"
-		cdo -yearavg ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		echo "3. Conventing grade"
+		/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc -60,15,0.25 -100,-20,0.25 bil
 
 		echo
-		echo "7. Select subregion"
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-5,5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NAMZ_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		echo "4. Conventing calendar"
+		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
 
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-70,-45,-12.5,-5 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAMZ_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
+		#~ echo 
+		#~ echo "5. Conventing unit"
+		#~ if [ ${var} == 'hus' ]
+		#~ then
+		#~ cdo mulc,1000 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'psl' ]
+		#~ then
+		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'ps' ]
+		#~ then
+		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'tas' ]
+		#~ then
+		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'ta' ]
+		#~ then
+		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'zg' ]
+		#~ then
+		#~ cdo mulc,10 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ else
+		#~ cp ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ fi
 
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-45,-34,-15,-2 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_NEB_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
-		
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-55,-45,-20,-10 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_SAM_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
-
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-60,-45,-35,-20 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_LPB_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
-
-		cdo sellonlatbox,-73.85,-34.85,-33.85,5.85 ${var}_SA_${model}_${exp}_${member}_MON_${dt}_lonlat.nc ${var}_BR_${model}_${exp}_${member}_MON_${dt}_lonlat.nc
-		cdo sellonlatbox,-73.85,-34.85,-33.85,5.85 ${var}_SA_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc ${var}_BR_${model}_${exp}_${member}_ANN_${dt}_lonlat.nc
-		
 		echo 
-		echo "8. Deleting file"
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
-		rm ${var}_${model}_${exp}_${member}_${dt}.nc
-		rm ${var}_${model}_${exp}_${member}_${dt}_lonlat.nc
-		rm ${var}_SA_${model}_${exp}_${member}_${dt}_lonlat.nc
+		echo "6. Deleting file"
+		rm ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc
+		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
+		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc
 	
-	done
+	done		
 done
 
 echo
-echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
+echo "--------------- END POSPROCESSING CMIP6 MODELS ----------------"
+
