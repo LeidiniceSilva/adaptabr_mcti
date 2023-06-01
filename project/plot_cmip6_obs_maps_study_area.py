@@ -9,6 +9,7 @@ import os
 import cmocean
 import numpy as np
 import rockhound as rh
+import geopandas as gpd
 import matplotlib.pyplot as plt
 
 from matplotlib.path import Path
@@ -18,11 +19,13 @@ from matplotlib.patches import PathPatch
 
 grid = rh.fetch_etopo1(version="bedrock")
 sa = grid.sel(latitude=slice(-60, 15), longitude=slice(-85, -30))
+sa_shp = gpd.read_file('/home/nice/Documentos/github_projects/shp/shp_america_sul/america_sul.shp')
 
 plt.figure(figsize=(6, 7))
 ax = plt.subplot(111)
 
 sa.bedrock.plot.pcolormesh(cmap=cmocean.cm.topo, cbar_kwargs=dict(pad=0.01, aspect=30, label='Topografia (m)'), ax=ax)
+sa_shp.plot(ax=ax, color='None', edgecolor='black')
 ax.set_xlabel(u'Longitude', fontweight='bold')
 ax.set_ylabel(u'Latitude', fontweight='bold')
 
