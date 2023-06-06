@@ -9,8 +9,7 @@ echo
 echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 
 # Models list
-model_list=( 'CNRM-ESM2-1' )
-#~ model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
+model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
 var_list=( 'hus' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
@@ -64,13 +63,13 @@ for model in ${model_list[@]}; do
 		else
 		dt0='185001-201412'
 		fi
-		dt1='196101-201412'
+		dt1='197901-201412'
 
 		echo ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc
 
 		echo
 		echo "1. Select date"
-		cdo seldate,1961-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
+		cdo seldate,1979-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
 
 		echo
 		echo "2. Select levels"
@@ -101,29 +100,29 @@ for model in ${model_list[@]}; do
 		echo "4. Conventing calendar"
 		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
 
-		#~ echo 
-		#~ echo "5. Conventing unit"
-		#~ if [ ${var} == 'hus' ]
-		#~ then
-		#~ cdo mulc,1000 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ elif [ ${var} == 'psl' ]
-		#~ then
-		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ elif [ ${var} == 'ps' ]
-		#~ then
-		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ elif [ ${var} == 'tas' ]
-		#~ then
-		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ elif [ ${var} == 'ta' ]
-		#~ then
-		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ elif [ ${var} == 'zg' ]
-		#~ then
-		#~ cdo mulc,10 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ else
-		#~ cp ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		#~ fi
+		echo 
+		echo "5. Conventing unit"
+		if [ ${var} == 'hus' ]
+		then
+		cdo mulc,1000 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		elif [ ${var} == 'psl' ]
+		then
+		cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		elif [ ${var} == 'ps' ]
+		then
+		cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		elif [ ${var} == 'tas' ]
+		then
+		cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		elif [ ${var} == 'ta' ]
+		then
+		cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		elif [ ${var} == 'zg' ]
+		then
+		cdo mulc,10 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		else
+		cp ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		fi
 
 		echo 
 		echo "6. Deleting file"
@@ -137,4 +136,3 @@ done
 
 echo
 echo "--------------- END POSPROCESSING CMIP6 MODELS ----------------"
-

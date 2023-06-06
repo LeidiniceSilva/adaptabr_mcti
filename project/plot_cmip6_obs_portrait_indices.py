@@ -131,21 +131,7 @@ def import_cmip_ann(param, area, model, exp, period, date):
 
 	return ts_ann
 	
-
-def sort_list(data_list):
-	
-	li = []
-	for i in range(len(data_list)):
-		li.append([data_list[i], i])
-	  
-	li.sort()
-	sort_index = []
-	for x in li:
-		sort_index.append(x[1])
-	
-	return sort_index
-	
-	
+		
 # Import cmip models and obs database 
 var_obs = 'Tmin'
 var_cmip6 = 'tasmin'

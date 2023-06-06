@@ -19,7 +19,7 @@ dt='1961-2014'
 
 for var in ${var_list[@]}; do
 
-	path="/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/"
+	path="/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/obs/"
 	cd ${path}
 
 	echo
@@ -34,14 +34,20 @@ for var in ${var_list[@]}; do
 
 	echo
 	echo "2. Conventing calendar"
-	cdo setcalendar,standard ${var}_${type}_mon_${dt}_lonlat.nc ${var}_sa_{type}_mon_${dt}_lonlat.nc
+	cdo setcalendar,standard ${var}_${type}_mon_${dt}_lonlat.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+
+	echo
+	echo "3. Select date"
+	cdo seldate,1979-01-01T00:00:00,2014-12-31T00:00:00 ${var}_sa_${type}_mon_${dt}_lonlat.nc ${var}_sa_${type}_mon_1979-2014_lonlat.nc
 
 	echo 
-	echo "3. Deleting file"
+	echo "4. Deleting file"
 	rm ${var}_${type}_mon_${dt}.nc
 	rm ${var}_${type}_mon_${dt}_lonlat.nc
+	rm ${var}_sa_${type}_mon_${dt}_lonlat.nc
 
 done
+
 
 echo
 echo "--------------- END POSPROCESSING OBS ----------------"
