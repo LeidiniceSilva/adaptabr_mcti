@@ -9,10 +9,12 @@ echo
 echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 
 # Models list
-model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
+model_list=( 'MPI-ESM1-2-HR' ) 
+#~ model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
-var_list=( 'hus' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
+var_list=( 'hus' )     
+#~ var_list=( 'hus' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
 
 for model in ${model_list[@]}; do
 
@@ -53,43 +55,46 @@ for model in ${model_list[@]}; do
 		member='r1i1p1f1_gn'
 		fi
 
-		# Datetime
-		if [ ${model} == 'ACCESS-CM2' ]
-		then
-		dt0='195001-201412'
-		elif [ ${model} == 'NorESM2-MM' ]
-		then
-		dt0='196001-201412'
-		else
-		dt0='185001-201412'
-		fi
-		dt1='197901-201412'
+		#~ # Datetime
+		#~ if [ ${model} == 'ACCESS-CM2' ]
+		#~ then
+		#~ dt0='195001-201412'
+		#~ elif [ ${model} == 'NorESM2-MM' ]
+		#~ then
+		#~ dt0='196001-201412'
+		#~ else
+		#~ dt0='185001-201412'
+		#~ fi
+		#~ dt1='197901-201412'
+
+		dt0='197901-201412'
+		dt1='1979-2014'
 
 		echo ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc
 
-		echo
-		echo "1. Select date"
-		cdo seldate,1979-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
+		#~ echo
+		#~ echo "1. Select date"
+		#~ cdo seldate,1979-01-01T00:00:00,2014-12-31T00:00:00 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
 
 		echo
 		echo "2. Select levels"
 		if [ ${var} == 'hus' ]
 		then
-		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		elif [ ${var} == 'ta' ]
 		then
-		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		elif [ ${var} == 'ua' ]
 		then
-		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		elif [ ${var} == 'va' ]
 		then
-		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		elif [ ${var} == 'zg' ]
 		then
-		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		cdo sellevel,85000,70000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		else
-		mv ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
+		mv ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		fi
 
 		echo
@@ -100,34 +105,33 @@ for model in ${model_list[@]}; do
 		echo "4. Conventing calendar"
 		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
 
-		echo 
-		echo "5. Conventing unit"
-		if [ ${var} == 'hus' ]
-		then
-		cdo mulc,1000 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		elif [ ${var} == 'psl' ]
-		then
-		cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		elif [ ${var} == 'ps' ]
-		then
-		cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		elif [ ${var} == 'tas' ]
-		then
-		cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		elif [ ${var} == 'ta' ]
-		then
-		cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		elif [ ${var} == 'zg' ]
-		then
-		cdo mulc,10 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		else
-		cp ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
-		fi
+		#~ echo 
+		#~ echo "5. Conventing unit"
+		#~ if [ ${var} == 'hus' ]
+		#~ then
+		#~ cdo mulc,1000 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'psl' ]
+		#~ then
+		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'ps' ]
+		#~ then
+		#~ cdo divc,100 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'tas' ]
+		#~ then
+		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'ta' ]
+		#~ then
+		#~ cdo subc,273.15 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ elif [ ${var} == 'zg' ]
+		#~ then
+		#~ cdo mulc,10 ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ else
+		#~ cp ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt1}_lonlat.nc
+		#~ fi
 
 		echo 
 		echo "6. Deleting file"
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}.nc
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}_new.nc
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt1}_new_lonlat.nc
 	
