@@ -15,7 +15,7 @@ var_list=( 'mslp' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )
 type='era5'
 
 # Date
-dt='1961-2014'
+dt='197901-201412'
 
 for var in ${var_list[@]}; do
 
@@ -34,17 +34,37 @@ for var in ${var_list[@]}; do
 
 	echo
 	echo "2. Conventing calendar"
-	cdo setcalendar,standard ${var}_${type}_mon_${dt}_lonlat.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	cdo setcalendar,standard ${var}_${type}_mon_${dt}_lonlat.nc ${var}_${type}_mon_${dt}_lonlat_std.nc
 
-	echo
-	echo "3. Select date"
-	cdo seldate,1979-01-01T00:00:00,2014-12-31T00:00:00 ${var}_sa_${type}_mon_${dt}_lonlat.nc ${var}_sa_${type}_mon_1979-2014_lonlat.nc
-
+	echo 
+	echo "3. Conventing unit"
+	if [ ${var} == 'hus' ]
+	then
+	cdo mulc,1000 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	elif [ ${var} == 'psl' ]
+	then
+	cdo divc,100 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	elif [ ${var} == 'ps' ]
+	then
+	cdo divc,100 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	elif [ ${var} == 'tas' ]
+	then
+	cdo subc,273.15 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	elif [ ${var} == 'ta' ]
+	then
+	cdo subc,273.15 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	elif [ ${var} == 'zg' ]
+	then
+	cdo mulc,10 ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	else
+	mv ${var}_${type}_mon_${dt}_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	fi
+		
 	echo 
 	echo "4. Deleting file"
 	rm ${var}_${type}_mon_${dt}.nc
-	rm ${var}_${type}_mon_${dt}_lonlat.nc
-	rm ${var}_sa_${type}_mon_${dt}_lonlat.nc
+	rm ${var}_${type}_mon_${dt}_lonlat.nc 
+	rm ${var}_${type}_mon_${dt}_lonlat_std.nc
 
 done
 
