@@ -2,7 +2,7 @@
 
 #__author__      = 'Leidinice Silva'
 #__email__       = 'leidinicesilva@gmail.com'
-#__date__        = 'Mar 01, 2023'
+#__date__        = 'May 21, 2023'
 #__description__ = 'Posprocessing the CMIP6 models'
 
 echo
@@ -18,11 +18,8 @@ for model in ${model_list[@]}; do
 
 	for var in ${var_list[@]}; do
 
-		path="/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/cmip6/"${model}
+		path="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/paper_cmip6/database/cmip6/"${model}
 		cd ${path}
-
-		echo
-		echo ${path}
 
 		# Experiment name
 		exp='historical'
@@ -55,64 +52,73 @@ for model in ${model_list[@]}; do
 
 		dt='197901-201412'
 
+		echo
+		echo ${path}
 		echo ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
 
 		echo
-		echo "2. Select levels"
+		echo "1. Select levels"
 		if [ ${var} == 'hus' ]
 		then
-		cdo sellevel,85000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		
 		elif [ ${var} == 'ta' ]
 		then
-		cdo sellevel,85000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		
 		elif [ ${var} == 'ua' ]
 		then
-		cdo sellevel,85000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		
 		elif [ ${var} == 'va' ]
 		then
-		cdo sellevel,85000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		
 		elif [ ${var} == 'zg' ]
 		then
-		cdo sellevel,50000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		
 		else
-		mv ${var}_Amon_${model}_${exp}_${member}_${dt0}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cp ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
 		fi
 
 		echo
-		echo "3. Conventing grade"
+		echo "2. Conventing grade"
 		/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc -60,15,0.25 -100,-20,0.25 bil
 
 		echo
-		echo "4. Conventing calendar"
+		echo "3. Conventing calendar"
 		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
 
 		echo 
-		echo "5. Conventing unit"
+		echo "4. Conventing unit"
 		if [ ${var} == 'hus' ]
 		then
-		cdo mulc,1000 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 mulc,1000 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		elif [ ${var} == 'psl' ]
 		then
-		cdo divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		elif [ ${var} == 'ps' ]
 		then
-		cdo divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		elif [ ${var} == 'tas' ]
 		then
-		cdo subc,273.15 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 subc,273.15 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		elif [ ${var} == 'ta' ]
 		then
-		cdo subc,273.15 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
-		elif [ ${var} == 'zg' ]
-		then
-		cdo mulc,10 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 subc,273.15 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		else
-		mv ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cp ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
 		fi
 
 		echo 
-		echo "6. Deleting file"
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}.nc 
+		echo "5. Deleting file"
+		rm ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat.nc 
 		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
