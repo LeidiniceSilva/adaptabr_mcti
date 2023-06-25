@@ -41,6 +41,8 @@ def basemap(lat, lon):
 
 	# Import shapefile 
 	map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=1.)
+	map.readshapefile('/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/database/cmip6/regions_shapefile/IPCC-WGI-reference-regions-v4', 'IPCC-WGI-reference-regions-v4', drawbounds=True, color='black', linewidth=1.)
+
 	x0, x1 = plt.xlim()
 	y0, y1 = plt.ylim()
 	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
@@ -66,80 +68,80 @@ lon=sa.longitude.values
 # Plot study area
 fig = plt.figure(figsize=(6, 7))
 
+ax = plt.subplot()
 map, xx, yy = basemap(lat, lon)
-# ~ sa_mask = maskoceans(xx, yy, sa.bedrock, resolution='c')
-plt_map = map.pcolormesh(xx, yy, sa.bedrock, cmap=cm.terrain, norm=mpl.colors.Normalize(vmin=0, vmax=3000)) 
+plt_map = map.pcolormesh(xx, yy, sa.bedrock, cmap=cm.terrain, norm=mpl.colors.Normalize(vmin=0, vmax=3000))
 plt.xlabel(u'Longitude', labelpad=15, fontsize=8, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=25, fontsize=8, fontweight='bold')
 
-# NWS
-a1,b1 = (-83,-15)
-a2,b2 = (-83,12)
-a3,b3 = (-70,12)
-a4,b4 = (-70,-15)
-poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly1)
+# ~ # NWS
+# ~ a1,b1 = (-83,-15)
+# ~ a2,b2 = (-83,12)
+# ~ a3,b3 = (-70,12)
+# ~ a4,b4 = (-70,-15)
+# ~ poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly1)
 
-# NSA
-c1,d1 = (-70,-7)
-c2,d2 = (-70,12)
-c3,d3 = (-50,12)
-c4,d4 = (-50,-7)
-poly2 = Polygon([(c1,d1),(c2,d2),(c3,d3),(c4,d4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly2)
+# ~ # NSA
+# ~ c1,d1 = (-70,-7)
+# ~ c2,d2 = (-70,12)
+# ~ c3,d3 = (-50,12)
+# ~ c4,d4 = (-50,-7)
+# ~ poly2 = Polygon([(c1,d1),(c2,d2),(c3,d3),(c4,d4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly2)
 
-# SAM
-f1,g1 = (-70,-20)
-f2,g2 = (-70,-7)
-f3,g3 = (-50,-7)
-f4,g4 = (-50,-20)
-poly3 = Polygon([(f1,g1),(f2,g2),(f3,g3),(f4,g4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly3)
+# ~ # SAM
+# ~ f1,g1 = (-70,-20)
+# ~ f2,g2 = (-70,-7)
+# ~ f3,g3 = (-50,-7)
+# ~ f4,g4 = (-50,-20)
+# ~ poly3 = Polygon([(f1,g1),(f2,g2),(f3,g3),(f4,g4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly3)
 
-# SES
-j1,k1 = (-68,-40)
-j2,k2 = (-68,-20)
-j3,k3 = (-40,-20)
-j4,k4 = (-40,-40)
-poly4 = Polygon([(j1,k1),(j2,k2),(j3,k3),(j4,k4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly4)
+# ~ # SES
+# ~ j1,k1 = (-68,-40)
+# ~ j2,k2 = (-68,-20)
+# ~ j3,k3 = (-40,-20)
+# ~ j4,k4 = (-40,-40)
+# ~ poly4 = Polygon([(j1,k1),(j2,k2),(j3,k3),(j4,k4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly4)
 
-# NES
-l1,m1 = (-50,-20)
-l2,m2 = (-50,0)
-l3,m3 = (-34,0)
-l4,m4 = (-34,-20)
-poly5 = Polygon([(l1,m1),(l2,m2),(l3,m3),(l4,m4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly5)
+# ~ # NES
+# ~ l1,m1 = (-50,-20)
+# ~ l2,m2 = (-50,0)
+# ~ l3,m3 = (-34,0)
+# ~ l4,m4 = (-34,-20)
+# ~ poly5 = Polygon([(l1,m1),(l2,m2),(l3,m3),(l4,m4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly5)
 
-# SWS 
-n1,p1 = (-76,-42)
-n2,p2 = (-76,-15)
-n3,p3 = (-68,-15)
-n4,p4 = (-68,-42)
-poly6 = Polygon([(n1,p1),(n2,p2),(n3,p3),(n4,p4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly6)
+# ~ # SWS 
+# ~ n1,p1 = (-76,-42)
+# ~ n2,p2 = (-76,-15)
+# ~ n3,p3 = (-68,-15)
+# ~ n4,p4 = (-68,-42)
+# ~ poly6 = Polygon([(n1,p1),(n2,p2),(n3,p3),(n4,p4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly6)
 
-# SSA
-q1,r1 = (-78,-56)
-q2,r2 = (-78,-40)
-q3,r3 = (-56,-40)
-q4,r4 = (-56,-56)
-poly7 = Polygon([(q1,r1),(q2,r2),(q3,r3),(q4,r4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly7)
+# ~ # SSA
+# ~ q1,r1 = (-78,-56)
+# ~ q2,r2 = (-78,-40)
+# ~ q3,r3 = (-56,-40)
+# ~ q4,r4 = (-56,-56)
+# ~ poly7 = Polygon([(q1,r1),(q2,r2),(q3,r3),(q4,r4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly7)
 
 plt.text(-28, -54, u'\u25B2 \nN', color='black', fontsize=8, fontweight='bold')
 plt.text(-79, -7, u'NWS', color='black', fontsize=8, fontweight='bold')
 plt.text(-67, -3, u'NSA', color='black', fontsize=8, fontweight='bold')
 plt.text(-58, -12, u'SAM', color='black', fontsize=8, fontweight='bold')
-plt.text(-51, -24, u'SES', color='black', fontsize=8, fontweight='bold')
+plt.text(-52, -24, u'SES', color='black', fontsize=8, fontweight='bold')
 plt.text(-45, -9, u'NES', color='black', fontsize=8, fontweight='bold')
 plt.text(-75, -24, u'SWS', color='black', fontsize=8, fontweight='bold')
-plt.text(-71, -44, u'SSA', color='black', fontsize=8, fontweight='bold')
+plt.text(-70, -44, u'SSA', color='black', fontsize=8, fontweight='bold')
 
-cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.15, 0.20, 0.02, 0.35]))
+cbar = plt.colorbar(plt_map, cax=fig.add_axes([0.15, 0.22, 0.02, 0.35]))
 cbar.set_label('Topography (meters)', fontsize=8, fontweight='bold')
-# ~ cbar.ax.tick_params(labelsize=8)
+cbar.ax.tick_params(labelsize=8)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/paper_cmip6/figs'
