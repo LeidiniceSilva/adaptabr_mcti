@@ -34,7 +34,7 @@ def import_obs(param, date):
 	
 def import_cmip(param, model, exp, date):
 	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
+	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/paper_cmip6/cmip6'
 	arq   = '{0}/{1}_SA_{2}_historical_{3}_ANN_{4}_lonlat.nc'.format(path, param, model, exp, date)	
 				
 	data  = netCDF4.Dataset(arq)
@@ -209,7 +209,7 @@ plt_map = map.contourf(xx, yy, mean_cmip6[16], levels=levs, latlon=True, cmap=co
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
 name_out = 'pyplt_maps_clim_ann_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
-plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
 
