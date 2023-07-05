@@ -69,13 +69,13 @@ def basemap(lat, lon):
 	
 
 # Import cmip models and obs database
-var_cmip6 = 'psl'
+var_cmip6 = 'tas'
 dt = '197901-201412'
 
 if var_cmip6 == 'psl':
 	var_obs = 'msl'
 elif var_cmip6 == 'ps':
-	var_obs = 'ps'
+	var_obs = 'sp'
 else:
 	var_obs = 't2m'
 	
@@ -92,17 +92,17 @@ fig = plt.figure(figsize=(7, 9))
 font_size = 8
 
 if var_cmip6 == 'psl':
-	levs = [989, 982, 985, 988, 991, 994, 997, 1000, 1003, 1006, 1009, 1012, 1015, 1018, 1021, 1024, 1027]
-	color = cm.coolwarm
-	legend = 'Mean sea level pressure (°C)'
-elif var_cmip6 == 'ps':
-	levs = [950, 955, 960, 965, 970, 975, 980, 985, 990, 995, 1000, 1005, 1010, 1015, 1020, 1025, 1030]
+	levs = [977, 980, 983, 986, 989, 992, 995, 998, 1001, 1004, 1007, 1010, 1013, 1016, 1019, 1022, 1025]
 	color = cm.rainbow
-	legend = 'Surface pressure (°C)'
+	legend = 'Mean sea level pressure (hPa)'
+elif var_cmip6 == 'ps':
+	levs = [921, 928, 935, 942, 948, 955, 962, 966, 969, 976, 983, 990, 997, 1004, 1011, 1018, 1025]
+	color = cm.rainbow
+	legend = 'Surface pressure (hPa)'
 else:
-	levs = [-8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
+	levs = [-2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
 	color = cm.jet
-	legend = 'Near-surface air temperatura (°C)'
+	legend = 'Near-surface air temperature (°C)'
 		
 ax = fig.add_subplot(5, 4, 1)  
 map, xx, yy = basemap(lat, lon)
@@ -199,7 +199,7 @@ plt.title(u'(r) {0}'.format(cmip6[17][0]), loc='left', fontsize=font_size, fontw
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/paper_cmip6'
-name_out = 'pyplt_maps_clim_{0}_sfc_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_maps_cmip6_clim_{0}_{1}.png'.format(var_cmip6, dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

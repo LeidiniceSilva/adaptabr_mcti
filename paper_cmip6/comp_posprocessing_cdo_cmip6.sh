@@ -12,7 +12,7 @@ echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
-var_list=( 'hus' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
+var_list=( 'hus' 'pr' 'psl' 'ps' 'tas' 'ta' 'ua' 'va' 'zg' )     
 
 for model in ${model_list[@]}; do
 
@@ -96,6 +96,10 @@ for model in ${model_list[@]}; do
 		then
 		cdo -b f32 mulc,1000 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
+		if [ ${var} == 'pr' ]
+		then
+		cdo -b f32 mulc,86400 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+				
 		elif [ ${var} == 'psl' ]
 		then
 		cdo -b f32 divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc

@@ -9,7 +9,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'mslp' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
+var_list=( 'mslp' 'mtpr' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
 
 # Database
 type='era5'
@@ -66,6 +66,10 @@ for var in ${var_list[@]}; do
 	then
 	cdo -b f32 divc,100 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
 	
+	if [ ${var} == 'mtpr' ]
+	then
+	cdo -b f32 mulc,86400 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+		
 	elif [ ${var} == 'ps' ]
 	then
 	cdo -b f32 divc,100 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc

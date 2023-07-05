@@ -84,7 +84,7 @@ def basemap(lat, lon):
 
 # Import cmip models and obs database
 plev = '500hPa' 
-var_cmip6 = 'zg'
+var_cmip6 = 'hus'
 dt = '197901-201412'
 
 if var_cmip6 == 'hus':
@@ -126,13 +126,13 @@ elif var_cmip6 == 'ta':
 	color = cm.jet
 	if plev == '850hPa':
 		levs = [-8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
-		legend = 'Air temperatura 850hPa (°C)'
+		legend = 'Air temperature 850hPa (°C)'
 	elif plev == '500hPa':
 		levs = [-8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
-		legend = 'Air temperatura 500hPa (°C)'
+		legend = 'Air temperature 500hPa (°C)'
 	else:
 		levs = [-8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24]
-		legend = 'Air temperatura 200hPa (°C)'
+		legend = 'Air temperature 200hPa (°C)'
 		
 elif var_cmip6 == 'ua':
 	color = cm.gist_rainbow_r
@@ -265,7 +265,7 @@ plt.title(u'(r) {0}'.format(cmip6[17][0]), loc='left', fontsize=font_size, fontw
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/paper_cmip6'
-name_out = 'pyplt_maps_clim_{0}_{1}_{2}.png'.format(var_cmip6, plev, dt)
+name_out = 'pyplt_maps_cmip6_clim_{0}_{1}_{2}.png'.format(var_cmip6, plev, dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
