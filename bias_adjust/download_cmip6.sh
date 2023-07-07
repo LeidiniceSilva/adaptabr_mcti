@@ -6,28 +6,26 @@
 #__description__ = 'Download CMIP6 simulations and projections'
 
 # center
-center=( 'DKRZ' )
+center=( 'NCC' )
 
 # model 
-model=( 'MPI-ESM1-2-HR' )
+model=( 'NorESM2-MM' )
 
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )
 
-#~ for var in ${var_list[@]}; do
+for var in ${var_list[@]}; do
 
-	#~ # Path to save file
-	#~ PATH="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/bias_adjust/cmip6/${model}/historical"    	    
-	#~ cd ${PATH}
+	# Path to save file
+	PATH="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/bias_adjust/cmip6/${model}/historical"    	    
+	cd ${PATH}
 
-	#~ # Download file
-	#~ /usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_historical_r1i1p1f1_gn_19850101-19891231.nc			
-	#~ /usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_historical_r1i1p1f1_gn_19900101-19941231.nc		
-	#~ /usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_historical_r1i1p1f1_gn_19950101-19991231.nc		
-	#~ /usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_historical_r1i1p1f1_gn_20000101-20041231.nc		
-	#~ /usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_historical_r1i1p1f1_gn_20050101-20091231.nc
-
-#~ done
+	# Download file
+	/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_historical_r1i1p1f1_gn_19800101-19891231.nc			
+	/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_historical_r1i1p1f1_gn_19900101-19991231.nc		
+	/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${center}/${model}/historical/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_historical_r1i1p1f1_gn_20000101-20091231.nc
+	
+done
 
 # scenario list
 scenario_list=( 'ssp126' 'ssp245' 'ssp585' )
@@ -40,24 +38,15 @@ for exp in ${scenario_list[@]}; do
 		cd ${PATH}
 
 		# Download file
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20150101-20191231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20200101-20241231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20250101-20291231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20300101-20341231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20350101-20391231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20400101-20441231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20450101-20491231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20500101-20541231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20550101-20591231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20600101-20641231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20650101-20691231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20700101-20741231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20750101-20791231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20800101-20841231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20850101-20891231.nc
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20900101-20941231.nc			
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_20950101-20991231.nc		
-		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20190710/${var}_day_${model}_${exp}_r1i1p1f1_gn_21000101-21001231.nc
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20150101-20201231.nc			
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20210101-20301231.nc			
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20310101-20401231.nc			
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20410101-20501231.nc			
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20510101-20601231.nc			
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20610101-20701231.nc		
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20710101-20801231.nc		
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20810101-20901231.nc		
+		/usr/bin/wget wget -N -c https://dap.ceda.ac.uk/badc/cmip6/data/CMIP6/ScenarioMIP/${center}/${model}/${exp}/r1i1p1f1/day/${var}/gn/files/d20191108/${var}_day_${model}_${exp}_r1i1p1f1_gn_20910101-21001231.nc
 		  
 	done
 done
