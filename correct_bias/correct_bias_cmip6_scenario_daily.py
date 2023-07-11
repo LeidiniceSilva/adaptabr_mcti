@@ -11,6 +11,8 @@ import numpy as np
 from netCDF4 import Dataset
 from datetime import datetime
 
+dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/bias_adjust/cmip6/"
+
 
 def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
                 var_shortname, var_longname, time_units, missing_value=-999.):
