@@ -7,9 +7,12 @@ __description__ = "This script correct bias of cmip6 models"
 
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
+from pylab import setp
 from netCDF4 import Dataset
 from datetime import datetime
+from scipy.stats import norm
 
 dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/"
 
@@ -53,40 +56,35 @@ def import_observed_data(model_name, target_date, basin, dates_list):
     return var		   
     
 
-def correct_bias(simulated, observed):
+def correct_bias(simulated_data, observed_data):
 	
-    # Get the shape of the simulated precipitation array
-    shape = simulated.shape
-    
-    # Reshape the simulated precipitation array to 2D
-    simulated_2d = simulated.reshape((shape[0], -1))
+    # Get the shape of the simulated data array
+    shape = simulated_data.shape
     
     # Correct each grid point separately
-    corrected_2d = np.zeros_like(simulated_2d)
-    for i in range(simulated_2d.shape[1]):
-        corrected_2d[:, i] = correct_bias_1d(simulated_2d[:, i], observed[:, i])
+    corrected_data = np.zeros_like(simulated_data)
+    for i in range(shape[1]):
+        for j in range(shape[2]):
+            corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
     
-    # Reshape the corrected precipitation array back to 3D
-    corrected_dataset = corrected_2d.reshape(shape)
+    return corrected_data
     
-    return corrected_dataset
 
-
-def correct_bias_1d(simulated, observed):
+def correct_bias_1d(simulated_values, observed_values):
 	
-    # Calculate the empirical quantiles of simulated and observed precipitation
-    simulated_quantiles = np.percentile(simulated, np.arange(0, 101))
-    observed_quantiles = np.percentile(observed, np.arange(0, 101))
+    # Calculate the empirical quantiles of simulated and observed values
+    simulated_quantiles = np.percentile(simulated_values, np.arange(0, 101))
+    observed_quantiles = np.percentile(observed_values, np.arange(0, 101))
     
     # Find the mapping function by fitting a linear regression
     mapping_function = np.polyfit(simulated_quantiles, observed_quantiles, 1)
     
-    # Apply the mapping function to the simulated precipitation
-    corrected_dataset = np.polyval(mapping_function, simulated)
-
-    return corrected_dataset
+    # Apply the mapping function to the simulated values
+    corrected_values = np.polyval(mapping_function, simulated_values)
     
+    return corrected_values
     
+   
 def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
                 var_shortname, var_longname, time_units, missing_value=-999.):
 					
@@ -143,16 +141,81 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
     foo.close()
 
 
-simulated = np.random.normal(10, 2, size=(365, 100, 100))  # Simulated data
+def setBoxColors(bp):
+    setp(bp['boxes'][0], color='black')
+    setp(bp['medians'][0], color='black')
+    setp(bp['caps'][0], color='black')
+    setp(bp['caps'][1], color='black')
+    setp(bp['whiskers'][0], color='black')
+    setp(bp['whiskers'][1], color='black')
+        
+    setp(bp['boxes'][1], color='red')
+    setp(bp['medians'][1], color='red')
+    setp(bp['caps'][2], color='red')
+    setp(bp['caps'][3], color='red')
+    setp(bp['whiskers'][2], color='red')
+    setp(bp['whiskers'][3], color='red')
+       
+    setp(bp['boxes'][2], color='blue')
+    setp(bp['medians'][2], color='blue')
+    setp(bp['caps'][4], color='blue')
+    setp(bp['caps'][5], color='blue')
+    setp(bp['whiskers'][4], color='blue')
+    setp(bp['whiskers'][5], color='blue')
+    
+
+def compute_cdf(data):
+
+	"""
+	The input arrays must have the same dimensions
+	:Param data: Numpy array with model or obs data
+	:Return: Cumulative Density Function
+	"""
+
+	x = np.linspace(np.min(data), np.max(data))
+	y = np.nanmean(x)
+	z = np.nanstd(x)
+	cdf = norm.cdf(x,y,z)
+
+	return x, cdf
+	
+	
 observed = np.random.normal(12, 1, size=(365, 100, 100))  # Observed data
-
-print(observed.shape)
-exit()
-
+simulated = np.random.normal(10, 2, size=(365, 100, 100))  # Simulated data
 corrected_dataset = correct_bias(simulated, observed)
 
-# Print the shape of the corrected precipitation array
+obs = np.nanmean(np.nanmean(observed, axis=1), axis=1)
+sim = np.nanmean(np.nanmean(simulated, axis=1), axis=1)
+correct_bias = np.nanmean(np.nanmean(corrected_dataset, axis=1), axis=1)
+
+# Print the shape of the corrected array
 print(corrected_dataset.shape)
+
+day_boxplot = [obs, sim, correct_bias]
+
+# Import cdf function
+x_obs, cdf_obs = compute_cdf(obs)
+x_sim, cdf_sim = compute_cdf(sim)
+x_correct_bias, cdf_correct_bias = compute_cdf(correct_bias)
+
+# Plot figure
+fig = plt.figure()
+
+ax = fig.add_subplot(1, 2, 1)
+x = np.arange(1, 3 + 1)
+bp = plt.boxplot(day_boxplot, positions=[1, 2, 3], sym='.')
+setBoxColors(bp)
+plt.title('(a) Daily boxplot', loc='left', fontweight='bold')
+plt.xticks(x, ('Observed','Simulated','Correct bias'))
+plt.xlabel('Dataset', fontweight='bold')
+plt.grid(linestyle='--')
+
+ax = fig.add_subplot(1, 2, 2)
+plt.plot(x_obs, cdf_obs, color='black', label='Observed', linewidth=1.5)
+plt.plot(x_sim, cdf_sim,  color='red', label='Simulated', linewidth=1.5)
+plt.plot(x_correct_bias, cdf_correct_bias,  color='blue', label='Correct bias', linewidth=1.5)
+plt.title('(b) Daily CDF', loc='left', fontweight='bold')
+plt.grid(linestyle='--')
+
+plt.show()
 exit()
-
-
