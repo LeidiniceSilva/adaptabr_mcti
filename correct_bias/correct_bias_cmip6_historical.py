@@ -6,17 +6,17 @@ __date__        = "Jul 05, 2023"
 __description__ = "This script correct bias of cmip6 models"
 
 import os
-import cftime
 import netCDF4
 import numpy as np
-import xarray as xr
+import pandas as pd
 
+from netCDF4 import Dataset
 from dict_cmip6_models_name import cmip6
 
 dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
 
 
-def import_observed_data(var_name, target_date):
+def import_observed(var_name, target_date):
 	
     """ Import observed data.
     :param: model_name: str (BR-DWGD)
@@ -36,7 +36,7 @@ def import_observed_data(var_name, target_date):
     return lat, lon, value	
     
     
-def import_simulated_data(model_name, exp_name, var_name, member, target_date):
+def import_simulated(model_name, exp_name, var_name, member, target_date):
         
 	""" Import simulated data.
 	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
@@ -104,14 +104,14 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 
     foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
-    foo.createDimension('time', time_array.shape[0])
+    foo.createDimension('time', None)
     foo.createDimension('lat', lat_array.shape[0])
     foo.createDimension('lon', lon_array.shape[0])
 
-    times = foo.createVariable('time', 'f8', 'time')
+    times = foo.createVariable('time', float, ('time'))
     times.units = time_units
     times.calendar = 'standard'
-    times[:] = time_array
+    times[:] = range(len(time_array))
 
     laty = foo.createVariable('lat', 'f4', 'lat')
     laty.units = 'degrees_north'
@@ -123,61 +123,58 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
     lonx.long_name = 'longitude'
     lonx[:] = lon_array
 
-    var = foo.createVariable(var_shortname, 'f', ('time', 'lat', 'lon'))
+    var = foo.createVariable(var_shortname, float, ('time', 'lat', 'lon'))
     var.units = var_units
     var.long_name = var_longname
     var.missing_value = missing_value
     var[:] = var_array
 
     foo.close()
-	
+
 
 # Import cmip models and obs database 
 best_models = [17, 7, 13, 9, 15]
 i = 9
 
-experiment = 'historical'
-dt = '19860101-20051231'
+# create date list
+time_array = pd.date_range('1986-01-01','1986-12-31', freq='D').strftime('%Y-%m-%d').tolist()
 
-var_obs = 'pr'
-var_cmip6 = 'pr'
+dt = '19860101-20051231'
+experiment = 'historical'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
 
 print(cmip6[i][0])
 print(experiment)
 print(var_cmip6)
 
-lat, lon, observed = import_observed_data(var_obs, dt)
-lat, lon, simulated = import_simulated_data(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+lat, lon, observed = import_observed(var_obs, dt)
+lat_array, lon_array, simulated = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 
-lat, lon, observed = import_observed_data(var_obs, dt)
-lat_array, lon_array, simulated = import_simulated_data(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
-
-# create date list
-time_array = pd.date_range('1986-01-01','2005-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-	
 # Import correct bias function
 corrected_dataset = correct_bias(simulated[0:365, :, :], observed[0:365, :, :])
 
 # Print the shape of the corrected array
-print(corrected_dataset)
 print(corrected_dataset.shape)
-exit()
 
 if var_cmip6 == 'pr':
-	time_units = 'mm'
-	var_longname = 'Daily Total Precipitation'
+	var_units = 'mm'
 	var_shortname = 'pr'
+	var_longname = 'Daily Total Precipitation'
+	time_units = 'days since {}'.format(time_array[0])
 elif var_cmip6 == 'tasmax':
-	time_units = 'Celcius degrees'
-	var_longname = 'Daily Maximum Near-Surface Air Temperature'
+	var_units = 'Celcius degrees'
 	var_shortname = 'tasmax'
+	var_longname = 'Daily Maximum Near-Surface Air Temperature'
+	time_units = 'days since {}'.format(time_array[0])
 else:
-	time_units = 'Celcius degrees'
-	var_longname = 'Daily Minimum Near-Surface Air Temperature'
+	var_units = 'Celcius degrees'
 	var_shortname = 'tasmin'
+	var_longname = 'Daily Minimum Near-Surface Air Temperature'
+	time_units = 'days since {}'.format(time_array[0])
 	
 # Path out to save netCDF4
-nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[i][0], experiment, var_cmip6, member, dt)
+nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
 exit()
 

@@ -3,142 +3,113 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Jul 05, 2023"
-__description__ = "This script correct bias of cmip6 models"
+__description__ = "This script plot skill of cmip6 correct models"
 
 import os
 import numpy as np
+import xarray as xr
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from pylab import setp
 from netCDF4 import Dataset
 from datetime import datetime
 from scipy.stats import norm
+from dict_cmip6_models_name import cmip6
 
 dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/"
 
 
-def import_simulated_data(model_name, exp_name, var_name, member, target_date):
-    
-    """ Import simulated data.
-    :param: model_name: str (GFDL, INM, MPI, MRI and Nor)
-    :param: target_date: datetime
-    :return: simulated data (Pr, Tasmax and Tasmin)
-    :return: flag that it refers to data control
-    :rtype: 3D array
-    """
-    
-    dir_modelname = "{0}/cmip6/{1}/{2}".format(dataset_dir, model_name, exp_name)
-    file_modelname = "{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc".format(var_name, model_name, exp_name, member, target_date)
-    
-    input_data = Dataset(os.path.join(dir_modelname, file_modelname))
-    var = input_data.variables[var_name][:]
-    input_data.close()
+def import_observed(var_name, target_date):
 
-    return var
-
-
-def import_observed_data(model_name, target_date, basin, dates_list):
-	
     """ Import observed data.
     :param: model_name: str (BR-DWGD)
     :param: target_date: datetime
-    :return: observed data (Pr, Tasmax and Tasmin)
+    :return: observed data (Prec, Tasmax and Tasmin)
     :return: flag that it refers to data control
     :rtype: 3D array
     """
-    
-    file_name = "{0}/obs/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
-    
-    input_data = Dataset(file_name)
-    var = input_data.variables[var_name][:]
-    input_data.close()
-
-    return var		   
-    
-
-def correct_bias(simulated_data, observed_data):
-	
-    # Get the shape of the simulated data array
-    shape = simulated_data.shape
-    
-    # Correct each grid point separately
-    corrected_data = np.zeros_like(simulated_data)
-    for i in range(shape[1]):
-        for j in range(shape[2]):
-            corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
-    
-    return corrected_data
-    
-
-def correct_bias_1d(simulated_values, observed_values):
-	
-    # Calculate the empirical quantiles of simulated and observed values
-    simulated_quantiles = np.percentile(simulated_values, np.arange(0, 101))
-    observed_quantiles = np.percentile(observed_values, np.arange(0, 101))
-    
-    # Find the mapping function by fitting a linear regression
-    mapping_function = np.polyfit(simulated_quantiles, observed_quantiles, 1)
-    
-    # Apply the mapping function to the simulated values
-    corrected_values = np.polyval(mapping_function, simulated_values)
-    
-    return corrected_values
-    
    
-def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
-                var_shortname, var_longname, time_units, missing_value=-999.):
-					
-    """Write 3 dimensional (time, lat, lon) netCDF4
-    :param ncname: Name of the output netCDF
-    :type ncname: string object
-    :param var_array: 3d prec array (time, lat, lon)
-    :type var_array: numpy array
-    :param time_array: 1d array with unique value which is the prediction hour
-    :type time_array: numpy array
-    :param lat_array: 1d array which contains the lat values
-    :type lat_array: numpy array
-    :param lon_array: 1d array which contains the lon values
-    :type lon_array: numpy array
-    :param var_units: variable units
-    :type var_units: string object
-    :param var_shortname: variable short name
-    :type var_shortname: string object
-    :param var_longname: variable long name
-    :type var_longname: string object
-    :param time_units: time units
-    :type time_units: string object
-    :param missing_value: missing value
-    :type missing_value: float
-    """
+    arq = xr.open_dataset('{0}/obs/'.format(dataset_dir) + '{0}_{1}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc'.format(var_name, target_date))
+    data = arq[var_name]
+    var = data.sel(time=slice('1986-01-01','1986-12-31'))
+    
+    clim_mean = var.groupby('time.month').mean('time')
+    clim_mean = clim_mean.values
+    clim = np.nanmean(np.nanmean(clim_mean, axis=1), axis=1)
+    
+    mon_mean = var.resample(time='1M').mean()
+    mon_mean = mon_mean.values
+    mon = np.nanmean(np.nanmean(mon_mean, axis=1), axis=1)
+    
+    day_mean = var.values
+    day = np.nanmean(np.nanmean(day_mean, axis=1), axis=1)
 
-    foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
+    return clim, mon, day
+   
+   
+def import_simulated(model_name, exp_name, var_name, member, target_date):
+       
+	""" Import simulated data.
+	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
+	:param: target_date: datetime
+	:return: simulated data (Prec, Tasmax and Tasmin)
+	:return: flag that it refers to data control
+	:rtype: 3D array
+	"""
+	
+	clim = []
+	mon = []
+	day = []
 
-    foo.createDimension('time', time_array.shape[0])
-    foo.createDimension('lat', lat_array.shape[0])
-    foo.createDimension('lon', lon_array.shape[0])
+	arq = xr.open_dataset('{0}/cmip6/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc'.format(var_name, model_name, exp_name, member, target_date))
+	data = arq[var_name]
+	var = data.sel(time=slice('1986-01-01','1986-12-31'))
 
-    times = foo.createVariable('time', 'f8', 'time')
-    times.units = time_units
-    times.calendar = 'standard'
-    times[:] = time_array
+	clim_mean = var.groupby('time.month').mean('time')
+	clim_mean = clim_mean.values
+	clim = np.nanmean(np.nanmean(clim_mean, axis=1), axis=1)
 
-    laty = foo.createVariable('lat', 'f4', 'lat')
-    laty.units = 'degrees_north'
-    laty.long_name = 'latitude'
-    laty[:] = lat_array
+	mon_mean = var.resample(time='1M').mean()
+	mon_mean = mon_mean.values
+	mon = np.nanmean(np.nanmean(mon_mean, axis=1), axis=1)
 
-    lonx = foo.createVariable('lon', 'f4', 'lon')
-    lonx.units = 'degrees_east'
-    lonx.long_name = 'longitude'
-    lonx[:] = lon_array
+	day_mean = var.values
+	day = np.nanmean(np.nanmean(day_mean, axis=1), axis=1)
 
-    var = foo.createVariable(var_shortname, 'f', ('time', 'lat', 'lon'))
-    var.units = var_units
-    var.long_name = var_longname
-    var.missing_value = missing_value
-    var[:] = var_array
+	return clim, mon, day
 
-    foo.close()
+
+def import_simulated_correct(model_name, exp_name, var_name, member, target_date):
+       
+	""" Import simulated data.
+	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
+	:param: target_date: datetime
+	:return: simulated data (Prec, Tasmax and Tasmin)
+	:return: flag that it refers to data control
+	:rtype: 3D array
+	"""
+
+	clim = []
+	mon = []
+	day = []
+
+	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_correct.nc'.format(var_name, model_name, exp_name, member, target_date))
+	data = arq[var_name]
+	var = data.sel(time=slice('1986-01-01','1986-12-31'))
+
+	clim_mean = var.groupby('time.month').mean('time')
+	clim_mean = clim_mean.values
+	clim = np.nanmean(np.nanmean(clim_mean, axis=1), axis=1)
+
+	mon_mean = var.resample(time='1M').mean()
+	mon_mean = mon_mean.values
+	mon = np.nanmean(np.nanmean(mon_mean, axis=1), axis=1)
+
+	day_mean = var.values
+	day = np.nanmean(np.nanmean(day_mean, axis=1), axis=1)
+
+	return clim, mon, day
 
 
 def setBoxColors(bp):
@@ -179,43 +150,91 @@ def compute_cdf(data):
 
 	return x, cdf
 	
-	
-observed = np.random.normal(12, 1, size=(365, 100, 100))  # Observed data
-simulated = np.random.normal(10, 2, size=(365, 100, 100))  # Simulated data
-corrected_dataset = correct_bias(simulated, observed)
 
-obs = np.nanmean(np.nanmean(observed, axis=1), axis=1)
-sim = np.nanmean(np.nanmean(simulated, axis=1), axis=1)
-correct_bias = np.nanmean(np.nanmean(corrected_dataset, axis=1), axis=1)
+# Import cmip models and obs database 
+best_models = [17, 7, 13, 9, 15]
+i = 9
 
-# Print the shape of the corrected array
-print(corrected_dataset.shape)
+dt = '19860101-20051231'
+experiment = 'historical'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
 
-day_boxplot = [obs, sim, correct_bias]
+print(cmip6[i][0])
+print(experiment)
+print(var_cmip6)
+
+clim_obs, mon_obs, day_obs = import_observed(var_obs, dt)
+clim_sim, mon_sim, day_sim = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+clim_sim_correct, mon_sim_correct, day_sim_correct = import_simulated_correct(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+
+day_boxplot = [day_obs, day_sim, day_sim_correct]
 
 # Import cdf function
-x_obs, cdf_obs = compute_cdf(obs)
-x_sim, cdf_sim = compute_cdf(sim)
-x_correct_bias, cdf_correct_bias = compute_cdf(correct_bias)
+x_obs, cdf_obs = compute_cdf(day_obs)
+x_sim, cdf_sim = compute_cdf(day_sim)
+x_correct_bias, cdf_correct_bias = compute_cdf(day_sim_correct)
 
 # Plot figure
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 11))
 
-ax = fig.add_subplot(1, 2, 1)
+if var_cmip6 == 'pr':
+	legend = 'Precipitation (mm d⁻¹)'
+elif var_cmip6 == 'tasmax':
+	legend = 'Maximum Air Temperature (°C)'
+else:
+	legend = 'Minimum Air Temperature (°C)'
+	
+ax = fig.add_subplot(2, 2, 1)
 x = np.arange(1, 3 + 1)
 bp = plt.boxplot(day_boxplot, positions=[1, 2, 3], sym='.')
 setBoxColors(bp)
 plt.title('(a) Daily boxplot', loc='left', fontweight='bold')
-plt.xticks(x, ('Observed','Simulated','Correct bias'))
+plt.xticks(x, ('Observed','Simulated','Correction'))
 plt.xlabel('Dataset', fontweight='bold')
+plt.ylabel('{0}'.format(legend), fontweight='bold')
 plt.grid(linestyle='--')
 
-ax = fig.add_subplot(1, 2, 2)
+ax = fig.add_subplot(2, 2, 2)
 plt.plot(x_obs, cdf_obs, color='black', label='Observed', linewidth=1.5)
 plt.plot(x_sim, cdf_sim,  color='red', label='Simulated', linewidth=1.5)
-plt.plot(x_correct_bias, cdf_correct_bias,  color='blue', label='Correct bias', linewidth=1.5)
+plt.plot(x_correct_bias, cdf_correct_bias,  color='blue', label='Correction', linewidth=1.5)
+plt.xlabel('{0}'.format(legend), fontweight='bold')
+plt.ylabel('CDF', fontweight='bold')
 plt.title('(b) Daily CDF', loc='left', fontweight='bold')
 plt.grid(linestyle='--')
+plt.legend(loc=9, ncol=1, fontsize=8, frameon=False)
 
+ax = fig.add_subplot(2, 2, 3)
+time = np.arange(0.5, 12 + 0.5)
+plt.plot(time, clim_obs, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='black', label = 'Observed')
+plt.plot(time, clim_sim, linewidth=1.5, linestyle='--', markersize=3, marker='*', markerfacecolor='white', color='red', label = 'Simulated')
+plt.plot(time, clim_sim_correct, linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='blue', label = 'Correction')
+plt.title('(c) Anual cycle', loc='left', fontweight='bold')
+plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+plt.xlabel('Months', fontweight='bold')
+plt.ylabel('{0}'.format(legend), fontweight='bold')
+plt.grid(linestyle='--')
+plt.legend(loc=9, ncol=3, fontsize=8, frameon=False)
+
+ax = fig.add_subplot(2, 2, 4)
+mon_dt = pd.date_range(start="19860101", end="19861231", freq="M")
+obs_dt = pd.Series(data=mon_obs, index=mon_dt)
+sim_dt = pd.Series(data=mon_sim, index=mon_dt)
+sim_correct_dt = pd.Series(data=mon_sim_correct, index=mon_dt)
+
+plt.plot(obs_dt, linewidth=1.5, linestyle='--', color='black', label = 'Observed')
+plt.plot(sim_dt, linewidth=1.5, linestyle='--', color='red', label = 'Simulated')
+plt.plot(sim_correct_dt, linewidth=1.5, linestyle='--', color='blue', label = 'Correction')
+plt.title('(d) Monthly time series', loc='left', fontweight='bold')
+plt.ylabel('{0}'.format(legend), fontweight='bold')
+plt.xlabel('Period', fontweight='bold')
+plt.grid(linestyle='--')
+plt.legend(loc=9, ncol=3, fontsize=8, frameon=False)
+
+# Path out to save figure
+path_out = '/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/figs/correct_bias'
+name_out = 'pyplt_skill_correct_bias_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
