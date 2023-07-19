@@ -220,7 +220,7 @@ for idx, gp in enumerate(grouped_elements):
 	print(time_list[idx], gp[0], gp[-1])
 
 	# Import correct bias function
-	corrected_dataset = correct_bias(simulated[gp[0]:gp[-1], :,:], observedsimulated[gp[0]:gp[-1])
+	corrected_dataset = correct_bias(simulated[gp[0]:gp[-1],:,:], observedsimulated[[gp[0]:gp[-1],:,:])
 
 	# Print the shape of the corrected array
 	print(corrected_dataset.shape)
