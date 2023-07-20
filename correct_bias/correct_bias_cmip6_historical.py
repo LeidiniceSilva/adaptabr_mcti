@@ -154,7 +154,7 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 
 	times = foo.createVariable('time', float, ('time'))
 	times.units = time_units
-	times.calendar = 'standard'
+	times.calendar = '365_day'
 	times[:] = range(len(time_array))
 
 	laty = foo.createVariable('lat', 'f4', 'lat')
@@ -187,8 +187,8 @@ time_i.remove('2004-02-29')
 		
 dt = '19860101-20051231'
 experiment = 'historical'
-var_obs = 'pr'
-var_cmip6 = 'pr'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
 
 print(cmip6[mdl][0])
 print(experiment)
@@ -246,7 +246,6 @@ for idx in range(0, 20):
 
 	# Print the shape of the corrected array
 	print(corrected_dataset.shape)
-	exit()
 	
 	if var_cmip6 == 'pr':
 		var_units = 'mm'
