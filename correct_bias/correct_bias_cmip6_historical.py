@@ -20,7 +20,7 @@ dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
 
 # Best models list
 best_models = [17, 7, 13, 9, 15]
-i = 7
+mdl = 7
 
 def import_observed(var_name, target_date):
 	
@@ -39,7 +39,7 @@ def import_observed(var_name, target_date):
     lon   = data.variables['lon'][:]
     value = var[:][:,:,:]
         
-    return lat, lon, value	
+    return value	
     
     
 def import_simulated(model_name, exp_name, var_name, member, target_date):
@@ -62,7 +62,6 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	
 	return lat, lon, value 
     
-
 
 def correct_bias(simulated_data, observed_data):
 
@@ -115,7 +114,14 @@ def remove_leap_days(array, indices):
 
     return new_array
     
+
+def group_elements(lst, group_size=365):
     
+    grouped_list = [lst[i:i + group_size] for i in range(0, len(lst), group_size)]
+    
+    return grouped_list
+    
+      
 def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
                 var_shortname, var_longname, time_units, missing_value=-999.):
 	
@@ -170,61 +176,78 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 	foo.close()
 
 
-# Create date list
-time_array = pd.date_range('1986-01-01','2005-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-time_list = pd.date_range('1986','2006', freq='Y').strftime('%Y').tolist()
-
+# Create date list non leap days
+time = pd.date_range('1986','2006', freq='Y').strftime('%Y').tolist()
+time_i = pd.date_range('1986-01-01','2005-12-31', freq='D').strftime('%Y-%m-%d').tolist()
+time_i.remove('1988-02-29')
+time_i.remove('1992-02-29')
+time_i.remove('1996-02-29')
+time_i.remove('2000-02-29')
+time_i.remove('2004-02-29')
+		
 dt = '19860101-20051231'
 experiment = 'historical'
 var_obs = 'pr'
 var_cmip6 = 'pr'
 
-print(cmip6[i][0])
+print(cmip6[mdl][0])
 print(experiment)
 print(var_cmip6)
 
 # Import cmip models and obs database 
-lat, lon, obs = import_observed(var_obs, dt)
-lat_array, lon_array, simulated = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+obs = import_observed(var_obs, dt)
+lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
 print('first step')
 print(obs.shape)
-print(simulated.shape)
+print(sim_array.shape)
 
 # leap day indices to delete
+# [789, 2249, 3709, 5169, 6629]
 leap_day_indices = get_leap_day_indices(1986, 2005)
+print(leap_day_indices)
 
-# Remove leap day (Feb 29th) from observed dataset
-if i == 7:
-	observed = remove_leap_days(obs, leap_day_indices)
-elif i == 9:
+# Remove leap day (Feb 29th) from datasets
+if obs.shape[0] == 7305:
 	observed = remove_leap_days(obs, leap_day_indices)
 else:
 	observed = obs
+	
+if sim_array.shape[0] == 7305:
+	simulated = remove_leap_days(sim_array, leap_day_indices)
+else:
+	simulated = sim_array
 
 print('second step')
 print(observed.shape)
 print(simulated.shape)
 
+# Call the function with the sample_list and group size 
 sample_list = list(range(0, 7300))
-def group_elements(lst, group_size=365):
-    grouped_list = [lst[i:i + group_size] for i in range(0, len(lst), group_size)]
-    return grouped_list
-
-# Call the function with the sample_list and group size 5
 grouped_elements = group_elements(sample_list, group_size=365)
+
+# Grouped elements
+yr_i = []
+yr_f = []
+time_ii = []
+for gp in grouped_elements:
+	yr_i.append(gp[0])
+	yr_f.append(gp[-1])
+	time_ii.append(time_i[gp[0]:gp[-1]+1])
 
 print('third step')
 # Print the grouped elements
-for idx, gp in enumerate(grouped_elements):
-	print(time_list[idx], gp[0], gp[-1])
-
+for idx in range(0, 20):
+	time_array = time_ii[idx]
+	print(time[idx], len(time_array), yr_i[idx], yr_f[idx])
+		
 	# Import correct bias function
-	corrected_dataset = correct_bias(simulated[gp[0]:gp[-1],:,:], observedsimulated[[gp[0]:gp[-1],:,:])
+	corrected_dataset = correct_bias(simulated[yr_i[idx]:yr_f[idx]+1,:,:], observed[yr_i[idx]:yr_f[idx]+1,:,:])
 
 	# Print the shape of the corrected array
 	print(corrected_dataset.shape)
-
+	exit()
+	
 	if var_cmip6 == 'pr':
 		var_units = 'mm'
 		var_shortname = 'pr'
@@ -240,10 +263,10 @@ for idx, gp in enumerate(grouped_elements):
 		var_shortname = 'tasmin'
 		var_longname = 'Daily Minimum Near-Surface Air Temperature'
 		time_units = 'days since {}'.format(time_array[0])
-	
+
 	print('fourth step')	
 	# Path out to save netCDF4
-	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[i][0], experiment, var_cmip6, cmip6[i][1], time_list[idx])
+	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], time[idx])
 	write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
 
 
