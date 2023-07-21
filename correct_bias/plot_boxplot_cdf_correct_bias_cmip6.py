@@ -26,9 +26,9 @@ i = 7
 
 experiment = 'historical'
 dt = '19860101-20051231'
-var_obs = 'pr'
-var_cmip6 = 'pr'
-year=1986
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
+year=2005
 
 print(cmip6[i][0])
 print(experiment)
@@ -195,7 +195,7 @@ plt.legend(loc=9, ncol=3, frameon=False)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
-name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}.png'.format(var_cmip6, year)
+name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, year)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

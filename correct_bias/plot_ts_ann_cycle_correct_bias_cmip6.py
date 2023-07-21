@@ -26,8 +26,8 @@ i = 7
 
 experiment = 'historical'
 dt = '19860101-20051231'
-var_obs = 'pr'
-var_cmip6 = 'pr'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
 
 print(cmip6[i][0])
 print(experiment)
@@ -115,7 +115,7 @@ mon_sim, clim_sim = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i
 mon_sim_correct, clim_sim_correct = import_simulated_correct(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 
 # Plot figure
-fig = plt.figure(figsize=(10, 8))
+fig = plt.figure(figsize=(8, 8))
 
 if var_cmip6 == 'pr':
 	legend = 'Precipitação (mm d⁻¹)'
@@ -125,21 +125,17 @@ else:
 	legend = 'Temperatura mínima(°C)'
 
 ax = fig.add_subplot(2, 1, 1)
-
-dt_i = pd.date_range('1986-01-01','2005-12-31', freq='M').strftime('%Y-%m-%d').tolist()
-
-obs_dt = pd.Series(data=mon_obs, index=dt_i)
-sim_dt = pd.Series(data=mon_sim, index=dt_i)
-sim_correct_dt = pd.Series(data=mon_sim_correct, index=dt_i)
-	
-plt.plot(obs_dt, linewidth=1.5, linestyle='--', color='black', label = 'Observação')
-plt.plot(sim_dt, linewidth=1.5, linestyle='--', color='red', label = 'Simulação')
-plt.plot(sim_correct_dt, linewidth=1.5, linestyle='--', color='blue', label = 'Correção')
-plt.title('(a) Série temporal diária', loc='left', fontweight='bold')
+time = np.arange(0.5, 240 + 0.5)
+plt.plot(time, mon_obs, linewidth=1.5, linestyle='--', color='black', label = 'Observação')
+plt.plot(time, mon_sim, linewidth=1.5, linestyle='--', color='red', label = 'Simulação')
+plt.plot(time, mon_sim_correct, linewidth=1.5, linestyle='--', color='blue', label = 'Correção')
+plt.title('(a) Série temporal mensal - {0}'.format (cmip6[i][0]), loc='left', fontweight='bold')
 plt.ylabel('{0}'.format(legend), fontweight='bold')
-plt.xlabel('Período 01/01/2005 - 31/12/2005', fontweight='bold')
+plt.xlabel('Período 01/2005 - 12/2005', fontweight='bold')
 plt.grid(linestyle='--')
 plt.legend(loc=9, ncol=3, frameon=False)
+plt.xticks(np.arange(0, 252, 12))
+plt.xlim(0, 240)
 if var_cmip6 == 'pr':
 	plt.yticks(np.arange(0, 18, 2))
 	plt.ylim(0, 16)
@@ -160,7 +156,7 @@ plt.xticks(time, ('Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set',
 plt.xlabel('Meses', fontweight='bold')
 plt.ylabel('{0}'.format(legend), fontweight='bold')
 plt.grid(linestyle='--')
-plt.legend(loc=9, ncol=3, fontsize=8, frameon=False)
+plt.legend(loc=9, ncol=3, frameon=False)
 if var_cmip6 == 'pr':
 	plt.yticks(np.arange(0, 18, 2))
 	plt.ylim(0, 16)
@@ -173,7 +169,7 @@ else:
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
-name_out = 'pyplt_ts_ann_cycle_correct_bias_cmip6_{0}_{1}.png'.format(var_cmip6, dt)
+name_out = 'pyplt_ts_ann_cycle_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
