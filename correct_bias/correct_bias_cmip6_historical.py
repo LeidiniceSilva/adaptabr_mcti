@@ -22,6 +22,16 @@ dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
 best_models = [17, 7, 13, 9, 15]
 mdl = 7
 
+experiment = 'historical'
+dt = '19860101-20051231'
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
+
+print(cmip6[mdl][0])
+print(experiment)
+print(var_cmip6)
+
+
 def import_observed(var_name, target_date):
 	
     """ Import observed data.
@@ -185,15 +195,6 @@ time_i.remove('1996-02-29')
 time_i.remove('2000-02-29')
 time_i.remove('2004-02-29')
 		
-dt = '19860101-20051231'
-experiment = 'historical'
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
-
-print(cmip6[mdl][0])
-print(experiment)
-print(var_cmip6)
-
 # Import cmip models and obs database 
 obs = import_observed(var_obs, dt)
 lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
@@ -242,11 +243,17 @@ for idx in range(0, 20):
 	print(time[idx], len(time_array), yr_i[idx], yr_f[idx])
 		
 	# Import correct bias function
-	corrected_dataset = correct_bias(simulated[yr_i[idx]:yr_f[idx]+1,:,:], observed[yr_i[idx]:yr_f[idx]+1,:,:])
+	corrected_data = correct_bias(simulated[yr_i[idx]:yr_f[idx]+1,:,:], observed[yr_i[idx]:yr_f[idx]+1,:,:])
 
 	# Print the shape of the corrected array
-	print(corrected_dataset.shape)
+	print(corrected_data.shape)
 	
+	# To replace negative values with 0
+	if var_cmip6 == 'pr':
+		corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
+	else:
+		corrected_dataset = corrected_data
+		
 	if var_cmip6 == 'pr':
 		var_units = 'mm'
 		var_shortname = 'pr'
