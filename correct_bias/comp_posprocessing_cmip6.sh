@@ -9,16 +9,18 @@ echo
 echo "--------------- INIT POSPROCESSING ----------------"
 
 # Model list
-model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
+model_list=( 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
+#~ model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
 
 # Experiment list
-exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
+exp_list=( 'historical' ) 
+#~ exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
 
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )     
 
 path_regrid="/home/nice/Documentos/github_projects/shell/regcm_pos"
-path_mask="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/bias_adjust/obs"
+path_mask="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/obs"
 
 for model in ${model_list[@]}; do
 
@@ -26,7 +28,7 @@ for model in ${model_list[@]}; do
 	
 		for var in ${var_list[@]}; do
 
-			path="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/bias_adjust/cmip6/${model}/${exp}"
+			path="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/cmip6/${model}/${exp}"
 			cd ${path}
 
 			# Member name
