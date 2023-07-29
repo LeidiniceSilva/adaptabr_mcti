@@ -18,17 +18,17 @@ from scipy.stats import norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
 
 # Best models list
 best_models = [17, 7, 13, 9, 15]
-i = 13
+i = 7
 
 experiment = 'historical'
 dt = '19860101-20051231'
-var_obs = 'pr'
-var_cmip6 = 'pr'
-year=1986 # 1986 1995 2005
+var_obs = 'Tmin'
+var_cmip6 = 'tasmin'
+year=2005
 
 print(cmip6[i][0])
 print(experiment)
@@ -189,6 +189,7 @@ elif var_cmip6 == 'tasmax':
 else:
 	plt.xticks(np.arange(14, 30, 2))
 	plt.xlim(14, 28)
+
 plt.grid(linestyle='--')
 plt.legend(loc=9, ncol=3, frameon=False)
 

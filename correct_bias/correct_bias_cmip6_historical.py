@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 
 from netCDF4 import Dataset
-from scipy.stats import gamma
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
@@ -20,7 +19,7 @@ dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
 
 # Best models list
 best_models = [17, 7, 13, 9, 15]
-mdl = 7
+mdl = 17
 
 experiment = 'historical'
 dt = '19860101-20051231'
@@ -30,6 +29,12 @@ var_cmip6 = 'tasmin'
 print(cmip6[mdl][0])
 print(experiment)
 print(var_cmip6)
+
+# NOAA GFDL, Princeton, NJ 08540, USA
+# INM, Russian Academy of Science, Moscow 119991, Russia"
+# MPI for Meteorology, Hamburg 20146, Germany
+# MRI, Tsukuba, Ibaraki 305-0052, Japan
+# NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway
 
 
 def import_observed(var_name, target_date):
@@ -151,12 +156,12 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 	foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
 	foo.Conventions = 'CF-1.7 CMIP-6.0 UGRID-1.0'
-	foo.title 		= 'GFDL-ESM4 correct bias model output'
-	foo.institution = 'NOAA GFDL, Princeton, NJ 08540, USA'
-	foo.source 		= 'GFDL-ESM4'
+	foo.title 		= 'NorESM2-MM correct bias model output'
+	foo.institution = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
+	foo.source 		= 'NorESM2-MM'
 	foo.history 	= 'CMIP6 model with corrected bias'
 	foo.references 	= 'https://esgf.ceda.ac.uk/thredds/catalog/esg_cmip6/catalog.html'
-	foo.comment 	= 'This netCDF4 file was corrected using GQM function'
+	foo.comment 	= 'This netCDF4 file was corrected using EQM function'
 
 	foo.createDimension('time', None)
 	foo.createDimension('lat', lat_array.shape[0])

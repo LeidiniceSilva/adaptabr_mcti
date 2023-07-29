@@ -13,16 +13,14 @@ import matplotlib.pyplot as plt
 
 from pylab import setp
 from netCDF4 import Dataset
-from datetime import datetime
-from scipy.stats import norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
 
 # Best models list
 best_models = [17, 7, 13, 9, 15]
-i = 7
+i = 9
 
 experiment = 'historical'
 dt = '19860101-20051231'
@@ -131,7 +129,7 @@ plt.plot(time, mon_sim, linewidth=1.5, linestyle='--', color='red', label = 'Sim
 plt.plot(time, mon_sim_correct, linewidth=1.5, linestyle='--', color='blue', label = 'Correção')
 plt.title('(a) Série temporal mensal - {0}'.format (cmip6[i][0]), loc='left', fontweight='bold')
 plt.ylabel('{0}'.format(legend), fontweight='bold')
-plt.xlabel('Período 01/2005 - 12/2005', fontweight='bold')
+plt.xlabel('Período 01/1986 - 12/2005', fontweight='bold')
 plt.grid(linestyle='--')
 plt.legend(loc=9, ncol=3, frameon=False)
 plt.xticks(np.arange(0, 252, 12))

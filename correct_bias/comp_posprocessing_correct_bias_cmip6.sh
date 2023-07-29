@@ -10,7 +10,7 @@ echo "--------------- INIT POSPROCESSING ----------------"
 
 # Model list
 # model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
-model_list=( 'GFDL-ESM4' ) 
+model_list=( 'NorESM2-MM' ) 
 
 # Experiment list
 # exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
@@ -64,7 +64,7 @@ for model in ${model_list[@]}; do
 			then
 			cdo ifthen ${path_mask}/mask_br_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
 			else
-			mv ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
+			cp ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
 			fi
 						
 			echo 
