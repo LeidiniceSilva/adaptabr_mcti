@@ -20,21 +20,6 @@ from dict_cmip6_models_name import cmip6
 # Dataset directory
 dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
 
-# Best models list
-best_models = [17, 7, 13, 9, 15]
-i = 13
-
-experiment = 'historical'
-dt = '19860101-20051231'
-var_obs = 'pr'
-var_cmip6 = 'pr'
-year=1986 # 1986 1995 2005
-
-print(cmip6[i][0])
-print(experiment)
-print(var_cmip6)
-print(year)
-
 
 def import_observed(var_name, target_date):
 
@@ -131,70 +116,90 @@ def compute_cdf(data):
 
 	return x, cdf
 	
+
+# Best models list
+best_models = [17, 7, 13, 9, 15]
+
+# Variable dictionary
+var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
+
+experiment = 'historical'
+dt = '19860101-20051231'
+year=1986 # 1986 1995 2005
+
+for i in best_models:
+	for j in range(1, 4):	
+		var_obs = var_dict[j][0]
+		var_cmip6 = var_dict[j][1]
 	
-# Import cmip models and obs database 
-day_obs = import_observed(var_obs, dt)
-day_sim = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
-day_sim_correct = import_simulated_correct(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+		print(cmip6[i][0])
+		print(var_cmip6)
+		print(year)
 
-day_boxplot = [day_obs, day_sim, day_sim_correct]
+		# Import cmip models and obs database 
+		day_obs = import_observed(var_obs, dt)
+		day_sim = import_simulated(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
+		day_sim_correct = import_simulated_correct(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 
-# Import cdf function
-x_obs, cdf_obs = compute_cdf(day_obs)
-x_sim, cdf_sim = compute_cdf(day_sim)
-x_correct_bias, cdf_correct_bias = compute_cdf(day_sim_correct)
+		day_boxplot = [day_obs, day_sim, day_sim_correct]
 
-# Plot figure
-fig = plt.figure(figsize=(12, 8))
+		# Import cdf function
+		x_obs, cdf_obs = compute_cdf(day_obs)
+		x_sim, cdf_sim = compute_cdf(day_sim)
+		x_correct_bias, cdf_correct_bias = compute_cdf(day_sim_correct)
 
-if var_cmip6 == 'pr':
-	legend = 'Precipitação (mm d⁻¹)'
-elif var_cmip6 == 'tasmax':
-	legend = 'Temperatura máxima (°C)'
-else:
-	legend = 'Temperatura mínima(°C)'
-	
-ax = fig.add_subplot(1, 2, 1)
-x = np.arange(1, 3 + 1)
-bp = plt.boxplot(day_boxplot, positions=[1, 2, 3], sym='.')
-setBoxColors(bp)
-plt.title('(a) Boxplot diário ({0}) {1}'.format(year, cmip6[i][0]), loc='left', fontweight='bold')
-plt.xticks(x, ('Observação','Simulação','Correção'))
-plt.xlabel('Conjunto de dados', fontweight='bold')
-plt.ylabel('{0}'.format(legend), fontweight='bold')
-plt.grid(linestyle='--')
-if var_cmip6 == 'pr':
-	plt.yticks(np.arange(0, 18, 2))
-	plt.ylim(0, 16)
-elif var_cmip6 == 'tasmax':
-	plt.yticks(np.arange(18, 38, 2))
-	plt.ylim(18, 36)
-else:
-	plt.yticks(np.arange(14, 30, 2))
-	plt.ylim(14, 28)
-	
-ax = fig.add_subplot(1, 2, 2)
-plt.plot(x_obs, cdf_obs, color='black', label='Observação', linewidth=1.5)
-plt.plot(x_sim, cdf_sim,  color='red', label='Simulação', linewidth=1.5)
-plt.plot(x_correct_bias, cdf_correct_bias,  color='blue', label='Correção', linewidth=1.5)  
-plt.title('(b) CDF diário ({0}) {1}'.format(year, cmip6[i][0]), loc='left', fontweight='bold')
-plt.xlabel('{0}'.format(legend), fontweight='bold')
-plt.ylabel('CDF', fontweight='bold')
-if var_cmip6 == 'pr':
-	plt.xticks(np.arange(0, 18, 2))
-	plt.xlim(0, 16)
-elif var_cmip6 == 'tasmax':
-	plt.xticks(np.arange(18, 38, 2))
-	plt.xlim(18, 36)
-else:
-	plt.xticks(np.arange(14, 30, 2))
-	plt.xlim(14, 28)
-plt.grid(linestyle='--')
-plt.legend(loc=9, ncol=3, frameon=False)
+		# Plot figure
+		fig = plt.figure(figsize=(12, 8))
 
-# Path out to save figure
-path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
-name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, year)
-plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
-plt.show()
+		if var_cmip6 == 'pr':
+			legend = 'Precipitação (mm d⁻¹)'
+		elif var_cmip6 == 'tasmax':
+			legend = 'Temperatura máxima (°C)'
+		else:
+			legend = 'Temperatura mínima(°C)'
+			
+		ax = fig.add_subplot(1, 2, 1)
+		x = np.arange(1, 3 + 1)
+		bp = plt.boxplot(day_boxplot, positions=[1, 2, 3], sym='.')
+		setBoxColors(bp)
+		plt.title('(a) Boxplot diário ({0}) {1}'.format(year, cmip6[i][0]), loc='left', fontweight='bold')
+		plt.xticks(x, ('Observação','Simulação','Correção'))
+		plt.xlabel('Conjunto de dados', fontweight='bold')
+		plt.ylabel('{0}'.format(legend), fontweight='bold')
+		plt.grid(linestyle='--')
+		if var_cmip6 == 'pr':
+			plt.yticks(np.arange(0, 18, 2))
+			plt.ylim(0, 16)
+		elif var_cmip6 == 'tasmax':
+			plt.yticks(np.arange(18, 38, 2))
+			plt.ylim(18, 36)
+		else:
+			plt.yticks(np.arange(14, 30, 2))
+			plt.ylim(14, 28)
+			
+		ax = fig.add_subplot(1, 2, 2)
+		plt.plot(x_obs, cdf_obs, color='black', label='Observação', linewidth=1.5)
+		plt.plot(x_sim, cdf_sim,  color='red', label='Simulação', linewidth=1.5)
+		plt.plot(x_correct_bias, cdf_correct_bias,  color='blue', label='Correção', linewidth=1.5)  
+		plt.title('(b) CDF diário ({0}) {1}'.format(year, cmip6[i][0]), loc='left', fontweight='bold')
+		plt.xlabel('{0}'.format(legend), fontweight='bold')
+		plt.ylabel('CDF', fontweight='bold')
+		if var_cmip6 == 'pr':
+			plt.xticks(np.arange(0, 18, 2))
+			plt.xlim(0, 16)
+		elif var_cmip6 == 'tasmax':
+			plt.xticks(np.arange(18, 38, 2))
+			plt.xlim(18, 36)
+		else:
+			plt.xticks(np.arange(14, 30, 2))
+			plt.xlim(14, 28)
+		plt.grid(linestyle='--')
+		plt.legend(loc=9, ncol=3, frameon=False)
+
+		# Path out to save figure
+		path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
+		name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, year)
+		plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
+		plt.close('all')
+		plt.cla()
 exit()
