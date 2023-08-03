@@ -118,7 +118,7 @@ def compute_cdf(data):
 	
 
 # Best models list
-best_models = [17, 7, 13, 9, 15]
+best_models = [7, 9, 13, 15, 17]
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}

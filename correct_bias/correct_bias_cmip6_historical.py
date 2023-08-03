@@ -15,26 +15,23 @@ from netCDF4 import Dataset
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
 
 # Best models list
-best_models = [17, 7, 13, 9, 15]
+best_models = [7, 9, 13, 15, 17]
 mdl = 17
 
-experiment = 'historical'
+# Variable dictionary
+var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
+var = 1
+
 dt = '19860101-20051231'
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
+experiment = 'historical'
+var_obs = var_dict[var][0]
+var_cmip6 = var_dict[var][1]
 
 print(cmip6[mdl][0])
-print(experiment)
 print(var_cmip6)
-
-# NOAA GFDL, Princeton, NJ 08540, USA
-# INM, Russian Academy of Science, Moscow 119991, Russia"
-# MPI for Meteorology, Hamburg 20146, Germany
-# MRI, Tsukuba, Ibaraki 305-0052, Japan
-# NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway
 
 
 def import_observed(var_name, target_date):
@@ -76,34 +73,34 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	value = var[:][:,:,:]
 	
 	return lat, lon, value 
+        
+    
+# ~ def correct_bias(simulated_data, observed_data):
+
+	# ~ # Get the shape of the simulated data array
+	# ~ shape = simulated_data.shape
+
+	# ~ # Correct each grid point separately
+	# ~ corrected_data = np.zeros_like(simulated_data)
+	# ~ for i in range(shape[1]):
+		# ~ for j in range(shape[2]):
+			# ~ corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
+
+	# ~ return corrected_data
     
 
-def correct_bias(simulated_data, observed_data):
-
-	# Get the shape of the simulated data array
-	shape = simulated_data.shape
-
-	# Correct each grid point separately
-	corrected_data = np.zeros_like(simulated_data)
-	for i in range(shape[1]):
-		for j in range(shape[2]):
-			corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
-
-	return corrected_data
-    
-
-def correct_bias_1d(simulated_values, observed_values):
+def correct_bias(simulated_values, observed_values):
 	
     # Calculate the empirical quantiles of simulated and observed values
     simulated_quantiles = np.percentile(simulated_values, np.arange(0, 101))
     observed_quantiles = np.percentile(observed_values, np.arange(0, 101))
-    
-    # Find the mapping function by fitting a linear regression
-    mapping_function = np.polyfit(simulated_quantiles, observed_quantiles, 1)
-    
-    # Apply the mapping function to the simulated values
-    corrected_values = np.polyval(mapping_function, simulated_values)
-    
+
+    # Calculate the adjustment factors
+    adjustment_factors = observed_quantiles / simulated_quantiles
+
+    # Adjust the model data using the quantile mapping adjustment factors
+    corrected_values = simulated_values * adjustment_factors
+
     return corrected_values
     
 
@@ -153,12 +150,23 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 	:param missing_value: float missing value
 	"""
 
+	if cmip6[mdl][0] == 'GFDL-ESM4':
+		cmip6_inst = 'NOAA GFDL, Princeton, NJ 08540, USA'
+	elif cmip6[mdl][0] == 'INM-CM5-0':
+		cmip6_inst = 'INM, Russian Academy of Science, Moscow 119991, Russia'
+	elif cmip6[mdl][0] == 'MPI-ESM1-2-HR':
+		cmip6_inst = 'MPI for Meteorology, Hamburg 20146, Germany'
+	elif cmip6[mdl][0] == 'MRI-ESM2-0':
+		cmip6_inst = 'MRI, Tsukuba, Ibaraki 305-0052, Japan'
+	else:
+		cmip6_inst = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
+		
 	foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
 	foo.Conventions = 'CF-1.7 CMIP-6.0 UGRID-1.0'
-	foo.title 		= 'NorESM2-MM correct bias model output'
-	foo.institution = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
-	foo.source 		= 'NorESM2-MM'
+	foo.title 		= '{0} correct bias model output'.format(cmip6[mdl][0])
+	foo.institution = '{0}'.format(cmip6_inst)
+	foo.source 		= '{0}'.format(cmip6[mdl][0])
 	foo.history 	= 'CMIP6 model with corrected bias'
 	foo.references 	= 'https://esgf.ceda.ac.uk/thredds/catalog/esg_cmip6/catalog.html'
 	foo.comment 	= 'This netCDF4 file was corrected using EQM function'
@@ -209,9 +217,8 @@ print(obs.shape)
 print(sim_array.shape)
 
 # leap day indices to delete
-# [789, 2249, 3709, 5169, 6629]
-leap_day_indices = get_leap_day_indices(1986, 2005)
-print(leap_day_indices)
+leap_day = get_leap_day_indices(1986, 2005)
+leap_day_indices = [789, 2249, 3709, 5169, 6629]
 
 # Remove leap day (Feb 29th) from datasets
 if obs.shape[0] == 7305:
@@ -253,11 +260,11 @@ for idx in range(0, 20):
 	# Print the shape of the corrected array
 	print(corrected_data.shape)
 	
-	# To replace negative values with 0
-	if var_cmip6 == 'pr':
-		corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
-	else:
-		corrected_dataset = corrected_data
+	# ~ # To replace negative values with 0
+	# ~ if var_cmip6 == 'pr':
+		# ~ corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
+	# ~ else:
+		# ~ corrected_dataset = corrected_data
 		
 	if var_cmip6 == 'pr':
 		var_units = 'mm'

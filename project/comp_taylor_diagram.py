@@ -12,7 +12,7 @@ def TaylorDiagram(
     corrcoef,
     refstd,
     fig=None,
-    rect=326,
+    rect=111,
     title=None,
     titleprops_dict=dict(),
     colors=None,
@@ -164,7 +164,7 @@ def TaylorDiagram(
 
     if radial_axis_title is None:
         if normalize:
-            radial_axis_title = "SD (Normalized)"
+            radial_axis_title = "Standard deviation (Normalized)"
         else:
             radial_axis_title = "Standard deviation"
 
@@ -206,13 +206,14 @@ def TaylorDiagram(
         else:
             label = labels[i]
         # customize marker
+        mkr = ['o', 's', 'D', '^', 'v', '*', '>', '<', 'p', 'h', 'o', 's', 'D', '^', 'v', '*', '>', '<', 'p', 'h', 'o', 's', 'D', '^', 'v', '*', '>', '<', 'p', 'h', 'o', 's', 'D', '^', 'v', '*', '>', '<', 'p', 'h']
         if markers is None:
-            marker = "o"
+            marker = mkr[i]
         else:
             marker = markers[i]
         # customize marker size
         if markersizes is None:
-            ms = 8
+            ms = 10
         else:
             ms = markersizes[i]
         # customize marker order

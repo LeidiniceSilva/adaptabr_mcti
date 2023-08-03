@@ -123,7 +123,7 @@ def basemap(lat, lon):
 	
 
 # Best models list
-best_models = [17, 7, 13, 9, 15]
+best_models = [7, 9, 13, 15, 17]
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
@@ -154,23 +154,23 @@ for i in best_models:
 		if var_cmip6 == 'pr':
 			levs0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 			color0 = cm.Blues
-			levs = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5]
+			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.BrBG
-			levs1 = [-1.5, -1.2, -0.9, -0.6, -0.3, 0, 0.3, 0.6, 0.9, 1.2, 1.5]
+			levs1 = [-1.2, -1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2]
 			legend = 'Viés de precipitação (mm d⁻¹)'
 		elif var_cmip6 == 'tasmax':
 			levs0 = [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
 			color0 = cm.Reds
-			levs = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5]
+			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
-			levs1 = [-1.5, -1.2, -0.9, -0.6, -0.3, 0, 0.3, 0.6, 0.9, 1.2, 1.5]
+			levs1 = [-1.2, -1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2]
 			legend = 'Viés de temperatura maxima (°C)'
 		else:
 			levs0 = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 			color0 = cm.Reds
-			levs = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5]
+			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
-			levs1 = [-1.5, -1.2, -0.9, -0.6, -0.3, 0, 0.3, 0.6, 0.9, 1.2, 1.5]
+			levs1 = [-1.2, -1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2]
 			legend = 'Viés de temperatura mínima (°C)'
 
 		ax = fig.add_subplot(2, 3, 1)  
@@ -208,7 +208,7 @@ for i in best_models:
 
 		ax = fig.add_subplot(2, 3, 6)  
 		map, xx, yy = basemap(lat, lon)
-		plt_map = map.contourf(xx, yy, bias_sim_correct, levels=levs, latlon=True, cmap=color, extend='both') 
+		plt_map = map.contourf(xx, yy, bias_sim_correct, levels=levs1, latlon=True, cmap=color, extend='both') 
 		plt.title(u'(e) Bias {0} correct'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
 		plt.xlabel(u'Longitude', labelpad=10, fontsize=font_size, fontweight='bold')
 		cbar = map.colorbar(plt_map, shrink=0.8, pad=0.1)
