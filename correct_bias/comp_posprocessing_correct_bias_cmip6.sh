@@ -74,6 +74,6 @@ for model in ${model_list[@]}; do
 		done
 	done
 done
-
+			
 echo
 echo "--------------- END POSPROCESSING ----------------"

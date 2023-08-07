@@ -9,15 +9,14 @@ echo
 echo "--------------- INIT POSPROCESSING ----------------"
 
 # Model list
-model_list=( 'GFDL-ESM4' ) 
-# model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
+model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
 
 # Experiment list
-exp_list=( 'ssp126' ) 
 # exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
+exp_list=( 'ssp126' ) 
 
 # Variable list
-var_list=( 'pr' 'tasmax' 'tasmin' )     
+var_list=( 'pr' 'tasmax' 'tasmin' )        
 
 path_regrid="/home/nice/Documentos/github_projects/shell/regcm_pos"
 path_mask="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/obs"
@@ -74,16 +73,31 @@ for model in ${model_list[@]}; do
 			echo
 			echo "4. Creating mask"
 			cdo ifthen ${path_mask}/mask_br_lonlat.nc ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std_unit.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc
+
+			echo 
+			echo "5. Split years"
+			if [ ${exp} == 'historical' ]
+			then
+			for year in $(/usr/bin/seq -w 1986 2005); do
+				cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
+			done
+			else
+			for year in $(/usr/bin/seq -w 2015 2100); do
+				cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
+			done
+			fi
 			
 			echo 
-			echo "5. Deleting file"
+			echo "6. Deleting file"
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat.nc 
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std.nc
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std_unit.nc
+			rm ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc
 
 		done
 	done
 done
+
 
 echo
 echo "--------------- END POSPROCESSING ----------------"
