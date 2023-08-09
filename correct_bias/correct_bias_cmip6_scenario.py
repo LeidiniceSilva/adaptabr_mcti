@@ -10,37 +10,33 @@ import netCDF4
 import calendar
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 from netCDF4 import Dataset
+from scipy.signal import detrend
+from scipy.stats import gamma, norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
 
 # Best models list
 best_models = [7, 9, 13, 15, 17]
-mdl = 7
-
-# Scenario dictionary
-ssp_dict = {1 :['ssp126'], 2 :['ssp245'], 3 :['ssp485']}
-ssp = 1
+mdl = 17
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 var = 1
 
-dt0 = '19860101-20051231'
-dt1 = '20150101-21001231'
-experiment = ssp_dict[ssp]
+experiment = 'ssp126'
 var_obs = var_dict[var][0]
 var_cmip6 = var_dict[var][1]
 
 print(cmip6[mdl][0])
-print(experiment)
 print(var_cmip6)
 
-	
-def import_observed(var_name, target_date):
+
+def import_observed(var_name):
 	
     """ Import observed data.
     :param: model_name: str (BR-DWGD)
@@ -50,7 +46,7 @@ def import_observed(var_name, target_date):
     :rtype: 3D array
     """
     
-    file_name = "{0}/obs/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
+    file_name = "{0}/obs/{1}_1986_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name)
     data  = netCDF4.Dataset(file_name)
     var   = data.variables[var_name][:]
     lat   = data.variables['lat'][:]
@@ -59,8 +55,29 @@ def import_observed(var_name, target_date):
         
     return value	
     
-    
-def import_simulated(model_name, exp_name, var_name, member, target_date):
+
+def import_simulated(model_name, var_name):
+        
+	""" Import simulated data.
+	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
+	:param: target_date: datetime
+	:return: simulated data (Prec, Tasmax and Tasmin)
+	:return: flag that it refers to data control
+	:rtype: 3D array
+	"""
+	
+	dir_model = "{0}/cmip6/{1}/historical".format(dataset_dir, model_name)
+	file_model = "{0}/{1}_br_day_NorESM2-MM_historical_r1i1p1f1_gn_1986_lonlat.nc".format(dir_model, var_name)
+	data  = netCDF4.Dataset(file_model)
+	var   = data.variables[var_name][:]
+	lat   = data.variables['lat'][:]
+	lon   = data.variables['lon'][:]
+	value = var[:][:,:,:]
+	
+	return lat, lon, value 
+	
+	
+def import_projected(model_name, exp_name, var_name, member, target_date):
         
 	""" Import simulated data.
 	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
@@ -79,33 +96,7 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	value = var[:][:,:,:]
 	
 	return lat, lon, value 
-    
-
-def correct_bias(model_data, observed_data):
 	
-    # Calculate the CDF of model and observed data
-    model_cdf = model_data.rank(dim='time') / float(model_data.time.size)
-    observed_cdf = observed_data.rank(dim='time') / float(observed_data.time.size)
-
-    # Compute the quantile mapping correction function
-    correction_function = xr.interp(model_cdf, observed_cdf.quantile(dim='time', q=model_cdf), observed_data)
-
-    # Apply the correction to the model data
-    corrected_model_data = xr.where(model_data.notnull(), correction_function, np.nan)
-
-    return corrected_model_data
-    
-
-def get_leap_day_indices(start_year, end_year):
-	
-    leap_day_indices = []
-    for year in range(start_year, end_year + 1):
-        if calendar.isleap(year):
-            # Leap day (February 29) corresponds to index 59 in a non-leap year and index 60 in a leap year
-            leap_day_indices.append((year - start_year) * 365 + 59 if calendar.monthrange(year, 2)[1] == 29 else (year - start_year) * 365 + 60)
-    
-    return leap_day_indices
-
 
 def remove_leap_days(array, indices):
 	
@@ -119,15 +110,76 @@ def remove_leap_days(array, indices):
     return new_array
     
 
-def group_elements(lst, group_size=365):
+def gamma_correction(obs_data, mod_data, sce_data, lower_limit=0.1, cdf_threshold=0.9999999):
+	
+    obs_raindays, mod_raindays, sce_raindays = [
+        x[x >= lower_limit] for x in [obs_data, mod_data, sce_data]
+    ]
+    obs_gamma, mod_gamma, sce_gamma = [
+        gamma.fit(x) for x in [obs_raindays, mod_raindays, sce_raindays]
+    ]
+
+    obs_cdf = gamma.cdf(np.sort(obs_raindays), *obs_gamma)
+    mod_cdf = gamma.cdf(np.sort(mod_raindays), *mod_gamma)
+    sce_cdf = gamma.cdf(np.sort(sce_raindays), *sce_gamma)
+
+    obs_cdf[obs_cdf > cdf_threshold] = cdf_threshold
+    mod_cdf[mod_cdf > cdf_threshold] = cdf_threshold
+    sce_cdf[sce_cdf > cdf_threshold] = cdf_threshold
+
+    obs_cdf_intpol = np.interp(
+        np.linspace(1, len(obs_raindays), len(sce_raindays)),
+        np.linspace(1, len(obs_raindays), len(obs_raindays)),
+        obs_cdf,
+    )
+
+    mod_cdf_intpol = np.interp(
+        np.linspace(1, len(mod_raindays), len(sce_raindays)),
+        np.linspace(1, len(mod_raindays), len(mod_raindays)),
+        mod_cdf,
+    )
+
+    obs_inverse, mod_inverse, sce_inverse = [
+        1.0 / (1.0 - x) for x in [obs_cdf_intpol, mod_cdf_intpol, sce_cdf]
+    ]
+
+    adapted_cdf = 1 - 1.0 / (obs_inverse * sce_inverse / mod_inverse)
+    adapted_cdf[adapted_cdf < 0.0] = 0.0
+
+    initial = (
+        gamma.ppf(np.sort(adapted_cdf), *obs_gamma)
+        * gamma.ppf(sce_cdf, *sce_gamma)
+        / gamma.ppf(sce_cdf, *mod_gamma)
+    )
+
+    mod_frequency = 1.0 * mod_raindays.shape[0] / mod_data.shape[0]
+    sce_frequency = 1.0 * sce_raindays.shape[0] / sce_data.shape[0]
+
+    days_min = len(sce_raindays) * sce_frequency / mod_frequency
+
+    expected_sce_raindays = int(min(days_min, len(sce_data)))
+
+    sce_argsort = np.argsort(sce_data)
+    correction = np.zeros(len(sce_data))
+
+    if len(sce_raindays) > expected_sce_raindays:
+        initial = np.interp(
+            np.linspace(1, len(sce_raindays), expected_sce_raindays),
+            np.linspace(1, len(sce_raindays), len(sce_raindays)),
+            initial,
+        )
+    else:
+        initial = np.hstack(
+            (np.zeros(expected_sce_raindays - len(sce_raindays)), initial)
+        )
+
+    correction[sce_argsort[:expected_sce_raindays]] = initial
+    # correction = pd.Series(correction, index=sce_data.index)
     
-    grouped_list = [lst[i:i + group_size] for i in range(0, len(lst), group_size)]
-    
-    return grouped_list
+    return correction
     
       
-def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
-                var_shortname, var_longname, time_units, missing_value=-999.):
+def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.):
 	
 	"""Write 3 dimensional (time, lat, lon) netCDF4
 	:param ncname: Name of the output netCDF
@@ -152,7 +204,7 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 		cmip6_inst = 'MRI, Tsukuba, Ibaraki 305-0052, Japan'
 	else:
 		cmip6_inst = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
-
+		
 	foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
 	foo.Conventions = 'CF-1.7 CMIP-6.0 UGRID-1.0'
@@ -191,83 +243,30 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 	foo.close()
 
 
-# Create date list non leap days
-time = pd.date_range('2015','2100', freq='Y').strftime('%Y').tolist()
-time_i = pd.date_range('2015-01-01','2100-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-time_i.remove('2016-02-29')
-time_i.remove('2020-02-29')
-time_i.remove('2024-02-29')
-time_i.remove('2028-02-29')
-time_i.remove('2032-02-29')
-time_i.remove('2036-02-29')
-time_i.remove('2040-02-29')
-time_i.remove('2044-02-29')
-time_i.remove('2048-02-29')
-time_i.remove('2052-02-29')
-time_i.remove('2056-02-29')
-time_i.remove('2060-02-29')
-time_i.remove('2064-02-29')
-time_i.remove('2068-02-29')
-time_i.remove('2072-02-29')
-time_i.remove('2076-02-29')
-time_i.remove('2080-02-29')
-time_i.remove('2084-02-29')
-time_i.remove('2088-02-29')
-time_i.remove('2092-02-29')
-time_i.remove('2096-02-29')
-
 # Import cmip models and obs database 
-obs = import_observed(var_obs, dt0)
-lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt1)
+obs = import_observed(var_obs)
+sim = import_simulated(cmip6[mdl][0], var_cmip6)
 
-print('first step')
-print(obs.shape)
-print(sim_array.shape)
+for dt in range(2015, 2101):
+	print(dt)
 
-# leap day indices to delete
-leap_day = get_leap_day_indices(2015, 2100)
-leap_day_indices = [424, 1884, 3344, 4804, 6264, 7724, 9184, 10644, 12104, 13564, 15024, 16484, 17944, 19404, 20864, 22324, 23784, 25244, 26704, 28164, 29624]
-
-# Remove leap day (Feb 29th) from datasets
-if obs.shape[0] == 31411:
-	observed = remove_leap_days(obs, leap_day_indices)
-else:
-	observed = obs
+	time_i = pd.date_range('{0}-01-01'.format(dt),'{0}-12-31'.format(dt), freq='D').strftime('%Y-%m-%d').tolist()
+	time_array = time_i
+	print(len(time_array))
 	
-if sim_array.shape[0] == 31411:
-	simulated = remove_leap_days(sim_array, leap_day_indices)
-else:
-	simulated = sim_array
+	lat_array, lon_array, proj_array = import_projected(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
-print('second step')
-print(observed.shape)
-print(simulated.shape)
+	# leap day indices to delete
+	leap_day_indices = [59]
 
-# Call the function with the sample_list and group size 
-sample_list = list(range(0, 31390))
-grouped_elements = group_elements(sample_list, group_size=365)
-
-# Grouped elements
-yr_i = []
-yr_f = []
-time_ii = []
-for gp in grouped_elements:
-	yr_i.append(gp[0])
-	yr_f.append(gp[-1])
-	time_ii.append(time_i[gp[0]:gp[-1]+1])
-
-print('third step')
-# Print the grouped elements
-for idx in range(0, 86):
-	time_array = time_ii[idx]
-	print(time[idx], len(time_array), yr_i[idx], yr_f[idx])
+	# Remove leap day (Feb 29th) from datasets
+	if proj_array.shape[0] == 366:
+		projected = remove_leap_days(proj_array, leap_day_indices)
+	else:
+		projected = proj_array
 		
 	# Import correct bias function
-	corrected_data = correct_bias(simulated[yr_i[idx]:yr_f[idx]+1,:,:], observed[yr_i[idx]:yr_f[idx]+1,:,:])
-
-	# Print the shape of the corrected array
-	print(corrected_data.shape)
-	exit()
+	corrected_dataset = gamma_correction(obs, sim, projected)
 	
 	# ~ # To replace negative values with 0
 	# ~ if var_cmip6 == 'pr':
@@ -291,9 +290,7 @@ for idx in range(0, 86):
 		var_longname = 'Daily Minimum Near-Surface Air Temperature'
 		time_units = 'days since {}'.format(time_array[0])
 
-	print('fourth step')	
 	# Path out to save netCDF4
-	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], time[idx])
+	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 	write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
-
-
+	exit()

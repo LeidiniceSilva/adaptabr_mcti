@@ -25,7 +25,6 @@ mdl = 17
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 var = 1
 
-dt = '19860101-20051231'
 experiment = 'historical'
 var_obs = var_dict[var][0]
 var_cmip6 = var_dict[var][1]
@@ -75,18 +74,18 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	return lat, lon, value 
         
     
-# ~ def correct_bias(simulated_data, observed_data):
+def correct_bias(simulated_data, observed_data):
 
-	# ~ # Get the shape of the simulated data array
-	# ~ shape = simulated_data.shape
+	# Get the shape of the simulated data array
+	shape = simulated_data.shape
 
-	# ~ # Correct each grid point separately
-	# ~ corrected_data = np.zeros_like(simulated_data)
-	# ~ for i in range(shape[1]):
-		# ~ for j in range(shape[2]):
-			# ~ corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
+	# Correct each grid point separately
+	corrected_data = np.zeros_like(simulated_data)
+	for i in range(shape[1]):
+		for j in range(shape[2]):
+			corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
 
-	# ~ return corrected_data
+	return corrected_data
     
 
 def correct_bias(simulated_values, observed_values):
@@ -102,17 +101,6 @@ def correct_bias(simulated_values, observed_values):
     corrected_values = simulated_values * adjustment_factors
 
     return corrected_values
-    
-
-def get_leap_day_indices(start_year, end_year):
-	
-    leap_day_indices = []
-    for year in range(start_year, end_year + 1):
-        if calendar.isleap(year):
-            # Leap day (February 29) corresponds to index 59 in a non-leap year and index 60 in a leap year
-            leap_day_indices.append((year - start_year) * 365 + 59 if calendar.monthrange(year, 2)[1] == 29 else (year - start_year) * 365 + 60)
-    
-    return leap_day_indices
 
 
 def remove_leap_days(array, indices):
@@ -126,16 +114,8 @@ def remove_leap_days(array, indices):
 
     return new_array
     
-
-def group_elements(lst, group_size=365):
-    
-    grouped_list = [lst[i:i + group_size] for i in range(0, len(lst), group_size)]
-    
-    return grouped_list
-    
       
-def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
-                var_shortname, var_longname, time_units, missing_value=-999.):
+def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.):
 	
 	"""Write 3 dimensional (time, lat, lon) netCDF4
 	:param ncname: Name of the output netCDF
@@ -199,72 +179,62 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units,
 	foo.close()
 
 
-# Create date list non leap days
-time = pd.date_range('1986','2006', freq='Y').strftime('%Y').tolist()
-time_i = pd.date_range('1986-01-01','2005-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-time_i.remove('1988-02-29')
-time_i.remove('1992-02-29')
-time_i.remove('1996-02-29')
-time_i.remove('2000-02-29')
-time_i.remove('2004-02-29')
-		
 # Import cmip models and obs database 
-obs = import_observed(var_obs, dt)
-lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
+for dt in range(1986, 2005):
+	print(dt)
 
-print('first step')
-print(obs.shape)
-print(sim_array.shape)
-
-# leap day indices to delete
-leap_day = get_leap_day_indices(1986, 2005)
-leap_day_indices = [789, 2249, 3709, 5169, 6629]
-
-# Remove leap day (Feb 29th) from datasets
-if obs.shape[0] == 7305:
-	observed = remove_leap_days(obs, leap_day_indices)
-else:
-	observed = obs
+	time_i = pd.date_range('{0}-01-01'.format(dt),'{0}-12-31'.format(dt), freq='D').strftime('%Y-%m-%d').tolist()
+	if dt == 1988:
+		time_i.remove('1988-02-29')
+	elif dt == 1992:
+		time_i.remove('1992-02-29')
+	elif dt == 1996:
+		time_i.remove('1996-02-29')
+	elif dt == 2000:
+		time_i.remove('2000-02-29')
+	elif dt == 2004:
+		time_i.remove('2004-02-29')
+	else:
+		time_i = time_i
 	
-if sim_array.shape[0] == 7305:
-	simulated = remove_leap_days(sim_array, leap_day_indices)
-else:
-	simulated = sim_array
+	time_array = time_i
+	print(len(time_array))
+	
+	obs = import_observed(var_obs, dt)
+	lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
-print('second step')
-print(observed.shape)
-print(simulated.shape)
+	print('first step')
+	print(obs.shape)
+	print(sim_array.shape)
 
-# Call the function with the sample_list and group size 
-sample_list = list(range(0, 7300))
-grouped_elements = group_elements(sample_list, group_size=365)
+	# leap day indices to delete
+	leap_day_indices = [59]
 
-# Grouped elements
-yr_i = []
-yr_f = []
-time_ii = []
-for gp in grouped_elements:
-	yr_i.append(gp[0])
-	yr_f.append(gp[-1])
-	time_ii.append(time_i[gp[0]:gp[-1]+1])
+	# Remove leap day (Feb 29th) from datasets
+	if obs.shape[0] == 366:
+		observed = remove_leap_days(obs, leap_day_indices)
+	else:
+		observed = obs
+	if sim_array.shape[0] == 366:
+		simulated = remove_leap_days(sim_array, leap_day_indices)
+	else:
+		simulated = sim_array
 
-print('third step')
-# Print the grouped elements
-for idx in range(0, 20):
-	time_array = time_ii[idx]
-	print(time[idx], len(time_array), yr_i[idx], yr_f[idx])
-		
+	print('second step')
+	print(observed.shape)
+	print(simulated.shape)
+
 	# Import correct bias function
-	corrected_data = correct_bias(simulated[yr_i[idx]:yr_f[idx]+1,:,:], observed[yr_i[idx]:yr_f[idx]+1,:,:])
+	corrected_data = correct_bias(simulated[0:365,:,:], observed[0:365,:,:])
 
 	# Print the shape of the corrected array
 	print(corrected_data.shape)
 	
-	# ~ # To replace negative values with 0
-	# ~ if var_cmip6 == 'pr':
-		# ~ corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
-	# ~ else:
-		# ~ corrected_dataset = corrected_data
+	# To replace negative values with 0
+	if var_cmip6 == 'pr':
+		corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
+	else:
+		corrected_dataset = corrected_data
 		
 	if var_cmip6 == 'pr':
 		var_units = 'mm'
@@ -284,7 +254,6 @@ for idx in range(0, 20):
 
 	print('fourth step')	
 	# Path out to save netCDF4
-	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], time[idx])
+	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 	write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
-
-
+	exit()

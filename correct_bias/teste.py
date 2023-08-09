@@ -5,10 +5,18 @@ __email__       = "leidinicesilva@gmail.com"
 __date__        = "Jul 05, 2023"
 __description__ = "This script correct bias of cmip6 models"
 
+import os
+import netCDF4
+import calendar
+import warnings
 import numpy as np
-import xarray as xr
+import pandas as pd
+import scipy.stats as st
 
+from netCDF4 import Dataset
 from dict_cmip6_models_name import cmip6
+
+warnings.filterwarnings("ignore")
 
 # Dataset directory
 dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
@@ -21,163 +29,223 @@ mdl = 17
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 var = 1
 
-dt = '19860101-20051231'
-exp = 'historical'
-model_name = cmip6[mdl][0]
-member = cmip6[mdl][1]
+experiment = 'historical'
 var_obs = var_dict[var][0]
 var_cmip6 = var_dict[var][1]
 
-print(model_name)
+print(cmip6[mdl][0])
 print(var_cmip6)
 
 
-import xarray as xr
-import numpy as np
+def import_observed(var_name, target_date):
 
-def quantile_delta_mapping(observed, model_data):
-    # Flatten the 3D arrays to 1D arrays
-    observed_flat = observed.flatten()
-    model_flat = model_data.flatten()
+    """ Import observed data.
+    :param: model_name: str (BR-DWGD)
+    :param: target_date: datetime
+    :return: observed data (Prec, Tasmax and Tasmin)
+    :return: flag that it refers to data control
+    :rtype: 3D array
+    """
+   
+    file_name = "{0}/obs/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
+    data  = netCDF4.Dataset(file_name)
+    var   = data.variables[var_name][:]
+    lat   = data.variables['lat'][:]
+    lon   = data.variables['lon'][:]
+    value = var[:][:,:,:]
+       
+    return value
+   
+   
+def import_simulated(model_name, exp_name, var_name, member, target_date):
+       
+	""" Import simulated data.
+	:param: model_name: str (Nor, GFDL, MPI, INM and MRI)
+	:param: target_date: datetime
+	:return: simulated data (Prec, Tasmax and Tasmin)
+	:return: flag that it refers to data control
+	:rtype: 3D array
+	"""
 
-    # Sort both observed and model data
-    observed_sorted = np.sort(observed_flat)
-    model_sorted = np.sort(model_flat)
+	dir_model = "{0}/cmip6/{1}/{2}".format(dataset_dir, model_name, exp_name)
+	file_model = "{0}/{1}_br_day_{2}_{3}_{4}_{5}_lonlat.nc".format(dir_model, var_name, model_name, exp_name, member, target_date)
+	data  = netCDF4.Dataset(file_model)
+	var   = data.variables[var_name][:]
+	lat   = data.variables['lat'][:]
+	lon   = data.variables['lon'][:]
+	value = var[:][:,:,:]
 
-    # Compute the quantiles for observed and model data
-    observed_quantiles = np.linspace(0, 1, len(observed_flat))
-    model_quantiles = np.linspace(0, 1, len(model_flat))
+	return lat, lon, value
 
-    # Calculate the quantile delta mapping
-    quantile_mapping = np.interp(model_quantiles, observed_quantiles, observed_sorted)
+   
+def quantile_mapping(tmax, fit_params_hist, th_distrib_hist, fit_params_era5, th_distrib_era5):
 
-    # Apply the quantile delta mapping to the model data
-    corrected_data_flat = np.interp(model_sorted, model_sorted, quantile_mapping)
-
-    # Reshape the corrected 1D array back to 3D
-    corrected_data = corrected_data_flat.reshape(model_data.shape)
-
-    return corrected_data
-
-if __name__ == '__main__':
-    # Replace with the paths to your observed and model data NetCDF files
-    model_data_file = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias/cmip6/NorESM2-MM/historical/pr_br_day_NorESM2-MM_historical_r1i1p1f1_gn_19860101-20051231_lonlat.nc'
-    observed_data_file = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias/obs/pr_19860101-20051231_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc'
-
-    # Read historical observations and model data using xarray
-    observed_data = xr.open_dataset(observed_data_file)['pr']
-    model_data = xr.open_dataset(model_data_file)['pr']
-
-    # Perform quantile delta mapping correction
-    corrected_data = quantile_delta_mapping(observed_data.values, model_data.values)
-
-    # Save the corrected data to a new NetCDF file
-    corrected_data_array = xr.DataArray(corrected_data, coords=model_data.coords, dims=model_data.dims)
-    corrected_data_array.to_netcdf('corrected_model_data.nc')
-
-
-exit()
-
-def empirical_quantile_mapping(model_data, observed_data):
-    # Calculate the empirical quantiles of model and observed data
-    model_quantiles = model_data.quantile(dim='time', q=np.linspace(0, 1, 101))
-    observed_quantiles = observed_data.quantile(dim='time', q=np.linspace(0, 1, 101))
-
-    # Calculate the adjustment factors
-    adjustment_factors = observed_quantiles / model_quantiles
-
-    # Adjust the model data using the quantile mapping adjustment factors
-    adjusted_model_data = model_data * adjustment_factors
-
-    return adjusted_model_data
+    k, s, loc, scale = fit_params_hist
+    k_, s_, loc_, scale_ = fit_params_era5
+   
+    # Apply cumulative distribution function with historical params and distribution
+    cdf_hist = th_distrib_hist.cdf(tmax, k=k, s=s, loc=loc, scale=scale)
+   
+    # Then apply inverse cdf (or ppf) with era5 fitted params and distribution
+    qm_array = th_distrib_era5.ppf(cdf_hist, k=k_, s=s_, loc=loc_, scale=scale_)
+   
+    return qm_array
 
 
-# Example usage
-if __name__ == "__main__":
-    # Load CMIP6 model data and observed data
-    # Replace 'model_file_path' and 'observed_file_path' with the actual file paths
-    model_data = xr.open_dataset('{0}/cmip6/{1}/{2}/'.format(dataset_dir, model_name, exp) + '{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc'.format(var_cmip6, model_name, exp, member, dt))
-    print(model_data)
+def remove_leap_days(array, indices):
+
+    # Create a mask to identify the indices to delete
+    mask = np.ones(array.shape[0], dtype=bool)
+    mask[indices] = False
+
+    # Use the mask to select the non-deleted indices
+    new_array = array[mask]
+
+    return new_array
+   
      
-    observed_data = xr.open_dataset('{0}/obs/'.format(dataset_dir) + '{0}_{1}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc'.format(var_obs, dt))
-    print(observed_data)
-    
-    # Select the variable of interest (e.g., 'tas' for temperature)
-    variable = 'pr'
+def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.):
 
-    # Extract the specific variable for historical simulations
-    model_historical_data = model_data[variable].sel(time=slice('1986', '1986'))
-    observed_historical_data = observed_data[variable].sel(time=slice('1986', '1986'))
+	"""Write 3 dimensional (time, lat, lon) netCDF4
+	:param ncname: Name of the output netCDF
+	:param var_array: 3D array (time, lat, lon)
+	:param time_array: 1D array with unique value
+	:param lat_array: 1D array which contains the lat values
+	:param lon_array: 1D array which contains the lon values
+	:param var_units: variable units
+	:param var_shortname: variable short name
+	:param var_longname: variable long name
+	:param time_units: time units
+	:param missing_value: float missing value
+	"""
 
-    # Apply empirical quantile mapping bias correction to historical simulations
-    corrected_historical_data = empirical_quantile_mapping(model_historical_data[0:365,:,:], observed_historical_data[0:365,:,:])
+	if cmip6[mdl][0] == 'GFDL-ESM4':
+		cmip6_inst = 'NOAA GFDL, Princeton, NJ 08540, USA'
+	elif cmip6[mdl][0] == 'INM-CM5-0':
+		cmip6_inst = 'INM, Russian Academy of Science, Moscow 119991, Russia'
+	elif cmip6[mdl][0] == 'MPI-ESM1-2-HR':
+		cmip6_inst = 'MPI for Meteorology, Hamburg 20146, Germany'
+	elif cmip6[mdl][0] == 'MRI-ESM2-0':
+		cmip6_inst = 'MRI, Tsukuba, Ibaraki 305-0052, Japan'
+	else:
+		cmip6_inst = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
 
-    # Update the model data with the corrected historical simulations
-    model_data[variable].loc[{'time': slice('1986', '1986')}] = corrected_historical_data
+	foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
-    # Save the corrected data to a new NetCDF file
-    model_data.to_netcdf('corrected_historical_simulations.nc')
-  
-exit()
+	foo.Conventions = 'CF-1.7 CMIP-6.0 UGRID-1.0'
+	foo.title = '{0} correct bias model output'.format(cmip6[mdl][0])
+	foo.institution = '{0}'.format(cmip6_inst)
+	foo.source = '{0}'.format(cmip6[mdl][0])
+	foo.history = 'CMIP6 model with corrected bias'
+	foo.references = 'https://esgf.ceda.ac.uk/thredds/catalog/esg_cmip6/catalog.html'
+	foo.comment = 'This netCDF4 file was corrected using EQM function'
+
+	foo.createDimension('time', None)
+	foo.createDimension('lat', lat_array.shape[0])
+	foo.createDimension('lon', lon_array.shape[0])
+
+	times = foo.createVariable('time', float, ('time'))
+	times.units = time_units
+	times.calendar = '365_day'
+	times[:] = range(len(time_array))
+
+	laty = foo.createVariable('lat', 'f4', 'lat')
+	laty.units = 'degrees_north'
+	laty.long_name = 'latitude'
+	laty[:] = lat_array
+
+	lonx = foo.createVariable('lon', 'f4', 'lon')
+	lonx.units = 'degrees_east'
+	lonx.long_name = 'longitude'
+	lonx[:] = lon_array
+
+	var = foo.createVariable(var_shortname, float, ('time', 'lat', 'lon'))
+	var.units = var_units
+	var.long_name = var_longname
+	var.missing_value = missing_value
+	var[:] = var_array
+
+	foo.close()
 
 
-# ~ def quantile_mapping_bias_correction(model_data, observed_data):
-    # ~ # Calculate the CDF of model and observed data
-    # ~ model_cdf = model_data.rank(dim='time') / float(model_data.time.size)
-    # ~ observed_cdf = observed_data.rank(dim='time') / float(observed_data.time.size)
+# Import cmip models and obs database
+for dt in range(1986, 2005):
+	print(dt)
 
-    # ~ # Compute the quantile mapping correction function
-    # ~ correction_function = xr.interp(model_cdf, observed_cdf.quantile(dim='time', q=model_cdf), observed_data)
+	time_i = pd.date_range('{0}-01-01'.format(dt),'{0}-12-31'.format(dt), freq='D').strftime('%Y-%m-%d').tolist()
+	if dt == 1988:
+		time_i.remove('1988-02-29')
+	elif dt == 1992:
+		time_i.remove('1992-02-29')
+	elif dt == 1996:
+		time_i.remove('1996-02-29')
+	elif dt == 2000:
+		time_i.remove('2000-02-29')
+	elif dt == 2004:
+		time_i.remove('2004-02-29')
+	else:
+		time_i = time_i
 
-    # ~ # Apply the correction to the model data
-    # ~ corrected_model_data = xr.where(model_data.notnull(), correction_function, np.nan)
+	time_array = time_i
+	print(len(time_array))
 
-    # ~ return corrected_model_data
-      
+	obs = import_observed(var_obs, dt)
+	lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
-# ~ def bias_correction_bcsd(model_data, observed_data, variable):
-    # ~ # Create the BCSD mapping
-    # ~ mapping = xc.core.utils.create_bcsd_mapping(
-        # ~ model_data[variable], observed_data[variable]
-    # ~ )
+	# leap day indices to delete
+	leap_day_indices = [59]
 
-    # ~ # Apply BCSD bias correction
-    # ~ corrected_data = xc.indices.bias_correct(
-        # ~ model_data[variable], mapping=mapping
-    # ~ )
+	# Remove leap day (Feb 29th) from datasets
+	if obs.shape[0] == 366:
+		observed = remove_leap_days(obs, leap_day_indices)
+	else:
+		observed = obs
+	if sim_array.shape[0] == 366:
+		simulated = remove_leap_days(sim_array, leap_day_indices)
+	else:
+		simulated = sim_array
 
-    # ~ return corrected_data
-    
-# ~ # Example usage
-# ~ if __name__ == "__main__":
-    # ~ # Load CMIP6 model data and observed data
-    # ~ # Replace 'model_file_path' and 'observed_file_path' with the actual file paths
-    # ~ model_data = xr.open_dataset('{0}/cmip6/{1}/{2}/'.format(dataset_dir, model_name, exp) + '{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc'.format(var_cmip6, model_name, exp, member, dt))
-    # ~ print(model_data)
-     
-    # ~ observed_data = xr.open_dataset('{0}/obs/'.format(dataset_dir) + '{0}_{1}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc'.format(var_obs, dt))
-    # ~ print(observed_data)
-    
-    # ~ # Select the variable of interest (e.g., 'tas' for temperature)
-    # ~ variable = 'pr'
+	print(observed.shape)
+	print(simulated.shape)
 
-    # ~ # Apply BCSD bias correction
-    # ~ corrected_data = bias_correction_bcsd(model_data, observed_data, variable)
+	print(np.min(observed), np.max(observed))
+	print(np.min(simulated), np.max(simulated))
+	
+	obs_k, obs_s, obs_loc, obs_scale = st.mielke.fit(observed)
+	obs_params = obs_k, obs_s, obs_loc, obs_scale
 
-    # ~ # Save the corrected data to a new NetCDF file
-    # ~ corrected_data.to_netcdf('corrected_ssp1-26_data.nc')
-    
-    # ~ # Extract the specific variable for historical simulations
-    # ~ model_historical_data = model_data[variable].sel(time=slice('1986', '2005'))
-    # ~ print(model_historical_data)
+	sim_k, sim_s, sim_loc, sim_scale = st.mielke.fit(simulated)
+	sim_params = sim_k, sim_s, sim_loc, sim_scale
 
-    # ~ # Apply quantile mapping bias correction to historical simulations
-    # ~ corrected_historical_data = quantile_mapping_bias_correction(model_historical_data, observed_data[variable])
-    # ~ print(corrected_historical_data)
-    
-    # ~ # Update the model data with the corrected historical simulations
-    # ~ model_data[variable].loc[{'time': slice('1986', '2005')}] = corrected_historical_data
+	print(obs_params)
+	print(sim_params)
 
-    # ~ # Save the corrected data to a new NetCDF file
-    # ~ model_data.to_netcdf('corrected_historical_simulations.nc')
-    
+	# Import correct bias function (quantile mapping)
+	corrected_data = quantile_mapping(simulated,sim_params,st.mielke,obs_params,st.mielke)
+
+	# To replace negative values with 0
+	if var_cmip6 == 'pr':
+		corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
+	else:
+		corrected_dataset = corrected_data
+
+	if var_cmip6 == 'pr':
+		var_units = 'mm'
+		var_shortname = 'pr'
+		var_longname = 'Daily Total Precipitation'
+		time_units = 'days since {}'.format(time_array[0])
+	elif var_cmip6 == 'tasmax':
+		var_units = 'Celcius degrees'
+		var_shortname = 'tasmax'
+		var_longname = 'Daily Maximum Near-Surface Air Temperature'
+		time_units = 'days since {}'.format(time_array[0])
+	else:
+		var_units = 'Celcius degrees'
+		var_shortname = 'tasmin'
+		var_longname = 'Daily Minimum Near-Surface Air Temperature'
+		time_units = 'days since {}'.format(time_array[0])
+
+	# Path out to save netCDF4
+	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
+	write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
+	exit()
