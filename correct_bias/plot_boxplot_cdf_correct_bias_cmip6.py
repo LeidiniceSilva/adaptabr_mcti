@@ -18,7 +18,7 @@ from scipy.stats import norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
 
 
 def import_observed(var_name, target_date):
@@ -118,7 +118,8 @@ def compute_cdf(data):
 	
 
 # Best models list
-best_models = [7, 9, 13, 15, 17]
+best_models = [17]
+# ~ best_models = [7, 9, 13, 15, 17]
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
@@ -128,7 +129,8 @@ dt = '19860101-20051231'
 year=1986 # 1986 1995 2005
 
 for i in best_models:
-	for j in range(1, 4):	
+	for j in range(1, 2):	
+	# ~ for j in range(1, 4):	
 		var_obs = var_dict[j][0]
 		var_cmip6 = var_dict[j][1]
 	

@@ -29,6 +29,7 @@ mdl = 17
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 var = 1
 
+dt = '19860101-20051231'
 experiment = 'historical'
 var_obs = var_dict[var][0]
 var_cmip6 = var_dict[var][1]
@@ -78,19 +79,34 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	return lat, lon, value
 
    
-def quantile_mapping(tmax, fit_params_hist, th_distrib_hist, fit_params_era5, th_distrib_era5):
+def correct_bias(simulated_data, observed_data):
 
-    k, s, loc, scale = fit_params_hist
-    k_, s_, loc_, scale_ = fit_params_era5
-   
-    # Apply cumulative distribution function with historical params and distribution
-    cdf_hist = th_distrib_hist.cdf(tmax, k=k, s=s, loc=loc, scale=scale)
-   
-    # Then apply inverse cdf (or ppf) with era5 fitted params and distribution
-    qm_array = th_distrib_era5.ppf(cdf_hist, k=k_, s=s_, loc=loc_, scale=scale_)
-   
-    return qm_array
+	# Get the shape of the simulated data array
+	shape = simulated_data.shape
 
+	# Correct each grid point separately
+	corrected_data = np.zeros_like(simulated_data)
+	for i in range(shape[1]):
+		for j in range(shape[2]):
+			corrected_data[:, i, j] = correct_bias_1d(simulated_data[:, i, j], observed_data[:, i, j])
+
+	return corrected_data
+
+
+def correct_bias_1d(simulated_values, observed_values):
+
+    # Calculate the empirical quantiles of simulated and observed values
+    simulated_quantiles = np.percentile(simulated_values, np.arange(0, 101))
+    observed_quantiles = np.percentile(observed_values, np.arange(0, 101))
+
+    # Find the mapping function by fitting a linear regression
+    mapping_function = np.polyfit(simulated_quantiles, observed_quantiles, 2)
+
+    # Apply the mapping function to the simulated values
+    corrected_values = np.polyval(mapping_function, simulated_values)
+
+    return corrected_values
+    
 
 def remove_leap_days(array, indices):
 
@@ -169,83 +185,61 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, 
 
 
 # Import cmip models and obs database
-for dt in range(1986, 2005):
-	print(dt)
+time_i = pd.date_range('1986-01-01','1986-12-31', freq='D').strftime('%Y-%m-%d').tolist()
+# ~ time_i.remove('1988-02-29')
+# ~ time_i.remove('1992-02-29')
+# ~ time_i.remove('1996-02-29')
+# ~ time_i.remove('2000-02-29')
+# ~ time_i.remove('2004-02-29')
+time_array = time_i
 
-	time_i = pd.date_range('{0}-01-01'.format(dt),'{0}-12-31'.format(dt), freq='D').strftime('%Y-%m-%d').tolist()
-	if dt == 1988:
-		time_i.remove('1988-02-29')
-	elif dt == 1992:
-		time_i.remove('1992-02-29')
-	elif dt == 1996:
-		time_i.remove('1996-02-29')
-	elif dt == 2000:
-		time_i.remove('2000-02-29')
-	elif dt == 2004:
-		time_i.remove('2004-02-29')
-	else:
-		time_i = time_i
+obs_array = import_observed(var_obs, dt)
+lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
-	time_array = time_i
-	print(len(time_array))
+print(len(time_array))
+print(obs_array.shape)
+print(sim_array.shape)
 
-	obs = import_observed(var_obs, dt)
-	lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
-
-	# leap day indices to delete
-	leap_day_indices = [59]
-
-	# Remove leap day (Feb 29th) from datasets
-	if obs.shape[0] == 366:
-		observed = remove_leap_days(obs, leap_day_indices)
-	else:
-		observed = obs
-	if sim_array.shape[0] == 366:
-		simulated = remove_leap_days(sim_array, leap_day_indices)
-	else:
-		simulated = sim_array
-
-	print(observed.shape)
-	print(simulated.shape)
-
-	print(np.min(observed), np.max(observed))
-	print(np.min(simulated), np.max(simulated))
+# leap day indices to delete
+leap_day_indices = [789, 2249, 3709, 5169, 6629]
+if obs_array.shape[0] == 7305:
+	observed = remove_leap_days(obs_array, leap_day_indices)
+else:
+	observed = obs_array
+if sim_array.shape[0] == 7305:
+	simulated = remove_leap_days(sim_array, leap_day_indices)
+else:
+	simulated = sim_array
 	
-	obs_k, obs_s, obs_loc, obs_scale = st.mielke.fit(observed)
-	obs_params = obs_k, obs_s, obs_loc, obs_scale
+print(observed.shape)
+print(simulated.shape)
 
-	sim_k, sim_s, sim_loc, sim_scale = st.mielke.fit(simulated)
-	sim_params = sim_k, sim_s, sim_loc, sim_scale
+# Import correct bias function (quantile mapping)
+corrected_data = correct_bias(simulated[0:365,:,:], observed[0:365,:,:])
 
-	print(obs_params)
-	print(sim_params)
+# To replace negative values with 0
+if var_cmip6 == 'pr':
+	corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
+else:
+	corrected_dataset = corrected_data
 
-	# Import correct bias function (quantile mapping)
-	corrected_data = quantile_mapping(simulated,sim_params,st.mielke,obs_params,st.mielke)
+if var_cmip6 == 'pr':
+	var_units = 'mm'
+	var_shortname = 'pr'
+	var_longname = 'Daily Total Precipitation'
+	time_units = 'days since {}'.format(time_array[0])
+elif var_cmip6 == 'tasmax':
+	var_units = 'Celcius degrees'
+	var_shortname = 'tasmax'
+	var_longname = 'Daily Maximum Near-Surface Air Temperature'
+	time_units = 'days since {}'.format(time_array[0])
+else:
+	var_units = 'Celcius degrees'
+	var_shortname = 'tasmin'
+	var_longname = 'Daily Minimum Near-Surface Air Temperature'
+	time_units = 'days since {}'.format(time_array[0])
 
-	# To replace negative values with 0
-	if var_cmip6 == 'pr':
-		corrected_dataset = np.where(corrected_data<0, 0, corrected_data)
-	else:
-		corrected_dataset = corrected_data
-
-	if var_cmip6 == 'pr':
-		var_units = 'mm'
-		var_shortname = 'pr'
-		var_longname = 'Daily Total Precipitation'
-		time_units = 'days since {}'.format(time_array[0])
-	elif var_cmip6 == 'tasmax':
-		var_units = 'Celcius degrees'
-		var_shortname = 'tasmax'
-		var_longname = 'Daily Maximum Near-Surface Air Temperature'
-		time_units = 'days since {}'.format(time_array[0])
-	else:
-		var_units = 'Celcius degrees'
-		var_shortname = 'tasmin'
-		var_longname = 'Daily Minimum Near-Surface Air Temperature'
-		time_units = 'days since {}'.format(time_array[0])
-
-	# Path out to save netCDF4
-	nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
-	write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
-	exit()
+# Path out to save netCDF4
+nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
+write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
+exit()
