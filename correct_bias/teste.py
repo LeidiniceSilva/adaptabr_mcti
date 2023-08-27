@@ -6,11 +6,13 @@ __date__        = "Jul 05, 2023"
 __description__ = "This script correct bias of cmip6 models"
 
 import os
+import cftime
 import netCDF4
 import calendar
 import warnings
 import numpy as np
 import pandas as pd
+import xarray as xr
 import scipy.stats as st
 
 from netCDF4 import Dataset
@@ -19,7 +21,7 @@ from dict_cmip6_models_name import cmip6
 warnings.filterwarnings("ignore")
 
 # Dataset directory
-dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
+dataset_dir = '/home/nice/Downloads'
 
 # Best models list
 best_models = [7, 9, 13, 15, 17]
@@ -48,7 +50,7 @@ def import_observed(var_name, target_date):
     :rtype: 3D array
     """
    
-    file_name = "{0}/obs/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
+    file_name = "{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
     data  = netCDF4.Dataset(file_name)
     var   = data.variables[var_name][:]
     lat   = data.variables['lat'][:]
@@ -68,7 +70,7 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	:rtype: 3D array
 	"""
 
-	dir_model = "{0}/cmip6/{1}/{2}".format(dataset_dir, model_name, exp_name)
+	dir_model = "{0}/".format(dataset_dir)
 	file_model = "{0}/{1}_br_day_{2}_{3}_{4}_{5}_lonlat.nc".format(dir_model, var_name, model_name, exp_name, member, target_date)
 	data  = netCDF4.Dataset(file_model)
 	var   = data.variables[var_name][:]
@@ -185,20 +187,11 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, 
 
 
 # Import cmip models and obs database
-time_i = pd.date_range('1986-01-01','1986-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-# ~ time_i.remove('1988-02-29')
-# ~ time_i.remove('1992-02-29')
-# ~ time_i.remove('1996-02-29')
-# ~ time_i.remove('2000-02-29')
-# ~ time_i.remove('2004-02-29')
-time_array = time_i
+time_array = xr.cftime_range(start=cftime.DatetimeNoLeap(1986,1,1),end=cftime.DatetimeNoLeap(2005,12,31),freq="D",calendar="365_day")
+ind_365 = range(len(time_array))
 
 obs_array = import_observed(var_obs, dt)
 lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
-
-print(len(time_array))
-print(obs_array.shape)
-print(sim_array.shape)
 
 # leap day indices to delete
 leap_day_indices = [789, 2249, 3709, 5169, 6629]
@@ -240,6 +233,6 @@ else:
 	time_units = 'days since {}'.format(time_array[0])
 
 # Path out to save netCDF4
-nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
+nc_output = '{0}/{1}_br_day_{2}_{3}_{4}_{5}_correct.nc'.format(dataset_dir, var_cmip6, cmip6[mdl][0], experiment, cmip6[mdl][1], dt)
 write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
 exit()
