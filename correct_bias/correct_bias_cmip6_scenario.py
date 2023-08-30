@@ -122,7 +122,7 @@ def quantile_mapping(dataset, fit_params_fut, th_distrib_fut, fit_params_obs, th
     # Apply cumulative distribution function with historical params and distribution
     cdf_fut = th_distrib_fut.cdf(tmax_fut, k=k_f, s=s_f, loc=loc_f, scale=scale_f)
     
-    # Then apply inverse cdf (or ppf) with era5 fitted params and distribution
+    # Then apply inverse cdf (or ppf) with obs fitted params and distribution
     correct_dataset = th_distrib_era5.ppf(cdf_fut, k=k_, s=s_, loc=loc_, scale=scale_)
     correction = correct_dataset * tendencia
     
