@@ -17,7 +17,7 @@ from mpl_toolkits.basemap import Basemap
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = "/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias"
 
 
 def import_observed(var_name, target_date):
@@ -104,8 +104,8 @@ def basemap(lat, lon):
 	xx, yy = map(lons,lats)
 
 	# Import shapefile 
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
 	x0, x1 = plt.xlim()
 	y0, y1 = plt.ylim()
 	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
@@ -216,7 +216,7 @@ for i in best_models:
 		cbar.ax.tick_params(labelsize=font_size)  
 
 		# Path out to save figure
-		path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
+		path_out = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/figs/correct_bias'
 		name_out = 'pyplt_maps_clim_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, dt)
 		plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 		plt.close('all')

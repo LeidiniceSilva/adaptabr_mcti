@@ -13,13 +13,13 @@ model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' )
 
 # Experiment list
 # exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
-exp_list=( 'ssp126' ) 
+exp_list=( 'historical' ) 
 
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )        
 
-path_regrid="/home/nice/Documentos/github_projects/shell/regcm_pos"
-path_mask="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/obs"
+path_regrid="/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shell/regcm_pos"
+path_mask="/scratch/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias/obs"
 
 for model in ${model_list[@]}; do
 
@@ -27,7 +27,7 @@ for model in ${model_list[@]}; do
 	
 		for var in ${var_list[@]}; do
 
-			path="/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias/cmip6/${model}/${exp}"
+			path="/scratch/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias/cmip6/${model}/${exp}"
 			cd ${path}
 
 			# Member name
@@ -74,25 +74,24 @@ for model in ${model_list[@]}; do
 			echo "4. Creating mask"
 			cdo ifthen ${path_mask}/mask_br_lonlat.nc ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std_unit.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc
 
-			echo 
-			echo "5. Split years"
-			if [ ${exp} == 'historical' ]
-			then
-			for year in $(/usr/bin/seq -w 1986 2005); do
-				cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
-			done
-			else
-			for year in $(/usr/bin/seq -w 2015 2100); do
-				cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
-			done
-			fi
+			#~ echo 
+			#~ echo "5. Split years"
+			#~ if [ ${exp} == 'historical' ]
+			#~ then
+			#~ for year in $(/usr/bin/seq -w 1986 2005); do
+				#~ cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
+			#~ done
+			#~ else
+			#~ for year in $(/usr/bin/seq -w 2015 2100); do
+				#~ cdo seldate,${year}-01-01,${year}-12-31 ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${year}_lonlat.nc
+			#~ done
+			#~ fi
 			
 			echo 
 			echo "6. Deleting file"
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat.nc 
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std.nc
 			rm ${var}_sa_day_${model}_${exp}_${member}_${dt}_lonlat_std_unit.nc
-			rm ${var}_br_day_${model}_${exp}_${member}_${dt}_lonlat.nc
 
 		done
 	done

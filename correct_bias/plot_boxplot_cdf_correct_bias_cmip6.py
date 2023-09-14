@@ -18,7 +18,7 @@ from scipy.stats import norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
+dataset_dir = "/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias"
 
 
 def import_observed(var_name, target_date):
@@ -199,7 +199,7 @@ for i in best_models:
 		plt.legend(loc=9, ncol=3, frameon=False)
 
 		# Path out to save figure
-		path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
+		path_out = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/figs/correct_bias'
 		name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, year)
 		plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 		plt.close('all')
