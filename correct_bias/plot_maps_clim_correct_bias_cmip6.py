@@ -72,7 +72,7 @@ def import_simulated_correct(model_name, exp_name, var_name, member, target_date
 	:rtype: 3D array
 	"""
 	
-	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_correct.nc'.format(var_name, model_name, exp_name, member, target_date))
+	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_corrected.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
 	time = data.sel(time=slice('1986-01-01','2005-12-31'))
 	var = time.groupby('time.year').mean('time')
@@ -110,7 +110,7 @@ def basemap(lat, lon):
 	y0, y1 = plt.ylim()
 	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
 	polys = [map_edges]
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
 	polys = polys + getattr(map, 'lim_unid_fed2')
 	codes = [[Path.MOVETO] + [Path.LINETO for p in p[1:]] for p in polys] # creating a PathPatch
 	polys_lin = [v for p in polys for v in p]
