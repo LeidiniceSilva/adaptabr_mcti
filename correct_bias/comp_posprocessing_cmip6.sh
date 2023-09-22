@@ -12,8 +12,7 @@ echo "--------------- INIT POSPROCESSING ----------------"
 model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
 
 # Experiment list
-# exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
-exp_list=( 'ssp585' ) 
+exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
 
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )        
