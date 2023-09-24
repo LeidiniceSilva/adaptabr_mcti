@@ -10,7 +10,7 @@ echo "--------------- INIT POSPROCESSING ----------------"
 
 # Model list
 # model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
-model_list=( 'NorESM2-MM' ) 
+model_list=( 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
 
 # Experiment list
 # exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
@@ -19,8 +19,8 @@ exp_list=( 'historical' )
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )     
 
-path_regrid="/home/nice/Documentos/github_projects/shell/regcm_pos"
-path_mask="/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias/obs"
+path_regrid="/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shell/regcm_pos"
+path_mask="/scratch/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias/obs"
 
 for model in ${model_list[@]}; do
 
@@ -28,7 +28,7 @@ for model in ${model_list[@]}; do
 	
 		for var in ${var_list[@]}; do
 
-			path="/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias/cmip6_correct/${model}/${exp}"
+			path="/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias/cmip6_correct/${model}/${exp}"
 			cd ${path}
 
 			# Member name
@@ -55,21 +55,17 @@ for model in ${model_list[@]}; do
 			echo ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
 
 			echo
-			echo "1. Merge date" 
-			cdo mergetime ${var}_br_day_${model}_${exp}_${member}_*_correct.nc ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc
-
-			echo
-			echo "2. Creating mask"			
+			echo "1. Creating mask"			
 			if [ ${var} == 'pr' ]
 			then
-			cdo ifthen ${path_mask}/mask_br_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
+			cdo ifthen ${path_mask}/mask_br_lonlat.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_corrected.nc
 			else
-			cp ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
+			cp ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc ${var}_br_day_${model}_${exp}_${member}_${dt}_corrected.nc
 			fi
 						
 			echo 
-			echo "3. Deleting file"
-			rm ${var}_br_day_${model}_${exp}_${member}_1986-2005_correct.nc
+			echo "2. Deleting file"
+			rm ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
 
 		done
 	done

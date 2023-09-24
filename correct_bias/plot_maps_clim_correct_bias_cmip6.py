@@ -17,7 +17,7 @@ from mpl_toolkits.basemap import Basemap
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = "/media/nice/Nice/documentos/projetos/AdaptaBrasil_MCTI/database/correct_bias"
+dataset_dir = "/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias"
 
 
 def import_observed(var_name, target_date):
@@ -72,7 +72,7 @@ def import_simulated_correct(model_name, exp_name, var_name, member, target_date
 	:rtype: 3D array
 	"""
 	
-	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_correct.nc'.format(var_name, model_name, exp_name, member, target_date))
+	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_corrected.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
 	time = data.sel(time=slice('1986-01-01','2005-12-31'))
 	var = time.groupby('time.year').mean('time')
@@ -104,13 +104,13 @@ def basemap(lat, lon):
 	xx, yy = map(lons,lats)
 
 	# Import shapefile 
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
 	x0, x1 = plt.xlim()
 	y0, y1 = plt.ylim()
 	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
 	polys = [map_edges]
-	map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
+	map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
 	polys = polys + getattr(map, 'lim_unid_fed2')
 	codes = [[Path.MOVETO] + [Path.LINETO for p in p[1:]] for p in polys] # creating a PathPatch
 	polys_lin = [v for p in polys for v in p]
@@ -156,21 +156,33 @@ for i in best_models:
 			color0 = cm.Blues
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.BrBG
+<<<<<<< HEAD
 			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+=======
+			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
+>>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de precipitação (mm d⁻¹)'
 		elif var_cmip6 == 'tasmax':
 			levs0 = [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
 			color0 = cm.Reds
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
+<<<<<<< HEAD
 			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+=======
+			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
+>>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de temperatura maxima (°C)'
 		else:
 			levs0 = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 			color0 = cm.Reds
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
+<<<<<<< HEAD
 			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+=======
+			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
+>>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de temperatura mínima (°C)'
 
 		ax = fig.add_subplot(2, 3, 1)  
@@ -216,7 +228,7 @@ for i in best_models:
 		cbar.ax.tick_params(labelsize=font_size)  
 
 		# Path out to save figure
-		path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
+		path_out = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/figs/correct_bias'
 		name_out = 'pyplt_maps_clim_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, dt)
 		plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 		plt.close('all')

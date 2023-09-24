@@ -18,7 +18,7 @@ from scipy.stats import norm
 from dict_cmip6_models_name import cmip6
 
 # Dataset directory
-dataset_dir = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/correct_bias'
+dataset_dir = "/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias"
 
 
 def import_observed(var_name, target_date):
@@ -69,7 +69,7 @@ def import_simulated_correct(model_name, exp_name, var_name, member, target_date
 	:rtype: 3D array
 	"""
 	
-	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_correct.nc'.format(var_name, model_name, exp_name, member, target_date))
+	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_corrected.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
 	var = data.sel(time=slice('{}-01-01'.format(year),'{}-12-31'.format(year)))
 	day = var.values
@@ -118,19 +118,17 @@ def compute_cdf(data):
 	
 
 # Best models list
-best_models = [17]
-# ~ best_models = [7, 9, 13, 15, 17]
+best_models = [7, 9, 13, 15, 17]
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 
 experiment = 'historical'
 dt = '19860101-20051231'
-year=1986 # 1986 1995 2005
+year=2005 # 1986 1995 2005
 
 for i in best_models:
-	for j in range(1, 2):	
-	# ~ for j in range(1, 4):	
+	for j in range(1, 4):	
 		var_obs = var_dict[j][0]
 		var_cmip6 = var_dict[j][1]
 	
@@ -199,7 +197,7 @@ for i in best_models:
 		plt.legend(loc=9, ncol=3, frameon=False)
 
 		# Path out to save figure
-		path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/correct_bias'
+		path_out = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/figs/correct_bias'
 		name_out = 'pyplt_boxplot_cdf_correct_bias_cmip6_{0}_{1}_{2}.png'.format(cmip6[i][0], var_cmip6, year)
 		plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 		plt.close('all')

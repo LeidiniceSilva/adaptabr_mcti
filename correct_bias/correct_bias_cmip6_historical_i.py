@@ -21,15 +21,16 @@ from dict_cmip6_models_name import cmip6
 warnings.filterwarnings("ignore")
 
 # Dataset directory
-dataset_dir = '/home/nice/Downloads'
+dataset_dir = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias'
 
 # Best models list
+mdl = 7
 best_models = [7, 9, 13, 15, 17]
-mdl = 17
+cmip6 = {7 :['GFDL-ESM4', 'r1i1p1f1_gr1'], 9 :['INM-CM5-0', 'r1i1p1f1_gr1'], 13	:['MPI-ESM1-2-HR', 'r1i1p1f1_gn'], 15	:['MRI-ESM2-0', 'r1i1p1f1_gn'], 17 :['NorESM2-MM', 'r1i1p1f1_gn']}
 
 # Variable dictionary
-var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 var = 1
+var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 
 dt = '19860101-20051231'
 experiment = 'historical'
@@ -50,14 +51,14 @@ def import_observed(var_name, target_date):
     :rtype: 3D array
     """
    
-    file_name = "{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
+    file_name = "{0}/obs/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.2.2_lonlat.nc".format(dataset_dir, var_name, target_date)
     data  = netCDF4.Dataset(file_name)
     var   = data.variables[var_name][:]
     lat   = data.variables['lat'][:]
     lon   = data.variables['lon'][:]
     value = var[:][:,:,:]
-       
-    return value
+    
+    return lat, lon, value
    
    
 def import_simulated(model_name, exp_name, var_name, member, target_date):
@@ -70,7 +71,7 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 	:rtype: 3D array
 	"""
 
-	dir_model = "{0}/".format(dataset_dir)
+	dir_model = "{0}/cmip6/{1}/{2}".format(dataset_dir, model_name, exp_name)
 	file_model = "{0}/{1}_br_day_{2}_{3}_{4}_{5}_lonlat.nc".format(dir_model, var_name, model_name, exp_name, member, target_date)
 	data  = netCDF4.Dataset(file_model)
 	var   = data.variables[var_name][:]
@@ -80,6 +81,18 @@ def import_simulated(model_name, exp_name, var_name, member, target_date):
 
 	return lat, lon, value
 
+
+def remove_leap_days(array, indices):
+
+    # Create a mask to identify the indices to delete
+    mask = np.ones(array.shape[0], dtype=bool)
+    mask[indices] = False
+
+    # Use the mask to select the non-deleted indices
+    new_array = array[mask]
+
+    return new_array
+    
    
 def correct_bias(simulated_data, observed_data):
 
@@ -108,19 +121,7 @@ def correct_bias_1d(simulated_values, observed_values):
     corrected_values = np.polyval(mapping_function, simulated_values)
 
     return corrected_values
-    
-
-def remove_leap_days(array, indices):
-
-    # Create a mask to identify the indices to delete
-    mask = np.ones(array.shape[0], dtype=bool)
-    mask[indices] = False
-
-    # Use the mask to select the non-deleted indices
-    new_array = array[mask]
-
-    return new_array
-   
+       
      
 def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.):
 
@@ -139,14 +140,19 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, 
 
 	if cmip6[mdl][0] == 'GFDL-ESM4':
 		cmip6_inst = 'NOAA GFDL, Princeton, NJ 08540, USA'
+		calendar = '365_day'
 	elif cmip6[mdl][0] == 'INM-CM5-0':
 		cmip6_inst = 'INM, Russian Academy of Science, Moscow 119991, Russia'
+		calendar = '365_day'
 	elif cmip6[mdl][0] == 'MPI-ESM1-2-HR':
 		cmip6_inst = 'MPI for Meteorology, Hamburg 20146, Germany'
+		calendar = 'standard'
 	elif cmip6[mdl][0] == 'MRI-ESM2-0':
 		cmip6_inst = 'MRI, Tsukuba, Ibaraki 305-0052, Japan'
+		calendar = 'standard'
 	else:
 		cmip6_inst = 'NCC, c/o MET-Norway, Henrik Mohns plass 1, Oslo 0313, Norway'
+		calendar = '365_day'
 
 	foo = Dataset(ncname, 'w', format='NETCDF4_CLASSIC')
 
@@ -164,7 +170,7 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, 
 
 	times = foo.createVariable('time', float, ('time'))
 	times.units = time_units
-	times.calendar = '365_day'
+	times.calendar = '{0}'.format(calendar)
 	times[:] = range(len(time_array))
 
 	laty = foo.createVariable('lat', 'f4', 'lat')
@@ -187,28 +193,29 @@ def write_3d_nc(ncname, var_array, time_array, lat_array, lon_array, var_units, 
 
 
 # Import cmip models and obs database
-time_array = xr.cftime_range(start=cftime.DatetimeNoLeap(1986,1,1),end=cftime.DatetimeNoLeap(2005,12,31),freq="D",calendar="365_day")
-ind_365 = range(len(time_array))
-
-obs_array = import_observed(var_obs, dt)
+lat_array, lon_array, obs_array = import_observed(var_obs, dt)
 lat_array, lon_array, sim_array = import_simulated(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
+
+# Date range of the historical period
+if sim_array.shape[0] == 7300:
+	time_array = xr.cftime_range(start=cftime.DatetimeNoLeap(1986,1,1),end=cftime.DatetimeNoLeap(2005,12,31),freq="D",calendar="365_day")
+else:
+	time_array = xr.cftime_range(start=cftime.DatetimeGregorian(1986,1,1),end=cftime.DatetimeGregorian(2005,12,31),freq="D",calendar="standard")
 
 # leap day indices to delete
 leap_day_indices = [789, 2249, 3709, 5169, 6629]
-if obs_array.shape[0] == 7305:
+if sim_array.shape[0] == 7300:
 	observed = remove_leap_days(obs_array, leap_day_indices)
 else:
 	observed = obs_array
-if sim_array.shape[0] == 7305:
-	simulated = remove_leap_days(sim_array, leap_day_indices)
-else:
-	simulated = sim_array
-	
+
+simulated = sim_array
+
 print(observed.shape)
 print(simulated.shape)
 
 # Import correct bias function (quantile mapping)
-corrected_data = correct_bias(simulated[0:365,:,:], observed[0:365,:,:])
+corrected_data = correct_bias(simulated[:,:,:], observed[:,:,:])
 
 # To replace negative values with 0
 if var_cmip6 == 'pr':
@@ -216,6 +223,7 @@ if var_cmip6 == 'pr':
 else:
 	corrected_dataset = corrected_data
 
+# Path out to save netCDF4
 if var_cmip6 == 'pr':
 	var_units = 'mm'
 	var_shortname = 'pr'
@@ -232,7 +240,6 @@ else:
 	var_longname = 'Daily Minimum Near-Surface Air Temperature'
 	time_units = 'days since {}'.format(time_array[0])
 
-# Path out to save netCDF4
-nc_output = '{0}/{1}_br_day_{2}_{3}_{4}_{5}_correct.nc'.format(dataset_dir, var_cmip6, cmip6[mdl][0], experiment, cmip6[mdl][1], dt)
+nc_output = '{0}/cmip6_correct/{1}/{2}/{3}_br_day_{1}_{2}_{4}_{5}_correct.nc'.format(dataset_dir, cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 write_3d_nc(nc_output, corrected_dataset, time_array, lat_array, lon_array, var_units, var_shortname, var_longname, time_units, missing_value=-999.)
 exit()
