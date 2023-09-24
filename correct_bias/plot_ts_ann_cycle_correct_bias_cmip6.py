@@ -95,7 +95,8 @@ def import_simulated_correct(model_name, exp_name, var_name, member, target_date
 
 
 # Best models list
-best_models = [7, 9, 13, 15, 17]
+best_models = [17]
+# ~ best_models = [7, 9, 13, 15, 17]
 
 # Variable dictionary
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
@@ -104,7 +105,7 @@ experiment = 'historical'
 dt = '19860101-20051231'
 
 for i in best_models:
-	for j in range(1, 4):	
+	for j in range(1, 3):	
 		var_obs = var_dict[j][0]
 		var_cmip6 = var_dict[j][1]
 	
