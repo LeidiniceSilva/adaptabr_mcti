@@ -9,12 +9,10 @@ echo
 echo "--------------- INIT POSPROCESSING ----------------"
 
 # Model list
-# model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
-model_list=( 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
+model_list=( 'GFDL-ESM4' 'INM-CM5-0' 'MPI-ESM1-2-HR' 'MRI-ESM2-0' 'NorESM2-MM' ) 
 
 # Experiment list
-# exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
-exp_list=( 'historical' ) 
+exp_list=( 'historical' 'ssp126' 'ssp245' 'ssp585' ) 
 
 # Variable list
 var_list=( 'pr' 'tasmax' 'tasmin' )     
@@ -65,7 +63,7 @@ for model in ${model_list[@]}; do
 						
 			echo 
 			echo "2. Deleting file"
-			rm ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
+			# rm ${var}_br_day_${model}_${exp}_${member}_${dt}_correct.nc
 
 		done
 	done

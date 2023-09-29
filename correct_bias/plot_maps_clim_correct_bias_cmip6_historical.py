@@ -156,33 +156,18 @@ for i in best_models:
 			color0 = cm.Blues
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.BrBG
-<<<<<<< HEAD
-			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-=======
-			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
->>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de precipitação (mm d⁻¹)'
 		elif var_cmip6 == 'tasmax':
 			levs0 = [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
 			color0 = cm.Reds
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
-<<<<<<< HEAD
-			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-=======
-			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
->>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de temperatura maxima (°C)'
 		else:
 			levs0 = [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 			color0 = cm.Reds
 			levs = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
 			color = cm.bwr
-<<<<<<< HEAD
-			levs1 = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-=======
-			levs1 = [-3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3]
->>>>>>> 16bc930b92a3962455013ac20351d9dc5151fded
 			legend = 'Viés de temperatura mínima (°C)'
 
 		ax = fig.add_subplot(2, 3, 1)  
@@ -204,7 +189,7 @@ for i in best_models:
 		ax = fig.add_subplot(2, 3, 3)  
 		map, xx, yy = basemap(lat, lon)
 		plt_map = map.contourf(xx, yy, sim_correct, levels=levs0, latlon=True, cmap=color0, extend='max') 
-		plt.title(u'(c) {0} correct'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
+		plt.title(u'(c) {0} correção'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
 		cbar = map.colorbar(plt_map, shrink=0.8, pad=0.1)
 		cbar.set_label('Climatologia', fontsize=font_size, fontweight='bold')
 		cbar.ax.tick_params(labelsize=font_size)  
@@ -212,7 +197,7 @@ for i in best_models:
 		ax = fig.add_subplot(2, 3, 5)  
 		map, xx, yy = basemap(lat, lon)
 		plt_map = map.contourf(xx, yy, bias_sim, levels=levs, latlon=True, cmap=color, extend='both') 
-		plt.title(u'(d) Bias {0}'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
+		plt.title(u'(d) Viés {0}'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
 		plt.xlabel(u'Longitude', labelpad=10, fontsize=font_size, fontweight='bold')
 		plt.ylabel(u'Latitude', labelpad=20, fontsize=font_size, fontweight='bold')
 		cbar = map.colorbar(plt_map, shrink=0.8, pad=0.1)
@@ -220,8 +205,8 @@ for i in best_models:
 
 		ax = fig.add_subplot(2, 3, 6)  
 		map, xx, yy = basemap(lat, lon)
-		plt_map = map.contourf(xx, yy, bias_sim_correct, levels=levs1, latlon=True, cmap=color, extend='both') 
-		plt.title(u'(e) Bias {0} correct'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
+		plt_map = map.contourf(xx, yy, bias_sim_correct, levels=levs, latlon=True, cmap=color, extend='both') 
+		plt.title(u'(e) Viés {0} correção'.format(cmip6[i][0]), loc='left', fontsize=font_size, fontweight='bold')
 		plt.xlabel(u'Longitude', labelpad=10, fontsize=font_size, fontweight='bold')
 		cbar = map.colorbar(plt_map, shrink=0.8, pad=0.1)
 		cbar.set_label('{0}'.format(legend), fontsize=font_size, fontweight='bold')

@@ -24,12 +24,12 @@ warnings.filterwarnings("ignore")
 dataset_dir = '/afs/ictp.it/home/m/mda_silv/Documents/projects/AdaptaBrasil_MCTI/database/correct_bias'
 
 # Best models list
-mdl = 17
+mdl = 7
 best_models = [7, 9, 13, 15, 17]
 cmip6 = {7 :['GFDL-ESM4', 'r1i1p1f1_gr1'], 9 :['INM-CM5-0', 'r1i1p1f1_gr1'], 13	:['MPI-ESM1-2-HR', 'r1i1p1f1_gn'], 15	:['MRI-ESM2-0', 'r1i1p1f1_gn'], 17 :['NorESM2-MM', 'r1i1p1f1_gn']}
 
 # Variable dictionary
-var = 3
+var = 1
 var_dict = {1 :['pr', 'pr'], 2 :['Tmax', 'tasmax'], 3 :['Tmin', 'tasmin']}
 
 dt = '19860101-20051231'
