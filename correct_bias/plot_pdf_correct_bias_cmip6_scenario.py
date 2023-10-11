@@ -51,7 +51,7 @@ def import_projected(model_name, exp_name, var_name, member, target_date):
 	
 	arq = xr.open_dataset('{0}/cmip6/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
-	var = data.sel(time=slice('2015-01-01','2100-12-31'))
+	var = data.sel(time=slice('2081-01-01','2100-12-31'))
 	day = var.values
 	ts = np.nanmean(np.nanmean(day, axis=1), axis=1)
 
@@ -70,7 +70,7 @@ def import_projected_correct(model_name, exp_name, var_name, member, target_date
 	
 	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_corrected.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
-	var = data.sel(time=slice('2015-01-01','2100-12-31'))
+	var = data.sel(time=slice('2081-01-01','2100-12-31'))
 	day = var.values
 	ts = np.nanmean(np.nanmean(day, axis=1), axis=1)
 
@@ -93,7 +93,6 @@ def compute_pdf(data):
 	return x, pdf
 	
 
-
 # Best models list
 best_models = [7, 9, 13, 15, 17]
 
@@ -115,12 +114,10 @@ for i in best_models:
 		proj = import_projected(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 		proj_cor = import_projected_correct(cmip6[i][0], experiment, var_cmip6, cmip6[i][1], dt)
 		
-		print(sim)
+		print(len(sim))
 		print()
-		print(proj)
-		print()
-		print(proj_cor)
-		print()
+		print(len(proj))
+		# ~ print(len(proj_cor))
 		
 		# Import cdf function
 		x_sim, pdf_sim = compute_pdf(sim)
@@ -139,20 +136,20 @@ for i in best_models:
 					
 		ax = fig.add_subplot(1, 1, 1)
 		plt.plot(x_sim, pdf_sim, color='black', label='Simulação', linewidth=1.5)
-		plt.plot(x_proj, pdf_proj,  color='blue', label='Projeção', linewidth=1.5)
-		plt.plot(x_proj_cor, pdf_proj_cor,  color='red', label='Projeção corrigida', linewidth=1.5)  
+		plt.plot(x_proj, pdf_proj,  color='red', label='Projeção', linewidth=1.5)
+		plt.plot(x_proj, pdf_proj,  color='red', label='Projeção corrigida', linestyle='--', linewidth=1.5)  
 		plt.title('(a) PDF diário {0}'.format(cmip6[i][0]), loc='left', fontweight='bold')
 		plt.xlabel('{0}'.format(legend), fontweight='bold')
 		plt.ylabel('CDF', fontweight='bold')
 		if var_cmip6 == 'pr':
-			plt.xticks(np.arange(0, 18, 2))
-			plt.xlim(0, 16)
+			plt.xticks(np.arange(0, 32, 2))
+			plt.xlim(0, 30)
 		elif var_cmip6 == 'tasmax':
-			plt.xticks(np.arange(18, 38, 2))
-			plt.xlim(18, 36)
+			plt.xticks(np.arange(20, 42, 2))
+			plt.xlim(20, 40)
 		else:
-			plt.xticks(np.arange(14, 30, 2))
-			plt.xlim(14, 28)
+			plt.xticks(np.arange(10, 32, 2))
+			plt.xlim(10, 30)
 		plt.grid(linestyle='--')
 		plt.legend(loc=9, ncol=3, frameon=False)
 

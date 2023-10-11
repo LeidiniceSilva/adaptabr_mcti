@@ -13,7 +13,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import xarray as xr
-import scipy.stats as st
+import scipy.stats as stats
 
 from netCDF4 import Dataset
 from dict_cmip6_models_name import cmip6
@@ -86,17 +86,17 @@ def import_projected(model_name, exp_name, var_name, member, target_date):
 	
 	return value 
 	
-	
-def quantile_mapping(observed, model, future, variable_obs, variable_mdl):
+
+def quantile_mapping_i(observed, model, future, variable_obs, variable_mdl):
 	
     # Calculate quantiles for observed and model data
-    obs_quantiles = observed[variable_obs].quantile([0.05, 0.5, 0.95], dim='time')
-    model_quantiles = model[variable_mdl].quantile([0.05, 0.5, 0.95], dim='time')
+    obs_quantiles = observed[variable_obs].quantile([0.1, 0.5, 0.9], dim='time')
+    model_quantiles = model[variable_mdl].quantile([0.1, 0.5, 0.9], dim='time')
 
     # Calculate quantile mapping correction factors
     correction_factors = {}
     
-    for quantile in [0.05, 0.5, 0.95]:
+    for quantile in [0.1, 0.5, 0.9]:
         obs_q = obs_quantiles.sel(quantile=quantile)
         model_q = model_quantiles.sel(quantile=quantile)
         correction_factors[quantile] = obs_q / model_q
@@ -105,14 +105,41 @@ def quantile_mapping(observed, model, future, variable_obs, variable_mdl):
     corrected_future = future[variable_mdl] * correction_factors[0.5]
 
     return corrected_future
-         
-     
+
+
+# ~ def quantile_mapping_ii(observed, model, variable_obs, variable_mdl):
+
+	# ~ # Calculate quantiles for observed and model data
+	# ~ obs_quantiles = observed[variable_obs].quantile([0.1, 0.5, 0.9], dim='time')
+	# ~ model_quantiles = model[variable_mdl].quantile([0.1, 0.5, 0.9], dim='time')
+	
+	# ~ mapping_functions = {}
+	# ~ for quantile in [0.1, 0.5, 0.9]:
+		# ~ obs_values = obs_quantiles.sel(quantile=quantile)
+		# ~ model_values = model_quantiles.sel(quantile=quantile)
+		# ~ mapping_functions[quantile] = stats.linregress(model_values, obs_values)
+	
+	# ~ corrected_var = model_var.copy()
+	# ~ for i in range(len(model_var.time)):
+		# ~ for j in range(len(model_var.lat)):
+			# ~ for k in range(len(model_var.lon)):
+				# ~ for quantile in [0.1, 0.5, 0.9]:
+					# ~ slope, intercept, r_value, _, _ = mapping_functions[quantile]
+					# ~ corrected_var[i, j, k] = (model_var[i, j, k] - intercept) / slope
+
+	# ~ # Save the corrected data 
+	# ~ corrected_data = model_data.copy()
+	# ~ corrected_data[variable_mdl] = corrected_var
+	
+	# ~ return corrected_data
+
+    
 # Import cmip models and obs database
 observed = import_observed(var_obs)
 simulated = import_simulated(cmip6[mdl][0], var_cmip6, cmip6[mdl][1])
 projected = import_projected(cmip6[mdl][0], experiment, var_cmip6, cmip6[mdl][1], dt)
 
-corrected_future = quantile_mapping(observed, simulated, projected, var_obs, var_cmip6)
+corrected_future = quantile_mapping_i(observed, simulated, projected, var_obs, var_cmip6)
 print(np.min(corrected_future))
 print(np.max(corrected_future))
 

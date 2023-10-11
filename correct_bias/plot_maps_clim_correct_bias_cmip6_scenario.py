@@ -32,7 +32,7 @@ def import_simulated(model_name, var_name, member):
 
 	arq = xr.open_dataset('{0}/cmip6/{1}/historical/'.format(dataset_dir, model_name) + '{0}_br_day_{1}_historical_{2}_19860101-20051231_lonlat.nc'.format(var_name, model_name, member))
 	data = arq[var_name]
-	time = data.sel(time=slice('1986-01-01','1986-12-31'))
+	time = data.sel(time=slice('1986-01-01','2005-12-31'))
 	var = time.groupby('time.year').mean('time')
 	lat = var.lat
 	lon = var.lon
@@ -53,7 +53,7 @@ def import_projected(model_name, exp_name, var_name, member, target_date):
 	
 	arq = xr.open_dataset('{0}/cmip6/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_lonlat.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
-	time = data.sel(time=slice('2015-01-01','2015-12-31'))
+	time = data.sel(time=slice('2015-01-01','2100-12-31'))
 	var = time.groupby('time.year').mean('time')
 	lat = var.lat
 	lon = var.lon
@@ -74,7 +74,7 @@ def import_projected_correct(model_name, exp_name, var_name, member, target_date
 	
 	arq = xr.open_dataset('{0}/cmip6_correct/{1}/{2}/'.format(dataset_dir, model_name, exp_name) + '{0}_br_day_{1}_{2}_{3}_{4}_corrected.nc'.format(var_name, model_name, exp_name, member, target_date))
 	data = arq[var_name]
-	time = data.sel(time=slice('2015-01-01','2015-12-31'))
+	time = data.sel(time=slice('2015-01-01','2100-12-31'))
 	var = time.groupby('time.year').mean('time')
 	lat = var.lat
 	lon = var.lon
