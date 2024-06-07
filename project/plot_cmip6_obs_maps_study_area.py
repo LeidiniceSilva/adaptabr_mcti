@@ -70,7 +70,7 @@ plt.text(-54, -19, u'SAM', color='gray', fontweight='bold')
 plt.text(-58, -23, u'LPB', color='gray', fontweight='bold')
 
 # Path out to save figure
-path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/project/figs/figs_report-II'
+path_out = '/afs/ictp.it/home/m/mda_silv/Documents/CMIP6/figs'
 name_out = 'pyplt_maps_study_area.png'
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
