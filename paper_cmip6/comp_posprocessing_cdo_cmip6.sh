@@ -2,7 +2,7 @@
 
 #__author__      = 'Leidinice Silva'
 #__email__       = 'leidinicesilva@gmail.com'
-#__date__        = 'May 21, 2023'
+#__date__        = 'Jun 10, 2024'
 #__description__ = 'Posprocessing the CMIP6 models'
 
 echo

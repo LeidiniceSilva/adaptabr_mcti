@@ -9,7 +9,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'mslp' 'mtpr' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
+var_list=( 'msl' 'mtpr' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
 
 # Database
 type='era5'
@@ -19,7 +19,7 @@ dt='197901-201412'
 
 for var in ${var_list[@]}; do
 
-	path="/home/nice/Documentos/AdaptaBrasil_MCTI/database/paper_cmip6/obs/"
+	path="/afs/ictp.it/home/m/mda_silv/Documents/CMIP6/database/obs/"
 	cd ${path}
 
 	echo

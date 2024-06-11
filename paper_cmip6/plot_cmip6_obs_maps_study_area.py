@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Jun 07, 2024"
+__date__        = "June 10, 2024"
 __description__ = "This script plot study area"
 
 import os

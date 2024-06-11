@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Mar 01, 2023"
+__date__        = "June 10, 2024"
 __description__ = "Compute statistical metrics"
 
 import math  
