@@ -13,35 +13,6 @@ import scipy.stats as st
 from scipy.stats import norm
 
 
-def compute_mbe(model, obs):
-
-    """
-    The input arrays must have the same dimensions
-    Param model: Numpy array with model data
-    Param obs: Numpy array with obs data
-    Return: Mean Bias Error
-    """
-
-    mbe = np.nanmean(np.array(model) - np.array(obs))
-    
-    return mbe
-    
-    
-def compute_rmse(model, obs):
-
-    """
-    The input arrays must have the same dimensions
-    Param model: Numpy array with model data
-    Param obs: Numpy array with obs data
-    Return: Root Mean Square Error
-    """
-    
-    mse = np.nanmean(np.square(np.subtract(model, obs)))
-    rmse = math.sqrt(mse)
-    
-    return rmse
-
-
 def compute_nrmse(model, obs):
 
     """
@@ -58,7 +29,6 @@ def compute_nrmse(model, obs):
 
     return nrmse
        
-
 
 def compute_tss(obs, model):
 
