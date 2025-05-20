@@ -52,7 +52,7 @@ def compute_tss(obs, model):
     return tss
 	
 	
-def compute_pcc(obs, model):
+def compute_corr(obs, model):
 
     """
     The input arrays must have the same dimensions
@@ -62,8 +62,9 @@ def compute_pcc(obs, model):
     """
     
     pcc, pvalue = st.pearsonr(obs, model)
-    
-    return pcc
+    r_squared = pcc ** 2
+
+    return r_squared
            
 	   
 def compute_ivs(obs, model):

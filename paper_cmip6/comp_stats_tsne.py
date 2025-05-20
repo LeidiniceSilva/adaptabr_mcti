@@ -8,6 +8,7 @@ __description__ = "This script plot portrait of cmip6 models"
 import os
 import netCDF4
 import numpy as np
+import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -16,8 +17,8 @@ from dict_cmip6_models_name import cmip6
 from comp_stats_metrics import compute_nrmse, compute_tss, compute_corr, compute_ivs
 
 dt = '197901-201412'
-path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
-
+path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/'
+path_ = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/figs/paper_cmip6/'
 
 def annual_cycle(dataset):
 
@@ -147,8 +148,8 @@ def import_cmip_atm(param, area, model, exp):
 	yr_ts_200 = year_mean(mean_850_ts)
 		
 	return xy_ts_850, xy_ts_500, xy_ts_200, ac_ts_850, ac_ts_500, ac_ts_200, yr_ts_850, yr_ts_500, yr_ts_200
-	
-	      
+	      	
+
 # Import obs database and cmip models
 namz_obs_pr_xy, namz_obs_pr_ac, namz_obs_pr_yr = import_obs_srf('mtpr', 'namz')
 namz_obs_ps_xy, namz_obs_ps_ac, namz_obs_ps_yr = import_obs_srf('sp', 'namz')
@@ -186,30 +187,30 @@ lpb_obs_v850_xy, lpb_obs_v500_xy, lpb_obs_v200_xy, lpb_obs_v850_ac, lpb_obs_v500
 lpb_obs_q850_xy, lpb_obs_q500_xy, lpb_obs_q200_xy, lpb_obs_q850_ac, lpb_obs_q500_ac, lpb_obs_q200_ac, lpb_obs_q850_yr, lpb_obs_q500_yr, lpb_obs_q200_yr = import_obs_atm('q', 'lpb')
 
 # Define variables
-m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200 = [[] for _ in range(14)]
+m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200 = [[] for _ in range(14)]
+m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200 = [[] for _ in range(14)]
+m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200 = [[] for _ in range(14)]
 
-m1_samz_pr, m1_samz_ps, m1_samz_t850, m1_samz_t500, m1_samz_t200, m1_samz_u850, m1_samz_u500, m1_samz_u200, m1_samz_v850, m1_samz_v500, m1_samz_v200, m1_samz_q850, m1_samz_q500, m1_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_samz_pr, m2_samz_ps, m2_samz_t850, m2_samz_t500, m2_samz_t200, m2_samz_u850, m2_samz_u500, m2_samz_u200, m2_samz_v850, m2_samz_v500, m2_samz_v200, m2_samz_q850, m2_samz_q500, m2_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_samz_pr, m3_samz_ps, m3_samz_t850, m3_samz_t500, m3_samz_t200, m3_samz_u850, m3_samz_u500, m3_samz_u200, m3_samz_v850, m3_samz_v500, m3_samz_v200, m3_samz_q850, m3_samz_q500, m3_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_samz_pr, m4_samz_ps, m4_samz_t850, m4_samz_t500, m4_samz_t200, m4_samz_u850, m4_samz_u500, m4_samz_u200, m4_samz_v850, m4_samz_v500, m4_samz_v200, m4_samz_q850, m4_samz_q500, m4_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_samz_pr, m1_samz_ps, m1_samz_t850, m1_samz_t500, m1_samz_t200, m1_samz_u850, m1_samz_u500, m1_samz_u200, m1_samz_v850, m1_samz_v500, m1_samz_v200, m1_samz_q850, m1_samz_q500, m1_samz_q200 = [[] for _ in range(14)]
+m2_samz_pr, m2_samz_ps, m2_samz_t850, m2_samz_t500, m2_samz_t200, m2_samz_u850, m2_samz_u500, m2_samz_u200, m2_samz_v850, m2_samz_v500, m2_samz_v200, m2_samz_q850, m2_samz_q500, m2_samz_q200 = [[] for _ in range(14)]
+m3_samz_pr, m3_samz_ps, m3_samz_t850, m3_samz_t500, m3_samz_t200, m3_samz_u850, m3_samz_u500, m3_samz_u200, m3_samz_v850, m3_samz_v500, m3_samz_v200, m3_samz_q850, m3_samz_q500, m3_samz_q200 = [[] for _ in range(14)]
+m4_samz_pr, m4_samz_ps, m4_samz_t850, m4_samz_t500, m4_samz_t200, m4_samz_u850, m4_samz_u500, m4_samz_u200, m4_samz_v850, m4_samz_v500, m4_samz_v200, m4_samz_q850, m4_samz_q500, m4_samz_q200 = [[] for _ in range(14)]
 
-m1_sam_pr, m1_sam_ps, m1_sam_t850, m1_sam_t500, m1_sam_t200, m1_sam_u850, m1_sam_u500, m1_sam_u200, m1_sam_v850, m1_sam_v500, m1_sam_v200, m1_sam_q850, m1_sam_q500, m1_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_sam_pr, m2_sam_ps, m2_sam_t850, m2_sam_t500, m2_sam_t200, m2_sam_u850, m2_sam_u500, m2_sam_u200, m2_sam_v850, m2_sam_v500, m2_sam_v200, m2_sam_q850, m2_sam_q500, m2_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_sam_pr, m3_sam_ps, m3_sam_t850, m3_sam_t500, m3_sam_t200, m3_sam_u850, m3_sam_u500, m3_sam_u200, m3_sam_v850, m3_sam_v500, m3_sam_v200, m3_sam_q850, m3_sam_q500, m3_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_sam_pr, m4_sam_ps, m4_sam_t850, m4_sam_t500, m4_sam_t200, m4_sam_u850, m4_sam_u500, m4_sam_u200, m4_sam_v850, m4_sam_v500, m4_sam_v200, m4_sam_q850, m4_sam_q500, m4_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_sam_pr, m1_sam_ps, m1_sam_t850, m1_sam_t500, m1_sam_t200, m1_sam_u850, m1_sam_u500, m1_sam_u200, m1_sam_v850, m1_sam_v500, m1_sam_v200, m1_sam_q850, m1_sam_q500, m1_sam_q200 = [[] for _ in range(14)]
+m2_sam_pr, m2_sam_ps, m2_sam_t850, m2_sam_t500, m2_sam_t200, m2_sam_u850, m2_sam_u500, m2_sam_u200, m2_sam_v850, m2_sam_v500, m2_sam_v200, m2_sam_q850, m2_sam_q500, m2_sam_q200 = [[] for _ in range(14)]
+m3_sam_pr, m3_sam_ps, m3_sam_t850, m3_sam_t500, m3_sam_t200, m3_sam_u850, m3_sam_u500, m3_sam_u200, m3_sam_v850, m3_sam_v500, m3_sam_v200, m3_sam_q850, m3_sam_q500, m3_sam_q200 = [[] for _ in range(14)]
+m4_sam_pr, m4_sam_ps, m4_sam_t850, m4_sam_t500, m4_sam_t200, m4_sam_u850, m4_sam_u500, m4_sam_u200, m4_sam_v850, m4_sam_v500, m4_sam_v200, m4_sam_q850, m4_sam_q500, m4_sam_q200 = [[] for _ in range(14)]
 
-m1_neb_pr, m1_neb_ps, m1_neb_t850, m1_neb_t500, m1_neb_t200, m1_neb_u850, m1_neb_u500, m1_neb_u200, m1_neb_v850, m1_neb_v500, m1_neb_v200, m1_neb_q850, m1_neb_q500, m1_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_neb_pr, m2_neb_ps, m2_neb_t850, m2_neb_t500, m2_neb_t200, m2_neb_u850, m2_neb_u500, m2_neb_u200, m2_neb_v850, m2_neb_v500, m2_neb_v200, m2_neb_q850, m2_neb_q500, m2_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_neb_pr, m3_neb_ps, m3_neb_t850, m3_neb_t500, m3_neb_t200, m3_neb_u850, m3_neb_u500, m3_neb_u200, m3_neb_v850, m3_neb_v500, m3_neb_v200, m3_neb_q850, m3_neb_q500, m3_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_neb_pr, m4_neb_ps, m4_neb_t850, m4_neb_t500, m4_neb_t200, m4_neb_u850, m4_neb_u500, m4_neb_u200, m4_neb_v850, m4_neb_v500, m4_neb_v200, m4_neb_q850, m4_neb_q500, m4_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_neb_pr, m1_neb_ps, m1_neb_t850, m1_neb_t500, m1_neb_t200, m1_neb_u850, m1_neb_u500, m1_neb_u200, m1_neb_v850, m1_neb_v500, m1_neb_v200, m1_neb_q850, m1_neb_q500, m1_neb_q200 = [[] for _ in range(14)]
+m2_neb_pr, m2_neb_ps, m2_neb_t850, m2_neb_t500, m2_neb_t200, m2_neb_u850, m2_neb_u500, m2_neb_u200, m2_neb_v850, m2_neb_v500, m2_neb_v200, m2_neb_q850, m2_neb_q500, m2_neb_q200 = [[] for _ in range(14)]
+m3_neb_pr, m3_neb_ps, m3_neb_t850, m3_neb_t500, m3_neb_t200, m3_neb_u850, m3_neb_u500, m3_neb_u200, m3_neb_v850, m3_neb_v500, m3_neb_v200, m3_neb_q850, m3_neb_q500, m3_neb_q200 = [[] for _ in range(14)]
+m4_neb_pr, m4_neb_ps, m4_neb_t850, m4_neb_t500, m4_neb_t200, m4_neb_u850, m4_neb_u500, m4_neb_u200, m4_neb_v850, m4_neb_v500, m4_neb_v200, m4_neb_q850, m4_neb_q500, m4_neb_q200 = [[] for _ in range(14)]
 
-m1_lpb_pr, m1_lpb_ps, m1_lpb_t850, m1_lpb_t500, m1_lpb_t200, m1_lpb_u850, m1_lpb_u500, m1_lpb_u200, m1_lpb_v850, m1_lpb_v500, m1_lpb_v200, m1_lpb_q850, m1_lpb_q500, m1_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_lpb_pr, m2_lpb_ps, m2_lpb_t850, m2_lpb_t500, m2_lpb_t200, m2_lpb_u850, m2_lpb_u500, m2_lpb_u200, m2_lpb_v850, m2_lpb_v500, m2_lpb_v200, m2_lpb_q850, m2_lpb_q500, m2_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_lpb_pr, m3_lpb_ps, m3_lpb_t850, m3_lpb_t500, m3_lpb_t200, m3_lpb_u850, m3_lpb_u500, m3_lpb_u200, m3_lpb_v850, m3_lpb_v500, m3_lpb_v200, m3_lpb_q850, m3_lpb_q500, m3_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_lpb_pr, m4_lpb_ps, m4_lpb_t850, m4_lpb_t500, m4_lpb_t200, m4_lpb_u850, m4_lpb_u500, m4_lpb_u200, m4_lpb_v850, m4_lpb_v500, m4_lpb_v200, m4_lpb_q850, m4_lpb_q500, m4_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_lpb_pr, m1_lpb_ps, m1_lpb_t850, m1_lpb_t500, m1_lpb_t200, m1_lpb_u850, m1_lpb_u500, m1_lpb_u200, m1_lpb_v850, m1_lpb_v500, m1_lpb_v200, m1_lpb_q850, m1_lpb_q500, m1_lpb_q200 = [[] for _ in range(14)]
+m2_lpb_pr, m2_lpb_ps, m2_lpb_t850, m2_lpb_t500, m2_lpb_t200, m2_lpb_u850, m2_lpb_u500, m2_lpb_u200, m2_lpb_v850, m2_lpb_v500, m2_lpb_v200, m2_lpb_q850, m2_lpb_q500, m2_lpb_q200 = [[] for _ in range(14)]
+m3_lpb_pr, m3_lpb_ps, m3_lpb_t850, m3_lpb_t500, m3_lpb_t200, m3_lpb_u850, m3_lpb_u500, m3_lpb_u200, m3_lpb_v850, m3_lpb_v500, m3_lpb_v200, m3_lpb_q850, m3_lpb_q500, m3_lpb_q200 = [[] for _ in range(14)]
+m4_lpb_pr, m4_lpb_ps, m4_lpb_t850, m4_lpb_t500, m4_lpb_t200, m4_lpb_u850, m4_lpb_u500, m4_lpb_u200, m4_lpb_v850, m4_lpb_v500, m4_lpb_v200, m4_lpb_q850, m4_lpb_q500, m4_lpb_q200 = [[] for _ in range(14)]
 
 legend = []
 for i in range(1, 18):
@@ -554,267 +555,56 @@ for i in range(1, 18):
 	m4_lpb_q850.append(compute_ivs(lpb_cmip_q850_yr, lpb_obs_q850_yr))
 	m4_lpb_q500.append(compute_ivs(lpb_cmip_q500_yr, lpb_obs_q500_yr))
 	m4_lpb_q200.append(compute_ivs(lpb_cmip_q200_yr, lpb_obs_q200_yr))
-						
+
 	legend.append(i)
 
-m1_namz = np.array([m1_namz_q200, m1_namz_q500, m1_namz_q850, m1_namz_v200, m1_namz_v500, m1_namz_v850, m1_namz_u200, m1_namz_u500, m1_namz_u850, m1_namz_t200, m1_namz_t500, m1_namz_t850, m1_namz_ps, m1_namz_pr])
-m2_namz = np.array([m2_namz_q200, m2_namz_q500, m2_namz_q850, m2_namz_v200, m2_namz_v500, m2_namz_v850, m2_namz_u200, m2_namz_u500, m2_namz_u850, m2_namz_t200, m2_namz_t500, m2_namz_t850, m2_namz_ps, m2_namz_pr])
-m3_namz = np.array([m3_namz_q200, m3_namz_q500, m3_namz_q850, m3_namz_v200, m3_namz_v500, m3_namz_v850, m3_namz_u200, m3_namz_u500, m3_namz_u850, m3_namz_t200, m3_namz_t500, m3_namz_t850, m3_namz_ps, m3_namz_pr])
-m4_namz = np.array([m4_namz_q200, m4_namz_q500, m4_namz_q850, m4_namz_v200, m4_namz_v500, m4_namz_v850, m4_namz_u200, m4_namz_u500, m4_namz_u850, m4_namz_t200, m4_namz_t500, m4_namz_t850, m4_namz_ps, m4_namz_pr])
+m1_namz = [m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200]
+m2_namz = [m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200]
+m3_namz = [m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200]
+m4_namz = [m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200]
 
-m1_samz = np.array([m1_samz_q200, m1_samz_q500, m1_samz_q850, m1_samz_v200, m1_samz_v500, m1_samz_v850, m1_samz_u200, m1_samz_u500, m1_samz_u850, m1_samz_t200, m1_samz_t500, m1_samz_t850, m1_samz_ps, m1_samz_pr])
-m2_samz = np.array([m2_samz_q200, m2_samz_q500, m2_samz_q850, m2_samz_v200, m2_samz_v500, m2_samz_v850, m2_samz_u200, m2_samz_u500, m2_samz_u850, m2_samz_t200, m2_samz_t500, m2_samz_t850, m2_samz_ps, m2_samz_pr])
-m3_samz = np.array([m3_samz_q200, m3_samz_q500, m3_samz_q850, m3_samz_v200, m3_samz_v500, m3_samz_v850, m3_samz_u200, m3_samz_u500, m3_samz_u850, m3_samz_t200, m3_samz_t500, m3_samz_t850, m3_samz_ps, m3_samz_pr])
-m4_samz = np.array([m4_samz_q200, m4_samz_q500, m4_samz_q850, m4_samz_v200, m4_samz_v500, m4_samz_v850, m4_samz_u200, m4_samz_u500, m4_samz_u850, m4_samz_t200, m4_samz_t500, m4_samz_t850, m4_samz_ps, m4_samz_pr])
+m1_samz = [m1_samz_pr, m1_samz_ps, m1_samz_t850, m1_samz_t500, m1_samz_t200, m1_samz_u850, m1_samz_u500, m1_samz_u200, m1_samz_v850, m1_samz_v500, m1_samz_v200, m1_samz_q850, m1_samz_q500, m1_samz_q200]
+m2_samz = [m2_samz_pr, m2_samz_ps, m2_samz_t850, m2_samz_t500, m2_samz_t200, m2_samz_u850, m2_samz_u500, m2_samz_u200, m2_samz_v850, m2_samz_v500, m2_samz_v200, m2_samz_q850, m2_samz_q500, m2_samz_q200]
+m3_samz = [m3_samz_pr, m3_samz_ps, m3_samz_t850, m3_samz_t500, m3_samz_t200, m3_samz_u850, m3_samz_u500, m3_samz_u200, m3_samz_v850, m3_samz_v500, m3_samz_v200, m3_samz_q850, m3_samz_q500, m3_samz_q200]
+m4_samz = [m4_samz_pr, m4_samz_ps, m4_samz_t850, m4_samz_t500, m4_samz_t200, m4_samz_u850, m4_samz_u500, m4_samz_u200, m4_samz_v850, m4_samz_v500, m4_samz_v200, m4_samz_q850, m4_samz_q500, m4_samz_q200]
+      
+m1_sam = [m1_sam_pr, m1_sam_ps, m1_sam_t850, m1_sam_t500, m1_sam_t200, m1_sam_u850, m1_sam_u500, m1_sam_u200, m1_sam_v850, m1_sam_v500, m1_sam_v200, m1_sam_q850, m1_sam_q500, m1_sam_q200]
+m2_sam = [m2_sam_pr, m2_sam_ps, m2_sam_t850, m2_sam_t500, m2_sam_t200, m2_sam_u850, m2_sam_u500, m2_sam_u200, m2_sam_v850, m2_sam_v500, m2_sam_v200, m2_sam_q850, m2_sam_q500, m2_sam_q200]
+m3_sam = [m3_sam_pr, m3_sam_ps, m3_sam_t850, m3_sam_t500, m3_sam_t200, m3_sam_u850, m3_sam_u500, m3_sam_u200, m3_sam_v850, m3_sam_v500, m3_sam_v200, m3_sam_q850, m3_sam_q500, m3_sam_q200]
+m4_sam = [m4_sam_pr, m4_sam_ps, m4_sam_t850, m4_sam_t500, m4_sam_t200, m4_sam_u850, m4_sam_u500, m4_sam_u200, m4_sam_v850, m4_sam_v500, m4_sam_v200, m4_sam_q850, m4_sam_q500, m4_sam_q200]
+      
+m1_neb = [m1_neb_pr, m1_neb_ps, m1_neb_t850, m1_neb_t500, m1_neb_t200, m1_neb_u850, m1_neb_u500, m1_neb_u200, m1_neb_v850, m1_sam_v500, m1_neb_v200, m1_neb_q850, m1_neb_q500, m1_neb_q200]
+m2_neb = [m2_neb_pr, m2_neb_ps, m2_neb_t850, m2_neb_t500, m2_neb_t200, m2_neb_u850, m2_neb_u500, m2_neb_u200, m2_neb_v850, m2_sam_v500, m2_neb_v200, m2_neb_q850, m2_neb_q500, m2_neb_q200]
+m3_neb = [m3_neb_pr, m3_neb_ps, m3_neb_t850, m3_neb_t500, m3_neb_t200, m3_neb_u850, m3_neb_u500, m3_neb_u200, m3_neb_v850, m3_sam_v500, m3_neb_v200, m3_neb_q850, m3_neb_q500, m3_neb_q200]
+m4_neb = [m4_neb_pr, m4_neb_ps, m4_neb_t850, m4_neb_t500, m4_neb_t200, m4_neb_u850, m4_neb_u500, m4_neb_u200, m4_neb_v850, m4_sam_v500, m4_neb_v200, m4_neb_q850, m4_neb_q500, m4_neb_q200]     
 
-m1_sam = np.array([m1_sam_q200, m1_sam_q500, m1_sam_q850, m1_sam_v200, m1_sam_v500, m1_sam_v850, m1_sam_u200, m1_sam_u500, m1_sam_u850, m1_sam_t200, m1_sam_t500, m1_sam_t850, m1_sam_ps, m1_sam_pr])
-m2_sam = np.array([m2_sam_q200, m2_sam_q500, m2_sam_q850, m2_sam_v200, m2_sam_v500, m2_sam_v850, m2_sam_u200, m2_sam_u500, m2_sam_u850, m2_sam_t200, m2_sam_t500, m2_sam_t850, m2_sam_ps, m2_sam_pr])
-m3_sam = np.array([m3_sam_q200, m3_sam_q500, m3_sam_q850, m3_sam_v200, m3_sam_v500, m3_sam_v850, m3_sam_u200, m3_sam_u500, m3_sam_u850, m3_sam_t200, m3_sam_t500, m3_sam_t850, m3_sam_ps, m3_sam_pr])
-m4_sam = np.array([m4_sam_q200, m4_sam_q500, m4_sam_q850, m4_sam_v200, m4_sam_v500, m4_sam_v850, m4_sam_u200, m4_sam_u500, m4_sam_u850, m4_sam_t200, m4_sam_t500, m4_sam_t850, m4_sam_ps, m4_sam_pr])
+m1_lpb = [m1_lpb_pr, m1_lpb_ps, m1_lpb_t850, m1_lpb_t500, m1_lpb_t200, m1_lpb_u850, m1_lpb_u500, m1_lpb_u200, m1_lpb_v850, m1_lpb_v500, m1_lpb_v200, m1_lpb_q850, m1_lpb_q500, m1_lpb_q200]
+m2_lpb = [m2_lpb_pr, m2_lpb_ps, m2_lpb_t850, m2_lpb_t500, m2_lpb_t200, m2_lpb_u850, m2_lpb_u500, m2_lpb_u200, m2_lpb_v850, m2_lpb_v500, m2_lpb_v200, m2_lpb_q850, m2_lpb_q500, m2_lpb_q200]
+m3_lpb = [m3_lpb_pr, m3_lpb_ps, m3_lpb_t850, m3_lpb_t500, m3_lpb_t200, m3_lpb_u850, m3_lpb_u500, m3_lpb_u200, m3_lpb_v850, m3_lpb_v500, m3_lpb_v200, m3_lpb_q850, m3_lpb_q500, m3_lpb_q200]
+m4_lpb = [m4_lpb_pr, m4_lpb_ps, m4_neb_t850, m4_lpb_t500, m4_lpb_t200, m4_lpb_u850, m4_lpb_u500, m4_lpb_u200, m4_lpb_v850, m4_lpb_v500, m4_lpb_v200, m4_lpb_q850, m4_lpb_q500, m4_lpb_q200] 
+   
+models = ['ACCESS-CM2','BCC-CSM2-MR','CanESM5','CMCC-ESM2','CNRM-CM6-1','CNRM-ESM2-1','GFDL-ESM4','INM-CM4-8','INM-CM5-0','KIOST-ESM','MIROC6','MIROC-ES2L','MPI-ESM1-2-HR','MPI-ESM1-2-LR','MRI-ESM2-0','NESM3','NorESM2-MM']
+variables = ['pr', 'ps', 't850', 't500', 't200', 'u850', 'u500', 'u200', 'v850', 'v500', 'v200', 'q850', 'q500', 'q200']
+regions = ['samz', 'namz', 'sam', 'neb', 'lpb']
+metrics = ['nrmse', 'tss', 'r2', 'ivs']
+       
+data = {'namz': {'nrmse': m1_namz, 'tss': m2_namz, 'r2': m3_namz, 'ivs': m4_namz,},
+'samz': {'nrmse': m1_samz, 'tss': m2_samz, 'r2': m3_samz, 'ivs': m4_samz,},
+'sam': {'nrmse': m1_sam, 'tss': m2_sam, 'r2': m3_sam, 'ivs': m4_sam,},
+'neb': {'nrmse': m1_neb, 'tss': m2_neb, 'r2': m3_neb, 'ivs': m4_neb,},
+'lpb': {'nrmse': m1_lpb, 'tss': m2_lpb, 'r2': m3_lpb, 'ivs': m4_lpb,}}
 
-m1_neb = np.array([m1_neb_q200, m1_neb_q500, m1_neb_q850, m1_neb_v200, m1_neb_v500, m1_neb_v850, m1_neb_u200, m1_neb_u500, m1_neb_u850, m1_neb_t200, m1_neb_t500, m1_neb_t850, m1_neb_ps, m1_neb_pr])
-m2_neb = np.array([m2_neb_q200, m2_neb_q500, m2_neb_q850, m2_neb_v200, m2_neb_v500, m2_neb_v850, m2_neb_u200, m2_neb_u500, m2_neb_u850, m2_neb_t200, m2_neb_t500, m2_neb_t850, m2_neb_ps, m2_neb_pr])
-m3_neb = np.array([m3_neb_q200, m3_neb_q500, m3_neb_q850, m3_neb_v200, m3_neb_v500, m3_neb_v850, m3_neb_u200, m3_neb_u500, m3_neb_u850, m3_neb_t200, m3_neb_t500, m3_neb_t850, m3_neb_ps, m3_neb_pr])
-m4_neb = np.array([m4_neb_q200, m4_neb_q500, m4_neb_q850, m4_neb_v200, m4_neb_v500, m4_neb_v850, m4_neb_u200, m4_neb_u500, m4_neb_u850, m4_neb_t200, m4_neb_t500, m4_neb_t850, m4_neb_ps, m4_neb_pr])
-
-m1_lpb = np.array([m1_lpb_q200, m1_lpb_q500, m1_lpb_q850, m1_lpb_v200, m1_lpb_v500, m1_lpb_v850, m1_lpb_u200, m1_lpb_u500, m1_lpb_u850, m1_lpb_t200, m1_lpb_t500, m1_lpb_t850, m1_lpb_ps, m1_lpb_pr])
-m2_lpb = np.array([m2_lpb_q200, m2_lpb_q500, m2_lpb_q850, m2_lpb_v200, m2_lpb_v500, m2_lpb_v850, m2_lpb_u200, m2_lpb_u500, m2_lpb_u850, m2_lpb_t200, m2_lpb_t500, m2_lpb_t850, m2_lpb_ps, m2_lpb_pr])
-m3_lpb = np.array([m3_lpb_q200, m3_lpb_q500, m3_lpb_q850, m3_lpb_v200, m3_lpb_v500, m3_lpb_v850, m3_lpb_u200, m3_lpb_u500, m3_lpb_u850, m3_lpb_t200, m3_lpb_t500, m3_lpb_t850, m3_lpb_ps, m3_lpb_pr])
-m4_lpb = np.array([m4_lpb_q200, m4_lpb_q500, m4_lpb_q850, m4_lpb_v200, m4_lpb_v500, m4_lpb_v850, m4_lpb_u200, m4_lpb_u500, m4_lpb_u850, m4_lpb_t200, m4_lpb_t500, m4_lpb_t850, m4_lpb_ps, m4_lpb_pr])
-
-# Plot cmip models and obs database 
-fig = plt.figure(figsize=(10, 12))
-
-norm_m1 = colors.BoundaryNorm(boundaries=np.arange(0, 1.1, 0.1), ncolors=256)
-norm_m2 = colors.BoundaryNorm(boundaries=np.arange(0, 1.1, 0.1), ncolors=256)
-norm_m3 = colors.BoundaryNorm(boundaries=np.arange(0, 1.1, 0.1), ncolors=256)
-norm_m4 = colors.BoundaryNorm(boundaries=np.arange(0, 2.2, 0.2), ncolors=256)
-
-color_m1 = cm.Blues
-color_m2 = cm.Reds
-color_m3 = cm.Greys
-color_m4 = cm.Greens
-
-xlabels = legend
-ylabels = ['Q200', 'Q500', 'Q850', 'V200', 'V500', 'V850', 'U200', 'U500', 'U850', 'T200', 'T500', 'T850', 'SP', 'Pr']
+# Loop in each region and metric
+for region in regions:
+	for metric in metrics:
 	
-ax = fig.add_subplot(5, 4, 1)  
-pcm = ax.pcolormesh(m1_namz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_title(u'(a)', loc='left', fontweight='bold', fontsize=8)
-ax.set_ylabel('NAMZ', fontsize=8)
-ax.set_xticks(np.arange(m1_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m1_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 2)  
-pcm = ax.pcolormesh(m2_namz, edgecolors='white', linewidths=2., norm=norm_m2, cmap=color_m2)
-ax.set_title(u'(b)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m2_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m2_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 3)  
-pcm = ax.pcolormesh(m3_namz, edgecolors='white', linewidths=2., norm=norm_m3, cmap=color_m3)
-ax.set_title(u'(c)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m3_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m3_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 4)  
-pcm = ax.pcolormesh(m4_namz, edgecolors='white', linewidths=2., norm=norm_m4, cmap=color_m4)
-ax.set_title(u'(d)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m4_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m4_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 5)  
-pcm = ax.pcolormesh(m1_samz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_title(u'(e)', loc='left', fontweight='bold', fontsize=8)
-ax.set_ylabel('SAMZ', fontsize=8)
-ax.set_xticks(np.arange(m1_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m1_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 6)  
-pcm = ax.pcolormesh(m2_samz, edgecolors='white', linewidths=2., norm=norm_m2, cmap=color_m2)
-ax.set_title(u'(f)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m2_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m2_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 7)  
-pcm = ax.pcolormesh(m3_samz, edgecolors='white', linewidths=2., norm=norm_m3, cmap=color_m3)
-ax.set_title(u'(g)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m3_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m3_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 8)  
-pcm = ax.pcolormesh(m4_samz, edgecolors='white', linewidths=2., norm=norm_m4, cmap=color_m4)
-ax.set_title(u'(h)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m4_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m4_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 9)  
-pcm = ax.pcolormesh(m1_sam, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_title(u'(i)', loc='left', fontweight='bold', fontsize=8)
-ax.set_ylabel('SAM', fontsize=8)
-ax.set_xticks(np.arange(m1_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m1_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 10)  
-pcm = ax.pcolormesh(m2_sam, edgecolors='white', linewidths=2., norm=norm_m2, cmap=color_m2)
-ax.set_title(u'(j)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m2_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m2_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 11)  
-pcm = ax.pcolormesh(m3_sam, edgecolors='white', linewidths=2., norm=norm_m3, cmap=color_m3)
-ax.set_title(u'(k)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m3_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m3_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 12)  
-pcm = ax.pcolormesh(m4_sam, edgecolors='white', linewidths=2., norm=norm_m4, cmap=color_m4)
-ax.set_title(u'(l)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m4_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m4_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 13)  
-pcm = ax.pcolormesh(m1_neb, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_title(u'(m)', loc='left', fontweight='bold', fontsize=8)
-ax.set_ylabel('NEB', fontsize=8)
-ax.set_xticks(np.arange(m1_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m1_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 14)  
-pcm = ax.pcolormesh(m2_neb, edgecolors='white', linewidths=2., norm=norm_m2, cmap=color_m2)
-ax.set_title(u'(n)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m2_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m2_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 15)  
-pcm = ax.pcolormesh(m3_neb, edgecolors='white', linewidths=2., norm=norm_m3, cmap=color_m3)
-ax.set_title(u'(o)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m3_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m3_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 16)  
-pcm = ax.pcolormesh(m4_neb, edgecolors='white', linewidths=2., norm=norm_m4, cmap=color_m4)
-ax.set_title(u'(p)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(m4_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m4_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_xticklabels(), visible=False)
-plt.setp(ax.get_yticklabels(), visible=False)
-
-ax = fig.add_subplot(5, 4, 17)  
-pcm = ax.pcolormesh(m1_lpb, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_title(u'(q)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xlabel('NRMSE', fontsize=8)
-ax.set_ylabel('LPB', fontsize=8)
-ax.set_xticks(np.arange(m1_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m1_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.12, 0.06, 0.18, 0.01]), orientation='horizontal')
-clb.ax.tick_params(labelsize=8)
-
-ax = fig.add_subplot(5, 4, 18)  
-pcm = ax.pcolormesh(m2_lpb, edgecolors='white', linewidths=2., norm=norm_m2, cmap=color_m2)
-ax.set_title(u'(r)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xlabel('TSS', fontsize=8)
-ax.set_xticks(np.arange(m2_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m2_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_yticklabels(), visible=False)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.32, 0.06, 0.18, 0.01]), orientation='horizontal')
-clb.ax.tick_params(labelsize=8)
-
-ax = fig.add_subplot(5, 4, 19)  
-pcm = ax.pcolormesh(m3_lpb, edgecolors='white', linewidths=2., norm=norm_m3, cmap=color_m3)
-ax.set_title(u'(s)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xlabel('R-squared', fontsize=8)
-ax.set_xticks(np.arange(m3_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m3_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_yticklabels(), visible=False)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.52, 0.06, 0.18, 0.01]), orientation='horizontal')
-clb.ax.tick_params(labelsize=8)
-
-ax = fig.add_subplot(5, 4, 20)  
-pcm = ax.pcolormesh(m4_lpb, edgecolors='white', linewidths=2., norm=norm_m4, cmap=color_m4)
-ax.set_title(u'(t)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xlabel('IVS', fontsize=8)
-ax.set_xticks(np.arange(m4_namz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(m4_namz.shape[0]) + 0.5)
-ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
-ax.set_yticklabels(ylabels, fontsize=8)
-plt.setp(ax.get_yticklabels(), visible=False)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.72, 0.06, 0.18, 0.01]), orientation='horizontal')
-clb.ax.tick_params(labelsize=8)
-
-# Path out to save figure
-path_out = '{0}/figs/paper_cmip6'.format(path)
-name_out = 'pyplt_portrait_stats_metrics_cmip6_obs_{0}.png'.format(dt)
-plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
-plt.show()
-exit()
-
-
-
-
-
+		metric_data = data[region][metric]
+		rows = list(zip(*metric_data))
+		df = pd.DataFrame(rows, columns=variables)
+		df.insert(0, 'model', models)
+		filename = f'{region}_{metric}_metrics.csv'
+		full_path = path_ + filename
+		df.to_csv(full_path, index=False)
+        
+        
 

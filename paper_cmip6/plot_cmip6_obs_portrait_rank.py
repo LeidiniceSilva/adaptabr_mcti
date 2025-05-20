@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 from dict_cmip6_models_name import cmip6
-from comp_stats_metrics import compute_nrmse, compute_tss, compute_pcc, compute_ivs
+from comp_stats_metrics import compute_nrmse, compute_tss, compute_corr, compute_ivs
 
 dt = '197901-201412'
-path  = '/marconi/home/userexternal/mdasilva/user/mdasilva/CMIP6'
+path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
 
 
 def annual_cycle(dataset):
@@ -51,7 +51,7 @@ def latlon(dataset):
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
@@ -70,7 +70,7 @@ def import_obs_srf(param, area):
 def import_obs_atm(param, area):
 	
 	
-	arq  = '{0}/database/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
@@ -101,7 +101,7 @@ def import_obs_atm(param, area):
 		
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -120,7 +120,7 @@ def import_cmip_srf(param, area, model, exp):
 def import_cmip_atm(param, area, model, exp):
 	
 	
-	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -186,32 +186,6 @@ def sort_list(data_list):
 		data_argsort_i.append(idx+1)
 
 	return data_argsort_i
-
-
-def sort_list_reverse(data_list):
-	
-	li = []
-	for i in range(len(data_list)):
-		li.append([data_list[i], i])
-	  
-	li.sort(reverse=True)
-	sort_index = []
-	for x in li:
-		sort_index.append(x[1])
-
-	model_list = []
-	value_list = []
-	for ii in sort_index:
-		model_list.append(cmip6[ii+1][0])
-		value_list.append(data_list[ii])
-
-	data_argsort = np.argsort(model_list)
-	
-	data_argsort_ii = []
-	for idx in data_argsort:
-		data_argsort_ii.append(idx+1)
-	
-	return data_argsort_ii
 	
 
 # Import obs database and cmip models
@@ -251,36 +225,30 @@ lpb_obs_v850_xy, lpb_obs_v500_xy, lpb_obs_v200_xy, lpb_obs_v850_ac, lpb_obs_v500
 lpb_obs_q850_xy, lpb_obs_q500_xy, lpb_obs_q200_xy, lpb_obs_q850_ac, lpb_obs_q500_ac, lpb_obs_q200_ac, lpb_obs_q850_yr, lpb_obs_q500_yr, lpb_obs_q200_yr = import_obs_atm('q', 'lpb')
 
 # Define variables
-m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200 = [[] for _ in range(14)]
+m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200 = [[] for _ in range(14)]
+m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200 = [[] for _ in range(14)]
+m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200 = [[] for _ in range(14)]
 
-# Define variables
-m1_namz_pr, m1_namz_ps, m1_namz_t850, m1_namz_t500, m1_namz_t200, m1_namz_u850, m1_namz_u500, m1_namz_u200, m1_namz_v850, m1_namz_v500, m1_namz_v200, m1_namz_q850, m1_namz_q500, m1_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_namz_pr, m2_namz_ps, m2_namz_t850, m2_namz_t500, m2_namz_t200, m2_namz_u850, m2_namz_u500, m2_namz_u200, m2_namz_v850, m2_namz_v500, m2_namz_v200, m2_namz_q850, m2_namz_q500, m2_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_namz_pr, m3_namz_ps, m3_namz_t850, m3_namz_t500, m3_namz_t200, m3_namz_u850, m3_namz_u500, m3_namz_u200, m3_namz_v850, m3_namz_v500, m3_namz_v200, m3_namz_q850, m3_namz_q500, m3_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_namz_pr, m4_namz_ps, m4_namz_t850, m4_namz_t500, m4_namz_t200, m4_namz_u850, m4_namz_u500, m4_namz_u200, m4_namz_v850, m4_namz_v500, m4_namz_v200, m4_namz_q850, m4_namz_q500, m4_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_samz_pr, m1_samz_ps, m1_samz_t850, m1_samz_t500, m1_samz_t200, m1_samz_u850, m1_samz_u500, m1_samz_u200, m1_samz_v850, m1_samz_v500, m1_samz_v200, m1_samz_q850, m1_samz_q500, m1_samz_q200 = [[] for _ in range(14)]
+m2_samz_pr, m2_samz_ps, m2_samz_t850, m2_samz_t500, m2_samz_t200, m2_samz_u850, m2_samz_u500, m2_samz_u200, m2_samz_v850, m2_samz_v500, m2_samz_v200, m2_samz_q850, m2_samz_q500, m2_samz_q200 = [[] for _ in range(14)]
+m3_samz_pr, m3_samz_ps, m3_samz_t850, m3_samz_t500, m3_samz_t200, m3_samz_u850, m3_samz_u500, m3_samz_u200, m3_samz_v850, m3_samz_v500, m3_samz_v200, m3_samz_q850, m3_samz_q500, m3_samz_q200 = [[] for _ in range(14)]
+m4_samz_pr, m4_samz_ps, m4_samz_t850, m4_samz_t500, m4_samz_t200, m4_samz_u850, m4_samz_u500, m4_samz_u200, m4_samz_v850, m4_samz_v500, m4_samz_v200, m4_samz_q850, m4_samz_q500, m4_samz_q200 = [[] for _ in range(14)]
 
-m1_samz_pr, m1_samz_ps, m1_samz_t850, m1_samz_t500, m1_samz_t200, m1_samz_u850, m1_samz_u500, m1_samz_u200, m1_samz_v850, m1_samz_v500, m1_samz_v200, m1_samz_q850, m1_samz_q500, m1_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_samz_pr, m2_samz_ps, m2_samz_t850, m2_samz_t500, m2_samz_t200, m2_samz_u850, m2_samz_u500, m2_samz_u200, m2_samz_v850, m2_samz_v500, m2_samz_v200, m2_samz_q850, m2_samz_q500, m2_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_samz_pr, m3_samz_ps, m3_samz_t850, m3_samz_t500, m3_samz_t200, m3_samz_u850, m3_samz_u500, m3_samz_u200, m3_samz_v850, m3_samz_v500, m3_samz_v200, m3_samz_q850, m3_samz_q500, m3_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_samz_pr, m4_samz_ps, m4_samz_t850, m4_samz_t500, m4_samz_t200, m4_samz_u850, m4_samz_u500, m4_samz_u200, m4_samz_v850, m4_samz_v500, m4_samz_v200, m4_samz_q850, m4_samz_q500, m4_samz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_sam_pr, m1_sam_ps, m1_sam_t850, m1_sam_t500, m1_sam_t200, m1_sam_u850, m1_sam_u500, m1_sam_u200, m1_sam_v850, m1_sam_v500, m1_sam_v200, m1_sam_q850, m1_sam_q500, m1_sam_q200 = [[] for _ in range(14)]
+m2_sam_pr, m2_sam_ps, m2_sam_t850, m2_sam_t500, m2_sam_t200, m2_sam_u850, m2_sam_u500, m2_sam_u200, m2_sam_v850, m2_sam_v500, m2_sam_v200, m2_sam_q850, m2_sam_q500, m2_sam_q200 = [[] for _ in range(14)]
+m3_sam_pr, m3_sam_ps, m3_sam_t850, m3_sam_t500, m3_sam_t200, m3_sam_u850, m3_sam_u500, m3_sam_u200, m3_sam_v850, m3_sam_v500, m3_sam_v200, m3_sam_q850, m3_sam_q500, m3_sam_q200 = [[] for _ in range(14)]
+m4_sam_pr, m4_sam_ps, m4_sam_t850, m4_sam_t500, m4_sam_t200, m4_sam_u850, m4_sam_u500, m4_sam_u200, m4_sam_v850, m4_sam_v500, m4_sam_v200, m4_sam_q850, m4_sam_q500, m4_sam_q200 = [[] for _ in range(14)]
 
-m1_sam_pr, m1_sam_ps, m1_sam_t850, m1_sam_t500, m1_sam_t200, m1_sam_u850, m1_sam_u500, m1_sam_u200, m1_sam_v850, m1_sam_v500, m1_sam_v200, m1_sam_q850, m1_sam_q500, m1_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_sam_pr, m2_sam_ps, m2_sam_t850, m2_sam_t500, m2_sam_t200, m2_sam_u850, m2_sam_u500, m2_sam_u200, m2_sam_v850, m2_sam_v500, m2_sam_v200, m2_sam_q850, m2_sam_q500, m2_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_sam_pr, m3_sam_ps, m3_sam_t850, m3_sam_t500, m3_sam_t200, m3_sam_u850, m3_sam_u500, m3_sam_u200, m3_sam_v850, m3_sam_v500, m3_sam_v200, m3_sam_q850, m3_sam_q500, m3_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_sam_pr, m4_sam_ps, m4_sam_t850, m4_sam_t500, m4_sam_t200, m4_sam_u850, m4_sam_u500, m4_sam_u200, m4_sam_v850, m4_sam_v500, m4_sam_v200, m4_sam_q850, m4_sam_q500, m4_sam_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_neb_pr, m1_neb_ps, m1_neb_t850, m1_neb_t500, m1_neb_t200, m1_neb_u850, m1_neb_u500, m1_neb_u200, m1_neb_v850, m1_neb_v500, m1_neb_v200, m1_neb_q850, m1_neb_q500, m1_neb_q200 = [[] for _ in range(14)]
+m2_neb_pr, m2_neb_ps, m2_neb_t850, m2_neb_t500, m2_neb_t200, m2_neb_u850, m2_neb_u500, m2_neb_u200, m2_neb_v850, m2_neb_v500, m2_neb_v200, m2_neb_q850, m2_neb_q500, m2_neb_q200 = [[] for _ in range(14)]
+m3_neb_pr, m3_neb_ps, m3_neb_t850, m3_neb_t500, m3_neb_t200, m3_neb_u850, m3_neb_u500, m3_neb_u200, m3_neb_v850, m3_neb_v500, m3_neb_v200, m3_neb_q850, m3_neb_q500, m3_neb_q200 = [[] for _ in range(14)]
+m4_neb_pr, m4_neb_ps, m4_neb_t850, m4_neb_t500, m4_neb_t200, m4_neb_u850, m4_neb_u500, m4_neb_u200, m4_neb_v850, m4_neb_v500, m4_neb_v200, m4_neb_q850, m4_neb_q500, m4_neb_q200 = [[] for _ in range(14)]
 
-m1_neb_pr, m1_neb_ps, m1_neb_t850, m1_neb_t500, m1_neb_t200, m1_neb_u850, m1_neb_u500, m1_neb_u200, m1_neb_v850, m1_neb_v500, m1_neb_v200, m1_neb_q850, m1_neb_q500, m1_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_neb_pr, m2_neb_ps, m2_neb_t850, m2_neb_t500, m2_neb_t200, m2_neb_u850, m2_neb_u500, m2_neb_u200, m2_neb_v850, m2_neb_v500, m2_neb_v200, m2_neb_q850, m2_neb_q500, m2_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_neb_pr, m3_neb_ps, m3_neb_t850, m3_neb_t500, m3_neb_t200, m3_neb_u850, m3_neb_u500, m3_neb_u200, m3_neb_v850, m3_neb_v500, m3_neb_v200, m3_neb_q850, m3_neb_q500, m3_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_neb_pr, m4_neb_ps, m4_neb_t850, m4_neb_t500, m4_neb_t200, m4_neb_u850, m4_neb_u500, m4_neb_u200, m4_neb_v850, m4_neb_v500, m4_neb_v200, m4_neb_q850, m4_neb_q500, m4_neb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-
-m1_lpb_pr, m1_lpb_ps, m1_lpb_t850, m1_lpb_t500, m1_lpb_t200, m1_lpb_u850, m1_lpb_u500, m1_lpb_u200, m1_lpb_v850, m1_lpb_v500, m1_lpb_v200, m1_lpb_q850, m1_lpb_q500, m1_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m2_lpb_pr, m2_lpb_ps, m2_lpb_t850, m2_lpb_t500, m2_lpb_t200, m2_lpb_u850, m2_lpb_u500, m2_lpb_u200, m2_lpb_v850, m2_lpb_v500, m2_lpb_v200, m2_lpb_q850, m2_lpb_q500, m2_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m3_lpb_pr, m3_lpb_ps, m3_lpb_t850, m3_lpb_t500, m3_lpb_t200, m3_lpb_u850, m3_lpb_u500, m3_lpb_u200, m3_lpb_v850, m3_lpb_v500, m3_lpb_v200, m3_lpb_q850, m3_lpb_q500, m3_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
-m4_lpb_pr, m4_lpb_ps, m4_lpb_t850, m4_lpb_t500, m4_lpb_t200, m4_lpb_u850, m4_lpb_u500, m4_lpb_u200, m4_lpb_v850, m4_lpb_v500, m4_lpb_v200, m4_lpb_q850, m4_lpb_q500, m4_lpb_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+m1_lpb_pr, m1_lpb_ps, m1_lpb_t850, m1_lpb_t500, m1_lpb_t200, m1_lpb_u850, m1_lpb_u500, m1_lpb_u200, m1_lpb_v850, m1_lpb_v500, m1_lpb_v200, m1_lpb_q850, m1_lpb_q500, m1_lpb_q200 = [[] for _ in range(14)]
+m2_lpb_pr, m2_lpb_ps, m2_lpb_t850, m2_lpb_t500, m2_lpb_t200, m2_lpb_u850, m2_lpb_u500, m2_lpb_u200, m2_lpb_v850, m2_lpb_v500, m2_lpb_v200, m2_lpb_q850, m2_lpb_q500, m2_lpb_q200 = [[] for _ in range(14)]
+m3_lpb_pr, m3_lpb_ps, m3_lpb_t850, m3_lpb_t500, m3_lpb_t200, m3_lpb_u850, m3_lpb_u500, m3_lpb_u200, m3_lpb_v850, m3_lpb_v500, m3_lpb_v200, m3_lpb_q850, m3_lpb_q500, m3_lpb_q200 = [[] for _ in range(14)]
+m4_lpb_pr, m4_lpb_ps, m4_lpb_t850, m4_lpb_t500, m4_lpb_t200, m4_lpb_u850, m4_lpb_u500, m4_lpb_u200, m4_lpb_v850, m4_lpb_v500, m4_lpb_v200, m4_lpb_q850, m4_lpb_q500, m4_lpb_q200 = [[] for _ in range(14)]
 
 legend = []
 for i in range(1, 18):
@@ -321,7 +289,7 @@ for i in range(1, 18):
 	lpb_cmip_v850_xy, lpb_cmip_v500_xy, lpb_cmip_v200_xy, lpb_cmip_v850_ac, lpb_cmip_v500_ac, lpb_cmip_v200_ac, lpb_cmip_v850_yr, lpb_cmip_v500_yr, lpb_cmip_v200_yr = import_cmip_atm('va', 'lpb', cmip6[i][0], cmip6[i][1])
 	lpb_cmip_q850_xy, lpb_cmip_q500_xy, lpb_cmip_q200_xy, lpb_cmip_q850_ac, lpb_cmip_q500_ac, lpb_cmip_q200_ac, lpb_cmip_q850_yr, lpb_cmip_q500_yr, lpb_cmip_q200_yr = import_cmip_atm('hus', 'lpb', cmip6[i][0], cmip6[i][1])
 
-# NAMZ
+	# NAMZ
 	m1_namz_pr.append(compute_nrmse(namz_cmip_pr_xy, namz_obs_pr_xy))
 	m1_namz_ps.append(compute_nrmse(namz_cmip_ps_xy, namz_obs_ps_xy))
 	m1_namz_t850.append(compute_nrmse(namz_cmip_t850_xy, namz_obs_t850_xy))
@@ -352,20 +320,20 @@ for i in range(1, 18):
 	m2_namz_q500.append(compute_tss(namz_cmip_q500_xy, namz_obs_q500_xy))
 	m2_namz_q200.append(compute_tss(namz_cmip_q200_xy, namz_obs_q200_xy))
 
-	m3_namz_pr.append(compute_pcc(namz_cmip_pr_ac, namz_obs_pr_ac))
-	m3_namz_ps.append(compute_pcc(namz_cmip_ps_ac, namz_obs_ps_ac))
-	m3_namz_t850.append(compute_pcc(namz_cmip_t850_ac, namz_obs_t850_ac))
-	m3_namz_t500.append(compute_pcc(namz_cmip_t500_ac, namz_obs_t500_ac))
-	m3_namz_t200.append(compute_pcc(namz_cmip_t200_ac, namz_obs_t200_ac))
-	m3_namz_u850.append(compute_pcc(namz_cmip_u850_ac, namz_obs_u850_ac))
-	m3_namz_u500.append(compute_pcc(namz_cmip_u500_ac, namz_obs_u500_ac))
-	m3_namz_u200.append(compute_pcc(namz_cmip_u200_ac, namz_obs_u200_ac))
-	m3_namz_v850.append(compute_pcc(namz_cmip_v850_ac, namz_obs_v850_ac))
-	m3_namz_v500.append(compute_pcc(namz_cmip_v500_ac, namz_obs_v500_ac))
-	m3_namz_v200.append(compute_pcc(namz_cmip_v200_ac, namz_obs_v200_ac))
-	m3_namz_q850.append(compute_pcc(namz_cmip_q850_ac, namz_obs_q850_ac))
-	m3_namz_q500.append(compute_pcc(namz_cmip_q500_ac, namz_obs_q500_ac))
-	m3_namz_q200.append(compute_pcc(namz_cmip_q200_ac, namz_obs_q200_ac))
+	m3_namz_pr.append(compute_corr(namz_cmip_pr_ac, namz_obs_pr_ac))
+	m3_namz_ps.append(compute_corr(namz_cmip_ps_ac, namz_obs_ps_ac))
+	m3_namz_t850.append(compute_corr(namz_cmip_t850_ac, namz_obs_t850_ac))
+	m3_namz_t500.append(compute_corr(namz_cmip_t500_ac, namz_obs_t500_ac))
+	m3_namz_t200.append(compute_corr(namz_cmip_t200_ac, namz_obs_t200_ac))
+	m3_namz_u850.append(compute_corr(namz_cmip_u850_ac, namz_obs_u850_ac))
+	m3_namz_u500.append(compute_corr(namz_cmip_u500_ac, namz_obs_u500_ac))
+	m3_namz_u200.append(compute_corr(namz_cmip_u200_ac, namz_obs_u200_ac))
+	m3_namz_v850.append(compute_corr(namz_cmip_v850_ac, namz_obs_v850_ac))
+	m3_namz_v500.append(compute_corr(namz_cmip_v500_ac, namz_obs_v500_ac))
+	m3_namz_v200.append(compute_corr(namz_cmip_v200_ac, namz_obs_v200_ac))
+	m3_namz_q850.append(compute_corr(namz_cmip_q850_ac, namz_obs_q850_ac))
+	m3_namz_q500.append(compute_corr(namz_cmip_q500_ac, namz_obs_q500_ac))
+	m3_namz_q200.append(compute_corr(namz_cmip_q200_ac, namz_obs_q200_ac))
 
 	m4_namz_pr.append(compute_ivs(namz_cmip_pr_yr, namz_obs_pr_yr))
 	m4_namz_ps.append(compute_ivs(namz_cmip_ps_yr, namz_obs_ps_yr))
@@ -413,20 +381,20 @@ for i in range(1, 18):
 	m2_samz_q500.append(compute_tss(samz_cmip_q500_xy, samz_obs_q500_xy))
 	m2_samz_q200.append(compute_tss(samz_cmip_q200_xy, samz_obs_q200_xy))
 
-	m3_samz_pr.append(compute_pcc(samz_cmip_pr_ac, samz_obs_pr_ac))
-	m3_samz_ps.append(compute_pcc(samz_cmip_ps_ac, samz_obs_ps_ac))
-	m3_samz_t850.append(compute_pcc(samz_cmip_t850_ac, samz_obs_t850_ac))
-	m3_samz_t500.append(compute_pcc(samz_cmip_t500_ac, samz_obs_t500_ac))
-	m3_samz_t200.append(compute_pcc(samz_cmip_t200_ac, samz_obs_t200_ac))
-	m3_samz_u850.append(compute_pcc(samz_cmip_u850_ac, samz_obs_u850_ac))
-	m3_samz_u500.append(compute_pcc(samz_cmip_u500_ac, samz_obs_u500_ac))
-	m3_samz_u200.append(compute_pcc(samz_cmip_u200_ac, samz_obs_u200_ac))
-	m3_samz_v850.append(compute_pcc(samz_cmip_v850_ac, samz_obs_v850_ac))
-	m3_samz_v500.append(compute_pcc(samz_cmip_v500_ac, samz_obs_v500_ac))
-	m3_samz_v200.append(compute_pcc(samz_cmip_v200_ac, samz_obs_v200_ac))
-	m3_samz_q850.append(compute_pcc(samz_cmip_q850_ac, samz_obs_q850_ac))
-	m3_samz_q500.append(compute_pcc(samz_cmip_q500_ac, samz_obs_q500_ac))
-	m3_samz_q200.append(compute_pcc(samz_cmip_q200_ac, samz_obs_q200_ac))
+	m3_samz_pr.append(compute_corr(samz_cmip_pr_ac, samz_obs_pr_ac))
+	m3_samz_ps.append(compute_corr(samz_cmip_ps_ac, samz_obs_ps_ac))
+	m3_samz_t850.append(compute_corr(samz_cmip_t850_ac, samz_obs_t850_ac))
+	m3_samz_t500.append(compute_corr(samz_cmip_t500_ac, samz_obs_t500_ac))
+	m3_samz_t200.append(compute_corr(samz_cmip_t200_ac, samz_obs_t200_ac))
+	m3_samz_u850.append(compute_corr(samz_cmip_u850_ac, samz_obs_u850_ac))
+	m3_samz_u500.append(compute_corr(samz_cmip_u500_ac, samz_obs_u500_ac))
+	m3_samz_u200.append(compute_corr(samz_cmip_u200_ac, samz_obs_u200_ac))
+	m3_samz_v850.append(compute_corr(samz_cmip_v850_ac, samz_obs_v850_ac))
+	m3_samz_v500.append(compute_corr(samz_cmip_v500_ac, samz_obs_v500_ac))
+	m3_samz_v200.append(compute_corr(samz_cmip_v200_ac, samz_obs_v200_ac))
+	m3_samz_q850.append(compute_corr(samz_cmip_q850_ac, samz_obs_q850_ac))
+	m3_samz_q500.append(compute_corr(samz_cmip_q500_ac, samz_obs_q500_ac))
+	m3_samz_q200.append(compute_corr(samz_cmip_q200_ac, samz_obs_q200_ac))
 
 	m4_samz_pr.append(compute_ivs(samz_cmip_pr_yr, samz_obs_pr_yr))
 	m4_samz_ps.append(compute_ivs(samz_cmip_ps_yr, samz_obs_ps_yr))
@@ -474,20 +442,20 @@ for i in range(1, 18):
 	m2_sam_q500.append(compute_tss(sam_cmip_q500_xy, sam_obs_q500_xy))
 	m2_sam_q200.append(compute_tss(sam_cmip_q200_xy, sam_obs_q200_xy))
 	
-	m3_sam_pr.append(compute_pcc(sam_cmip_pr_ac, sam_obs_pr_ac))
-	m3_sam_ps.append(compute_pcc(sam_cmip_ps_ac, sam_obs_ps_ac))
-	m3_sam_t850.append(compute_pcc(sam_cmip_t850_ac, sam_obs_t850_ac))
-	m3_sam_t500.append(compute_pcc(sam_cmip_t500_ac, sam_obs_t500_ac))
-	m3_sam_t200.append(compute_pcc(sam_cmip_t200_ac, sam_obs_t200_ac))
-	m3_sam_u850.append(compute_pcc(sam_cmip_u850_ac, sam_obs_u850_ac))
-	m3_sam_u500.append(compute_pcc(sam_cmip_u500_ac, sam_obs_u500_ac))
-	m3_sam_u200.append(compute_pcc(sam_cmip_u200_ac, sam_obs_u200_ac))
-	m3_sam_v850.append(compute_pcc(sam_cmip_v850_ac, sam_obs_v850_ac))
-	m3_sam_v500.append(compute_pcc(sam_cmip_v500_ac, sam_obs_v500_ac))
-	m3_sam_v200.append(compute_pcc(sam_cmip_v200_ac, sam_obs_v200_ac))
-	m3_sam_q850.append(compute_pcc(sam_cmip_q850_ac, sam_obs_q850_ac))
-	m3_sam_q500.append(compute_pcc(sam_cmip_q500_ac, sam_obs_q500_ac))
-	m3_sam_q200.append(compute_pcc(sam_cmip_q200_ac, sam_obs_q200_ac))
+	m3_sam_pr.append(compute_corr(sam_cmip_pr_ac, sam_obs_pr_ac))
+	m3_sam_ps.append(compute_corr(sam_cmip_ps_ac, sam_obs_ps_ac))
+	m3_sam_t850.append(compute_corr(sam_cmip_t850_ac, sam_obs_t850_ac))
+	m3_sam_t500.append(compute_corr(sam_cmip_t500_ac, sam_obs_t500_ac))
+	m3_sam_t200.append(compute_corr(sam_cmip_t200_ac, sam_obs_t200_ac))
+	m3_sam_u850.append(compute_corr(sam_cmip_u850_ac, sam_obs_u850_ac))
+	m3_sam_u500.append(compute_corr(sam_cmip_u500_ac, sam_obs_u500_ac))
+	m3_sam_u200.append(compute_corr(sam_cmip_u200_ac, sam_obs_u200_ac))
+	m3_sam_v850.append(compute_corr(sam_cmip_v850_ac, sam_obs_v850_ac))
+	m3_sam_v500.append(compute_corr(sam_cmip_v500_ac, sam_obs_v500_ac))
+	m3_sam_v200.append(compute_corr(sam_cmip_v200_ac, sam_obs_v200_ac))
+	m3_sam_q850.append(compute_corr(sam_cmip_q850_ac, sam_obs_q850_ac))
+	m3_sam_q500.append(compute_corr(sam_cmip_q500_ac, sam_obs_q500_ac))
+	m3_sam_q200.append(compute_corr(sam_cmip_q200_ac, sam_obs_q200_ac))
 	
 	m4_sam_pr.append(compute_ivs(sam_cmip_pr_yr, sam_obs_pr_yr))
 	m4_sam_ps.append(compute_ivs(sam_cmip_ps_yr, sam_obs_ps_yr))
@@ -535,20 +503,20 @@ for i in range(1, 18):
 	m2_neb_q500.append(compute_tss(neb_cmip_q500_xy, neb_obs_q500_xy))
 	m2_neb_q200.append(compute_tss(neb_cmip_q200_xy, neb_obs_q200_xy))
 
-	m3_neb_pr.append(compute_pcc(neb_cmip_pr_ac, neb_obs_pr_ac))
-	m3_neb_ps.append(compute_pcc(neb_cmip_ps_ac, neb_obs_ps_ac))
-	m3_neb_t850.append(compute_pcc(neb_cmip_t850_ac, neb_obs_t850_ac))
-	m3_neb_t500.append(compute_pcc(neb_cmip_t500_ac, neb_obs_t500_ac))
-	m3_neb_t200.append(compute_pcc(neb_cmip_t200_ac, neb_obs_t200_ac))
-	m3_neb_u850.append(compute_pcc(neb_cmip_u850_ac, neb_obs_u850_ac))
-	m3_neb_u500.append(compute_pcc(neb_cmip_u500_ac, neb_obs_u500_ac))
-	m3_neb_u200.append(compute_pcc(neb_cmip_u200_ac, neb_obs_u200_ac))
-	m3_neb_v850.append(compute_pcc(neb_cmip_v850_ac, neb_obs_v850_ac))
-	m3_neb_v500.append(compute_pcc(neb_cmip_v500_ac, neb_obs_v500_ac))
-	m3_neb_v200.append(compute_pcc(neb_cmip_v200_ac, neb_obs_v200_ac))
-	m3_neb_q850.append(compute_pcc(neb_cmip_q850_ac, neb_obs_q850_ac))
-	m3_neb_q500.append(compute_pcc(neb_cmip_q500_ac, neb_obs_q500_ac))
-	m3_neb_q200.append(compute_pcc(neb_cmip_q200_ac, neb_obs_q200_ac))
+	m3_neb_pr.append(compute_corr(neb_cmip_pr_ac, neb_obs_pr_ac))
+	m3_neb_ps.append(compute_corr(neb_cmip_ps_ac, neb_obs_ps_ac))
+	m3_neb_t850.append(compute_corr(neb_cmip_t850_ac, neb_obs_t850_ac))
+	m3_neb_t500.append(compute_corr(neb_cmip_t500_ac, neb_obs_t500_ac))
+	m3_neb_t200.append(compute_corr(neb_cmip_t200_ac, neb_obs_t200_ac))
+	m3_neb_u850.append(compute_corr(neb_cmip_u850_ac, neb_obs_u850_ac))
+	m3_neb_u500.append(compute_corr(neb_cmip_u500_ac, neb_obs_u500_ac))
+	m3_neb_u200.append(compute_corr(neb_cmip_u200_ac, neb_obs_u200_ac))
+	m3_neb_v850.append(compute_corr(neb_cmip_v850_ac, neb_obs_v850_ac))
+	m3_neb_v500.append(compute_corr(neb_cmip_v500_ac, neb_obs_v500_ac))
+	m3_neb_v200.append(compute_corr(neb_cmip_v200_ac, neb_obs_v200_ac))
+	m3_neb_q850.append(compute_corr(neb_cmip_q850_ac, neb_obs_q850_ac))
+	m3_neb_q500.append(compute_corr(neb_cmip_q500_ac, neb_obs_q500_ac))
+	m3_neb_q200.append(compute_corr(neb_cmip_q200_ac, neb_obs_q200_ac))
 
 	m4_neb_pr.append(compute_ivs(neb_cmip_pr_yr, neb_obs_pr_yr))
 	m4_neb_ps.append(compute_ivs(neb_cmip_ps_yr, neb_obs_ps_yr))
@@ -596,20 +564,20 @@ for i in range(1, 18):
 	m2_lpb_q500.append(compute_tss(lpb_cmip_q500_xy, lpb_obs_q500_xy))
 	m2_lpb_q200.append(compute_tss(lpb_cmip_q200_xy, lpb_obs_q200_xy))
 	
-	m3_lpb_pr.append(compute_pcc(lpb_cmip_pr_ac, lpb_obs_pr_ac))
-	m3_lpb_ps.append(compute_pcc(lpb_cmip_ps_ac, lpb_obs_ps_ac))
-	m3_lpb_t850.append(compute_pcc(lpb_cmip_t850_ac, lpb_obs_t850_ac))
-	m3_lpb_t500.append(compute_pcc(lpb_cmip_t500_ac, lpb_obs_t500_ac))
-	m3_lpb_t200.append(compute_pcc(lpb_cmip_t200_ac, lpb_obs_t200_ac))
-	m3_lpb_u850.append(compute_pcc(lpb_cmip_u850_ac, lpb_obs_u850_ac))
-	m3_lpb_u500.append(compute_pcc(lpb_cmip_u500_ac, lpb_obs_u500_ac))
-	m3_lpb_u200.append(compute_pcc(lpb_cmip_u200_ac, lpb_obs_u200_ac))
-	m3_lpb_v850.append(compute_pcc(lpb_cmip_v850_ac, lpb_obs_v850_ac))
-	m3_lpb_v500.append(compute_pcc(lpb_cmip_v500_ac, lpb_obs_v500_ac))
-	m3_lpb_v200.append(compute_pcc(lpb_cmip_v200_ac, lpb_obs_v200_ac))
-	m3_lpb_q850.append(compute_pcc(lpb_cmip_q850_ac, lpb_obs_q850_ac))
-	m3_lpb_q500.append(compute_pcc(lpb_cmip_q500_ac, lpb_obs_q500_ac))
-	m3_lpb_q200.append(compute_pcc(lpb_cmip_q200_ac, lpb_obs_q200_ac))
+	m3_lpb_pr.append(compute_corr(lpb_cmip_pr_ac, lpb_obs_pr_ac))
+	m3_lpb_ps.append(compute_corr(lpb_cmip_ps_ac, lpb_obs_ps_ac))
+	m3_lpb_t850.append(compute_corr(lpb_cmip_t850_ac, lpb_obs_t850_ac))
+	m3_lpb_t500.append(compute_corr(lpb_cmip_t500_ac, lpb_obs_t500_ac))
+	m3_lpb_t200.append(compute_corr(lpb_cmip_t200_ac, lpb_obs_t200_ac))
+	m3_lpb_u850.append(compute_corr(lpb_cmip_u850_ac, lpb_obs_u850_ac))
+	m3_lpb_u500.append(compute_corr(lpb_cmip_u500_ac, lpb_obs_u500_ac))
+	m3_lpb_u200.append(compute_corr(lpb_cmip_u200_ac, lpb_obs_u200_ac))
+	m3_lpb_v850.append(compute_corr(lpb_cmip_v850_ac, lpb_obs_v850_ac))
+	m3_lpb_v500.append(compute_corr(lpb_cmip_v500_ac, lpb_obs_v500_ac))
+	m3_lpb_v200.append(compute_corr(lpb_cmip_v200_ac, lpb_obs_v200_ac))
+	m3_lpb_q850.append(compute_corr(lpb_cmip_q850_ac, lpb_obs_q850_ac))
+	m3_lpb_q500.append(compute_corr(lpb_cmip_q500_ac, lpb_obs_q500_ac))
+	m3_lpb_q200.append(compute_corr(lpb_cmip_q200_ac, lpb_obs_q200_ac))
 	
 	m4_lpb_pr.append(compute_ivs(lpb_cmip_pr_yr, lpb_obs_pr_yr))
 	m4_lpb_ps.append(compute_ivs(lpb_cmip_ps_yr, lpb_obs_ps_yr))
@@ -699,79 +667,295 @@ sort_m2_namz_q200 = sort_list(m2_namz_q200)
 sort_m3_namz_q200 = sort_list(m3_namz_q200)
 sort_m4_namz_q200 = sort_list(m4_namz_q200)
 
-
 # Sort SAMZ
-sort_m1_samz_pr = sort_list(m1_namz_pr)
-sort_m2_samz_pr = sort_list(m2_namz_pr)
-sort_m3_samz_pr = sort_list(m3_namz_pr)
-sort_m4_samz_pr = sort_list(m4_namz_pr)
+sort_m1_samz_pr = sort_list(m1_samz_pr)
+sort_m2_samz_pr = sort_list(m2_samz_pr)
+sort_m3_samz_pr = sort_list(m3_samz_pr)
+sort_m4_samz_pr = sort_list(m4_samz_pr)
 
-sort_m1_samz_ps = sort_list(m1_namz_ps)
-sort_m2_samz_ps = sort_list(m2_namz_ps)
-sort_m3_samz_ps = sort_list(m3_namz_ps)
-sort_m4_samz_ps = sort_list(m4_namz_ps)
+sort_m1_samz_ps = sort_list(m1_samz_ps)
+sort_m2_samz_ps = sort_list(m2_samz_ps)
+sort_m3_samz_ps = sort_list(m3_samz_ps)
+sort_m4_samz_ps = sort_list(m4_samz_ps)
 
-sort_m1_samz_t850 = sort_list(m1_namz_t850)
-sort_m2_samz_t850 = sort_list(m2_namz_t850)
-sort_m3_samz_t850 = sort_list(m3_namz_t850)
-sort_m4_samz_t850 = sort_list(m4_namz_t850)
+sort_m1_samz_t850 = sort_list(m1_samz_t850)
+sort_m2_samz_t850 = sort_list(m2_samz_t850)
+sort_m3_samz_t850 = sort_list(m3_samz_t850)
+sort_m4_samz_t850 = sort_list(m4_samz_t850)
 
-sort_m1_samz_t500 = sort_list(m1_namz_t500)
-sort_m2_samz_t500 = sort_list(m2_namz_t500)
-sort_m3_samz_t500 = sort_list(m3_namz_t500)
-sort_m4_samz_t500 = sort_list(m4_namz_t500)
+sort_m1_samz_t500 = sort_list(m1_samz_t500)
+sort_m2_samz_t500 = sort_list(m2_samz_t500)
+sort_m3_samz_t500 = sort_list(m3_samz_t500)
+sort_m4_samz_t500 = sort_list(m4_samz_t500)
 
-sort_m1_samz_t200 = sort_list(m1_namz_t200)
-sort_m2_samz_t200 = sort_list(m2_namz_t200)
-sort_m3_samz_t200 = sort_list(m3_namz_t200)
-sort_m4_samz_t200 = sort_list(m4_namz_t200)
+sort_m1_samz_t200 = sort_list(m1_samz_t200)
+sort_m2_samz_t200 = sort_list(m2_samz_t200)
+sort_m3_samz_t200 = sort_list(m3_samz_t200)
+sort_m4_samz_t200 = sort_list(m4_samz_t200)
 
-sort_m1_samz_u850 = sort_list(m1_namz_u850)
-sort_m2_samz_u850 = sort_list(m2_namz_u850)
-sort_m3_samz_u850 = sort_list(m3_namz_u850)
-sort_m4_samz_u850 = sort_list(m4_namz_u850)
+sort_m1_samz_u850 = sort_list(m1_samz_u850)
+sort_m2_samz_u850 = sort_list(m2_samz_u850)
+sort_m3_samz_u850 = sort_list(m3_samz_u850)
+sort_m4_samz_u850 = sort_list(m4_samz_u850)
 
-sort_m1_samz_u500 = sort_list(m1_namz_u500)
-sort_m2_samz_u500 = sort_list(m2_namz_u500)
-sort_m3_samz_u500 = sort_list(m3_namz_u500)
-sort_m4_samz_u500 = sort_list(m4_namz_u500)
+sort_m1_samz_u500 = sort_list(m1_samz_u500)
+sort_m2_samz_u500 = sort_list(m2_samz_u500)
+sort_m3_samz_u500 = sort_list(m3_samz_u500)
+sort_m4_samz_u500 = sort_list(m4_samz_u500)
 
-sort_m1_samz_u200 = sort_list(m1_namz_u200)
-sort_m2_samz_u200 = sort_list(m2_namz_u200)
-sort_m3_samz_u200 = sort_list(m3_namz_u200)
-sort_m4_samz_u200 = sort_list(m4_namz_u200)
+sort_m1_samz_u200 = sort_list(m1_samz_u200)
+sort_m2_samz_u200 = sort_list(m2_samz_u200)
+sort_m3_samz_u200 = sort_list(m3_samz_u200)
+sort_m4_samz_u200 = sort_list(m4_samz_u200)
 
-sort_m1_samz_v850 = sort_list(m1_namz_v850)
-sort_m2_samz_v850 = sort_list(m2_namz_v850)
-sort_m3_samz_v850 = sort_list(m3_namz_v850)
-sort_m4_samz_v850 = sort_list(m4_namz_u850)
+sort_m1_samz_v850 = sort_list(m1_samz_v850)
+sort_m2_samz_v850 = sort_list(m2_samz_v850)
+sort_m3_samz_v850 = sort_list(m3_samz_v850)
+sort_m4_samz_v850 = sort_list(m4_samz_u850)
 
-sort_m1_samz_v500 = sort_list(m1_namz_v500)
-sort_m2_samz_v500 = sort_list(m2_namz_v500)
-sort_m3_samz_v500 = sort_list(m3_namz_v500)
-sort_m4_samz_v500 = sort_list(m4_namz_v500)
+sort_m1_samz_v500 = sort_list(m1_samz_v500)
+sort_m2_samz_v500 = sort_list(m2_samz_v500)
+sort_m3_samz_v500 = sort_list(m3_samz_v500)
+sort_m4_samz_v500 = sort_list(m4_samz_v500)
 
-sort_m1_samz_v200 = sort_list(m1_namz_v200)
-sort_m2_samz_v200 = sort_list(m2_namz_v200)
-sort_m3_samz_v200 = sort_list(m3_namz_v200)
-sort_m4_samz_v200 = sort_list(m4_namz_v200)
+sort_m1_samz_v200 = sort_list(m1_samz_v200)
+sort_m2_samz_v200 = sort_list(m2_samz_v200)
+sort_m3_samz_v200 = sort_list(m3_samz_v200)
+sort_m4_samz_v200 = sort_list(m4_samz_v200)
 
-sort_m1_samz_q850 = sort_list(m1_namz_q850)
-sort_m2_samz_q850 = sort_list(m2_namz_q850)
-sort_m3_samz_q850 = sort_list(m3_namz_q850)
-sort_m4_samz_q850 = sort_list(m4_namz_q850)
+sort_m1_samz_q850 = sort_list(m1_samz_q850)
+sort_m2_samz_q850 = sort_list(m2_samz_q850)
+sort_m3_samz_q850 = sort_list(m3_samz_q850)
+sort_m4_samz_q850 = sort_list(m4_samz_q850)
 
-sort_m1_samz_q500 = sort_list(m1_namz_q500)
-sort_m2_samz_q500 = sort_list(m2_namz_q500)
-sort_m3_samz_q500 = sort_list(m3_namz_q500)
-sort_m4_samz_q500 = sort_list(m4_namz_q500)
+sort_m1_samz_q500 = sort_list(m1_samz_q500)
+sort_m2_samz_q500 = sort_list(m2_samz_q500)
+sort_m3_samz_q500 = sort_list(m3_samz_q500)
+sort_m4_samz_q500 = sort_list(m4_samz_q500)
 
-sort_m1_samz_q200 = sort_list(m1_namz_q200)
-sort_m2_samz_q200 = sort_list(m2_namz_q200)
-sort_m3_samz_q200 = sort_list(m3_namz_q200)
-sort_m4_samz_q200 = sort_list(m4_namz_q200)
+sort_m1_samz_q200 = sort_list(m1_samz_q200)
+sort_m2_samz_q200 = sort_list(m2_samz_q200)
+sort_m3_samz_q200 = sort_list(m3_samz_q200)
+sort_m4_samz_q200 = sort_list(m4_samz_q200)
 
-cri_namz_pr, cri_namz_ps, cri_namz_t850, cri_namz_t500, cri_namz_t200, cri_namz_u850, cri_namz_u500, cri_namz_u200, cri_namz_v850, cri_namz_v500, cri_namz_v200, cri_namz_q850, cri_namz_q500, cri_namz_q200 = [], [], [], [], [], [], [], [], [], [], [], [], [], [] 
+# Sort SAM
+sort_m1_sam_pr = sort_list(m1_sam_pr)
+sort_m2_sam_pr = sort_list(m2_sam_pr)
+sort_m3_sam_pr = sort_list(m3_sam_pr)
+sort_m4_sam_pr = sort_list(m4_sam_pr)
+
+sort_m1_sam_ps = sort_list(m1_sam_ps)
+sort_m2_sam_ps = sort_list(m2_sam_ps)
+sort_m3_sam_ps = sort_list(m3_sam_ps)
+sort_m4_sam_ps = sort_list(m4_sam_ps)
+
+sort_m1_sam_t850 = sort_list(m1_sam_t850)
+sort_m2_sam_t850 = sort_list(m2_sam_t850)
+sort_m3_sam_t850 = sort_list(m3_sam_t850)
+sort_m4_sam_t850 = sort_list(m4_sam_t850)
+
+sort_m1_sam_t500 = sort_list(m1_sam_t500)
+sort_m2_sam_t500 = sort_list(m2_sam_t500)
+sort_m3_sam_t500 = sort_list(m3_sam_t500)
+sort_m4_sam_t500 = sort_list(m4_sam_t500)
+
+sort_m1_sam_t200 = sort_list(m1_sam_t200)
+sort_m2_sam_t200 = sort_list(m2_sam_t200)
+sort_m3_sam_t200 = sort_list(m3_sam_t200)
+sort_m4_sam_t200 = sort_list(m4_sam_t200)
+
+sort_m1_sam_u850 = sort_list(m1_sam_u850)
+sort_m2_sam_u850 = sort_list(m2_sam_u850)
+sort_m3_sam_u850 = sort_list(m3_sam_u850)
+sort_m4_sam_u850 = sort_list(m4_sam_u850)
+
+sort_m1_sam_u500 = sort_list(m1_sam_u500)
+sort_m2_sam_u500 = sort_list(m2_sam_u500)
+sort_m3_sam_u500 = sort_list(m3_sam_u500)
+sort_m4_sam_u500 = sort_list(m4_sam_u500)
+
+sort_m1_sam_u200 = sort_list(m1_sam_u200)
+sort_m2_sam_u200 = sort_list(m2_sam_u200)
+sort_m3_sam_u200 = sort_list(m3_sam_u200)
+sort_m4_sam_u200 = sort_list(m4_sam_u200)
+
+sort_m1_sam_v850 = sort_list(m1_sam_v850)
+sort_m2_sam_v850 = sort_list(m2_sam_v850)
+sort_m3_sam_v850 = sort_list(m3_sam_v850)
+sort_m4_sam_v850 = sort_list(m4_sam_u850)
+
+sort_m1_sam_v500 = sort_list(m1_sam_v500)
+sort_m2_sam_v500 = sort_list(m2_sam_v500)
+sort_m3_sam_v500 = sort_list(m3_sam_v500)
+sort_m4_sam_v500 = sort_list(m4_sam_v500)
+
+sort_m1_sam_v200 = sort_list(m1_sam_v200)
+sort_m2_sam_v200 = sort_list(m2_sam_v200)
+sort_m3_sam_v200 = sort_list(m3_sam_v200)
+sort_m4_sam_v200 = sort_list(m4_sam_v200)
+
+sort_m1_sam_q850 = sort_list(m1_sam_q850)
+sort_m2_sam_q850 = sort_list(m2_sam_q850)
+sort_m3_sam_q850 = sort_list(m3_sam_q850)
+sort_m4_sam_q850 = sort_list(m4_sam_q850)
+
+sort_m1_sam_q500 = sort_list(m1_sam_q500)
+sort_m2_sam_q500 = sort_list(m2_sam_q500)
+sort_m3_sam_q500 = sort_list(m3_sam_q500)
+sort_m4_sam_q500 = sort_list(m4_sam_q500)
+
+sort_m1_sam_q200 = sort_list(m1_sam_q200)
+sort_m2_sam_q200 = sort_list(m2_sam_q200)
+sort_m3_sam_q200 = sort_list(m3_sam_q200)
+sort_m4_sam_q200 = sort_list(m4_sam_q200)
+
+# Sort NEB
+sort_m1_neb_pr = sort_list(m1_neb_pr)
+sort_m2_neb_pr = sort_list(m2_neb_pr)
+sort_m3_neb_pr = sort_list(m3_neb_pr)
+sort_m4_neb_pr = sort_list(m4_neb_pr)
+
+sort_m1_neb_ps = sort_list(m1_neb_ps)
+sort_m2_neb_ps = sort_list(m2_neb_ps)
+sort_m3_neb_ps = sort_list(m3_neb_ps)
+sort_m4_neb_ps = sort_list(m4_neb_ps)
+
+sort_m1_neb_t850 = sort_list(m1_neb_t850)
+sort_m2_neb_t850 = sort_list(m2_neb_t850)
+sort_m3_neb_t850 = sort_list(m3_neb_t850)
+sort_m4_neb_t850 = sort_list(m4_neb_t850)
+
+sort_m1_neb_t500 = sort_list(m1_neb_t500)
+sort_m2_neb_t500 = sort_list(m2_neb_t500)
+sort_m3_neb_t500 = sort_list(m3_neb_t500)
+sort_m4_neb_t500 = sort_list(m4_neb_t500)
+
+sort_m1_neb_t200 = sort_list(m1_neb_t200)
+sort_m2_neb_t200 = sort_list(m2_neb_t200)
+sort_m3_neb_t200 = sort_list(m3_neb_t200)
+sort_m4_neb_t200 = sort_list(m4_neb_t200)
+
+sort_m1_neb_u850 = sort_list(m1_neb_u850)
+sort_m2_neb_u850 = sort_list(m2_neb_u850)
+sort_m3_neb_u850 = sort_list(m3_neb_u850)
+sort_m4_neb_u850 = sort_list(m4_neb_u850)
+
+sort_m1_neb_u500 = sort_list(m1_neb_u500)
+sort_m2_neb_u500 = sort_list(m2_neb_u500)
+sort_m3_neb_u500 = sort_list(m3_neb_u500)
+sort_m4_neb_u500 = sort_list(m4_neb_u500)
+
+sort_m1_neb_u200 = sort_list(m1_neb_u200)
+sort_m2_neb_u200 = sort_list(m2_neb_u200)
+sort_m3_neb_u200 = sort_list(m3_neb_u200)
+sort_m4_neb_u200 = sort_list(m4_neb_u200)
+
+sort_m1_neb_v850 = sort_list(m1_neb_v850)
+sort_m2_neb_v850 = sort_list(m2_neb_v850)
+sort_m3_neb_v850 = sort_list(m3_neb_v850)
+sort_m4_neb_v850 = sort_list(m4_neb_u850)
+
+sort_m1_neb_v500 = sort_list(m1_neb_v500)
+sort_m2_neb_v500 = sort_list(m2_neb_v500)
+sort_m3_neb_v500 = sort_list(m3_neb_v500)
+sort_m4_neb_v500 = sort_list(m4_neb_v500)
+
+sort_m1_neb_v200 = sort_list(m1_neb_v200)
+sort_m2_neb_v200 = sort_list(m2_neb_v200)
+sort_m3_neb_v200 = sort_list(m3_neb_v200)
+sort_m4_neb_v200 = sort_list(m4_neb_v200)
+
+sort_m1_neb_q850 = sort_list(m1_neb_q850)
+sort_m2_neb_q850 = sort_list(m2_neb_q850)
+sort_m3_neb_q850 = sort_list(m3_neb_q850)
+sort_m4_neb_q850 = sort_list(m4_neb_q850)
+
+sort_m1_neb_q500 = sort_list(m1_neb_q500)
+sort_m2_neb_q500 = sort_list(m2_neb_q500)
+sort_m3_neb_q500 = sort_list(m3_neb_q500)
+sort_m4_neb_q500 = sort_list(m4_neb_q500)
+
+sort_m1_neb_q200 = sort_list(m1_neb_q200)
+sort_m2_neb_q200 = sort_list(m2_neb_q200)
+sort_m3_neb_q200 = sort_list(m3_neb_q200)
+sort_m4_neb_q200 = sort_list(m4_neb_q200)
+
+# Sort LPB
+sort_m1_lpb_pr = sort_list(m1_lpb_pr)
+sort_m2_lpb_pr = sort_list(m2_lpb_pr)
+sort_m3_lpb_pr = sort_list(m3_lpb_pr)
+sort_m4_lpb_pr = sort_list(m4_lpb_pr)
+
+sort_m1_lpb_ps = sort_list(m1_lpb_ps)
+sort_m2_lpb_ps = sort_list(m2_lpb_ps)
+sort_m3_lpb_ps = sort_list(m3_lpb_ps)
+sort_m4_lpb_ps = sort_list(m4_lpb_ps)
+
+sort_m1_lpb_t850 = sort_list(m1_lpb_t850)
+sort_m2_lpb_t850 = sort_list(m2_lpb_t850)
+sort_m3_lpb_t850 = sort_list(m3_lpb_t850)
+sort_m4_lpb_t850 = sort_list(m4_lpb_t850)
+
+sort_m1_lpb_t500 = sort_list(m1_lpb_t500)
+sort_m2_lpb_t500 = sort_list(m2_lpb_t500)
+sort_m3_lpb_t500 = sort_list(m3_lpb_t500)
+sort_m4_lpb_t500 = sort_list(m4_lpb_t500)
+
+sort_m1_lpb_t200 = sort_list(m1_lpb_t200)
+sort_m2_lpb_t200 = sort_list(m2_lpb_t200)
+sort_m3_lpb_t200 = sort_list(m3_lpb_t200)
+sort_m4_lpb_t200 = sort_list(m4_lpb_t200)
+
+sort_m1_lpb_u850 = sort_list(m1_lpb_u850)
+sort_m2_lpb_u850 = sort_list(m2_lpb_u850)
+sort_m3_lpb_u850 = sort_list(m3_lpb_u850)
+sort_m4_lpb_u850 = sort_list(m4_lpb_u850)
+
+sort_m1_lpb_u500 = sort_list(m1_lpb_u500)
+sort_m2_lpb_u500 = sort_list(m2_lpb_u500)
+sort_m3_lpb_u500 = sort_list(m3_lpb_u500)
+sort_m4_lpb_u500 = sort_list(m4_lpb_u500)
+
+sort_m1_lpb_u200 = sort_list(m1_lpb_u200)
+sort_m2_lpb_u200 = sort_list(m2_lpb_u200)
+sort_m3_lpb_u200 = sort_list(m3_lpb_u200)
+sort_m4_lpb_u200 = sort_list(m4_lpb_u200)
+
+sort_m1_lpb_v850 = sort_list(m1_lpb_v850)
+sort_m2_lpb_v850 = sort_list(m2_lpb_v850)
+sort_m3_lpb_v850 = sort_list(m3_lpb_v850)
+sort_m4_lpb_v850 = sort_list(m4_lpb_u850)
+
+sort_m1_lpb_v500 = sort_list(m1_lpb_v500)
+sort_m2_lpb_v500 = sort_list(m2_lpb_v500)
+sort_m3_lpb_v500 = sort_list(m3_lpb_v500)
+sort_m4_lpb_v500 = sort_list(m4_lpb_v500)
+
+sort_m1_lpb_v200 = sort_list(m1_lpb_v200)
+sort_m2_lpb_v200 = sort_list(m2_lpb_v200)
+sort_m3_lpb_v200 = sort_list(m3_lpb_v200)
+sort_m4_lpb_v200 = sort_list(m4_lpb_v200)
+
+sort_m1_lpb_q850 = sort_list(m1_lpb_q850)
+sort_m2_lpb_q850 = sort_list(m2_lpb_q850)
+sort_m3_lpb_q850 = sort_list(m3_lpb_q850)
+sort_m4_lpb_q850 = sort_list(m4_lpb_q850)
+
+sort_m1_lpb_q500 = sort_list(m1_lpb_q500)
+sort_m2_lpb_q500 = sort_list(m2_lpb_q500)
+sort_m3_lpb_q500 = sort_list(m3_lpb_q500)
+sort_m4_lpb_q500 = sort_list(m4_lpb_q500)
+
+sort_m1_lpb_q200 = sort_list(m1_lpb_q200)
+sort_m2_lpb_q200 = sort_list(m2_lpb_q200)
+sort_m3_lpb_q200 = sort_list(m3_lpb_q200)
+sort_m4_lpb_q200 = sort_list(m4_lpb_q200)
+
+cri_namz_pr, cri_namz_ps, cri_namz_t850, cri_namz_t500, cri_namz_t200, cri_namz_u850, cri_namz_u500, cri_namz_u200, cri_namz_v850, cri_namz_v500, cri_namz_v200, cri_namz_q850, cri_namz_q500, cri_namz_q200 = [[] for _ in range(14)]
+cri_samz_pr, cri_samz_ps, cri_samz_t850, cri_samz_t500, cri_samz_t200, cri_samz_u850, cri_samz_u500, cri_samz_u200, cri_samz_v850, cri_samz_v500, cri_samz_v200, cri_samz_q850, cri_samz_q500, cri_samz_q200 = [[] for _ in range(14)]
+cri_sam_pr, cri_sam_ps, cri_sam_t850, cri_sam_t500, cri_sam_t200, cri_sam_u850, cri_sam_u500, cri_sam_u200, cri_sam_v850, cri_sam_v500, cri_sam_v200, cri_sam_q850, cri_sam_q500, cri_sam_q200 = [[] for _ in range(14)]
+cri_neb_pr, cri_neb_ps, cri_neb_t850, cri_neb_t500, cri_neb_t200, cri_neb_u850, cri_neb_u500, cri_neb_u200, cri_neb_v850, cri_neb_v500, cri_neb_v200, cri_neb_q850, cri_neb_q500, cri_neb_q200 = [[] for _ in range(14)]
+cri_lpb_pr, cri_lpb_ps, cri_lpb_t850, cri_lpb_t500, cri_lpb_t200, cri_lpb_u850, cri_lpb_u500, cri_lpb_u200, cri_lpb_v850, cri_lpb_v500, cri_lpb_v200, cri_lpb_q850, cri_lpb_q500, cri_lpb_q200 = [[] for _ in range(14)]
 
 for i in range(0, 17):
 
@@ -790,29 +974,156 @@ for i in range(0, 17):
 	cri_namz_q500.append(compute_cri(sort_m1_namz_q500[i], sort_m2_namz_q500[i], sort_m3_namz_q500[i], sort_m4_namz_q500[i]))
 	cri_namz_q200.append(compute_cri(sort_m1_namz_q200[i], sort_m2_namz_q200[i], sort_m3_namz_q200[i], sort_m4_namz_q200[i]))
 	
+	cri_samz_pr.append(compute_cri(sort_m1_samz_pr[i], sort_m2_samz_pr[i], sort_m3_samz_pr[i], sort_m4_samz_pr[i]))
+	cri_samz_ps.append(compute_cri(sort_m1_samz_ps[i], sort_m2_samz_ps[i], sort_m3_samz_ps[i], sort_m4_samz_ps[i]))
+	cri_samz_t850.append(compute_cri(sort_m1_samz_t850[i], sort_m2_samz_t850[i], sort_m3_samz_t850[i], sort_m4_samz_t850[i]))
+	cri_samz_t500.append(compute_cri(sort_m1_samz_t500[i], sort_m2_samz_t500[i], sort_m3_samz_t500[i], sort_m4_namz_t500[i]))
+	cri_samz_t200.append(compute_cri(sort_m1_samz_t200[i], sort_m2_samz_t200[i], sort_m3_samz_t200[i], sort_m4_samz_t200[i]))
+	cri_samz_u850.append(compute_cri(sort_m1_samz_u850[i], sort_m2_samz_u850[i], sort_m3_samz_u850[i], sort_m4_samz_u850[i]))
+	cri_samz_u500.append(compute_cri(sort_m1_samz_u500[i], sort_m2_samz_u500[i], sort_m3_samz_u500[i], sort_m4_samz_u500[i]))
+	cri_samz_u200.append(compute_cri(sort_m1_samz_u200[i], sort_m2_samz_u200[i], sort_m3_samz_u200[i], sort_m4_samz_u200[i]))
+	cri_samz_v850.append(compute_cri(sort_m1_samz_v850[i], sort_m2_samz_v850[i], sort_m3_samz_v850[i], sort_m4_samz_v850[i]))
+	cri_samz_v500.append(compute_cri(sort_m1_samz_v500[i], sort_m2_samz_v500[i], sort_m3_samz_v500[i], sort_m4_samz_v500[i]))
+	cri_samz_v200.append(compute_cri(sort_m1_samz_v200[i], sort_m2_samz_v200[i], sort_m3_samz_v200[i], sort_m4_samz_v200[i]))
+	cri_samz_q850.append(compute_cri(sort_m1_samz_q850[i], sort_m2_samz_q850[i], sort_m3_samz_q850[i], sort_m4_samz_q850[i]))
+	cri_samz_q500.append(compute_cri(sort_m1_samz_q500[i], sort_m2_samz_q500[i], sort_m3_samz_q500[i], sort_m4_samz_q500[i]))
+	cri_samz_q200.append(compute_cri(sort_m1_samz_q200[i], sort_m2_samz_q200[i], sort_m3_samz_q200[i], sort_m4_samz_q200[i]))
+	
+	cri_sam_pr.append(compute_cri(sort_m1_sam_pr[i], sort_m2_sam_pr[i], sort_m3_sam_pr[i], sort_m4_sam_pr[i]))
+	cri_sam_ps.append(compute_cri(sort_m1_sam_ps[i], sort_m2_sam_ps[i], sort_m3_sam_ps[i], sort_m4_sam_ps[i]))
+	cri_sam_t850.append(compute_cri(sort_m1_sam_t850[i], sort_m2_sam_t850[i], sort_m3_sam_t850[i], sort_m4_sam_t850[i]))
+	cri_sam_t500.append(compute_cri(sort_m1_sam_t500[i], sort_m2_sam_t500[i], sort_m3_sam_t500[i], sort_m4_sam_t500[i]))
+	cri_sam_t200.append(compute_cri(sort_m1_sam_t200[i], sort_m2_sam_t200[i], sort_m3_sam_t200[i], sort_m4_sam_t200[i]))
+	cri_sam_u850.append(compute_cri(sort_m1_sam_u850[i], sort_m2_sam_u850[i], sort_m3_sam_u850[i], sort_m4_sam_u850[i]))
+	cri_sam_u500.append(compute_cri(sort_m1_sam_u500[i], sort_m2_sam_u500[i], sort_m3_sam_u500[i], sort_m4_sam_u500[i]))
+	cri_sam_u200.append(compute_cri(sort_m1_sam_u200[i], sort_m2_sam_u200[i], sort_m3_sam_u200[i], sort_m4_sam_u200[i]))
+	cri_sam_v850.append(compute_cri(sort_m1_sam_v850[i], sort_m2_sam_v850[i], sort_m3_sam_v850[i], sort_m4_sam_v850[i]))
+	cri_sam_v500.append(compute_cri(sort_m1_sam_v500[i], sort_m2_sam_v500[i], sort_m3_sam_v500[i], sort_m4_sam_v500[i]))
+	cri_sam_v200.append(compute_cri(sort_m1_sam_v200[i], sort_m2_sam_v200[i], sort_m3_sam_v200[i], sort_m4_sam_v200[i]))
+	cri_sam_q850.append(compute_cri(sort_m1_sam_q850[i], sort_m2_sam_q850[i], sort_m3_sam_q850[i], sort_m4_sam_q850[i]))
+	cri_sam_q500.append(compute_cri(sort_m1_sam_q500[i], sort_m2_sam_q500[i], sort_m3_sam_q500[i], sort_m4_sam_q500[i]))
+	cri_sam_q200.append(compute_cri(sort_m1_sam_q200[i], sort_m2_sam_q200[i], sort_m3_sam_q200[i], sort_m4_sam_q200[i]))
+	
+	cri_neb_pr.append(compute_cri(sort_m1_neb_pr[i], sort_m2_neb_pr[i], sort_m3_neb_pr[i], sort_m4_neb_pr[i]))
+	cri_neb_ps.append(compute_cri(sort_m1_neb_ps[i], sort_m2_neb_ps[i], sort_m3_neb_ps[i], sort_m4_neb_ps[i]))
+	cri_neb_t850.append(compute_cri(sort_m1_neb_t850[i], sort_m2_neb_t850[i], sort_m3_neb_t850[i], sort_m4_neb_t850[i]))
+	cri_neb_t500.append(compute_cri(sort_m1_neb_t500[i], sort_m2_neb_t500[i], sort_m3_neb_t500[i], sort_m4_neb_t500[i]))
+	cri_neb_t200.append(compute_cri(sort_m1_neb_t200[i], sort_m2_neb_t200[i], sort_m3_neb_t200[i], sort_m4_neb_t200[i]))
+	cri_neb_u850.append(compute_cri(sort_m1_neb_u850[i], sort_m2_neb_u850[i], sort_m3_neb_u850[i], sort_m4_neb_u850[i]))
+	cri_neb_u500.append(compute_cri(sort_m1_neb_u500[i], sort_m2_neb_u500[i], sort_m3_neb_u500[i], sort_m4_neb_u500[i]))
+	cri_neb_u200.append(compute_cri(sort_m1_neb_u200[i], sort_m2_neb_u200[i], sort_m3_neb_u200[i], sort_m4_neb_u200[i]))
+	cri_neb_v850.append(compute_cri(sort_m1_neb_v850[i], sort_m2_neb_v850[i], sort_m3_neb_v850[i], sort_m4_neb_v850[i]))
+	cri_neb_v500.append(compute_cri(sort_m1_neb_v500[i], sort_m2_neb_v500[i], sort_m3_neb_v500[i], sort_m4_neb_v500[i]))
+	cri_neb_v200.append(compute_cri(sort_m1_neb_v200[i], sort_m2_neb_v200[i], sort_m3_neb_v200[i], sort_m4_neb_v200[i]))
+	cri_neb_q850.append(compute_cri(sort_m1_neb_q850[i], sort_m2_neb_q850[i], sort_m3_neb_q850[i], sort_m4_neb_q850[i]))
+	cri_neb_q500.append(compute_cri(sort_m1_neb_q500[i], sort_m2_neb_q500[i], sort_m3_neb_q500[i], sort_m4_neb_q500[i]))
+	cri_neb_q200.append(compute_cri(sort_m1_neb_q200[i], sort_m2_neb_q200[i], sort_m3_neb_q200[i], sort_m4_neb_q200[i]))
 
-sort_cri_namz_pr = sort_list_reverse(cri_namz_pr)
-sort_cri_namz_ps = sort_list_reverse(cri_namz_ps)
-sort_cri_namz_t850 = sort_list_reverse(cri_namz_t850)
-sort_cri_namz_t500 = sort_list_reverse(cri_namz_t500)
-sort_cri_namz_t200 = sort_list_reverse(cri_namz_t200)
-sort_cri_namz_u850 = sort_list_reverse(cri_namz_u850)
-sort_cri_namz_u500 = sort_list_reverse(cri_namz_u500)
-sort_cri_namz_u200 = sort_list_reverse(cri_namz_u200)
-sort_cri_namz_v850 = sort_list_reverse(cri_namz_v850)
-sort_cri_namz_v500 = sort_list_reverse(cri_namz_v500)
-sort_cri_namz_v200 = sort_list_reverse(cri_namz_v200)
-sort_cri_namz_q850 = sort_list_reverse(cri_namz_q850)
-sort_cri_namz_q500 = sort_list_reverse(cri_namz_q500)
-sort_cri_namz_q200 = sort_list_reverse(cri_namz_q200)
+	cri_lpb_pr.append(compute_cri(sort_m1_lpb_pr[i], sort_m2_lpb_pr[i], sort_m3_lpb_pr[i], sort_m4_lpb_pr[i]))
+	cri_lpb_ps.append(compute_cri(sort_m1_lpb_ps[i], sort_m2_lpb_ps[i], sort_m3_lpb_ps[i], sort_m4_lpb_ps[i]))
+	cri_lpb_t850.append(compute_cri(sort_m1_lpb_t850[i], sort_m2_lpb_t850[i], sort_m3_lpb_t850[i], sort_m4_lpb_t850[i]))
+	cri_lpb_t500.append(compute_cri(sort_m1_lpb_t500[i], sort_m2_lpb_t500[i], sort_m3_lpb_t500[i], sort_m4_lpb_t500[i]))
+	cri_lpb_t200.append(compute_cri(sort_m1_lpb_t200[i], sort_m2_lpb_t200[i], sort_m3_lpb_t200[i], sort_m4_lpb_t200[i]))
+	cri_lpb_u850.append(compute_cri(sort_m1_lpb_u850[i], sort_m2_lpb_u850[i], sort_m3_lpb_u850[i], sort_m4_lpb_u850[i]))
+	cri_lpb_u500.append(compute_cri(sort_m1_lpb_u500[i], sort_m2_lpb_u500[i], sort_m3_lpb_u500[i], sort_m4_lpb_u500[i]))
+	cri_lpb_u200.append(compute_cri(sort_m1_lpb_u200[i], sort_m2_lpb_u200[i], sort_m3_lpb_u200[i], sort_m4_lpb_u200[i]))
+	cri_lpb_v850.append(compute_cri(sort_m1_lpb_v850[i], sort_m2_lpb_v850[i], sort_m3_lpb_v850[i], sort_m4_lpb_v850[i]))
+	cri_lpb_v500.append(compute_cri(sort_m1_lpb_v500[i], sort_m2_lpb_v500[i], sort_m3_lpb_v500[i], sort_m4_lpb_v500[i]))
+	cri_lpb_v200.append(compute_cri(sort_m1_lpb_v200[i], sort_m2_lpb_v200[i], sort_m3_lpb_v200[i], sort_m4_lpb_v200[i]))
+	cri_lpb_q850.append(compute_cri(sort_m1_lpb_q850[i], sort_m2_lpb_q850[i], sort_m3_lpb_q850[i], sort_m4_lpb_q850[i]))
+	cri_lpb_q500.append(compute_cri(sort_m1_lpb_q500[i], sort_m2_lpb_q500[i], sort_m3_lpb_q500[i], sort_m4_lpb_q500[i]))
+	cri_lpb_q200.append(compute_cri(sort_m1_lpb_q200[i], sort_m2_lpb_q200[i], sort_m3_lpb_q200[i], sort_m4_lpb_q200[i]))
+	
+sort_cri_namz_pr = sort_list(cri_namz_pr)
+sort_cri_namz_ps = sort_list(cri_namz_ps)
+sort_cri_namz_t850 = sort_list(cri_namz_t850)
+sort_cri_namz_t500 = sort_list(cri_namz_t500)
+sort_cri_namz_t200 = sort_list(cri_namz_t200)
+sort_cri_namz_u850 = sort_list(cri_namz_u850)
+sort_cri_namz_u500 = sort_list(cri_namz_u500)
+sort_cri_namz_u200 = sort_list(cri_namz_u200)
+sort_cri_namz_v850 = sort_list(cri_namz_v850)
+sort_cri_namz_v500 = sort_list(cri_namz_v500)
+sort_cri_namz_v200 = sort_list(cri_namz_v200)
+sort_cri_namz_q850 = sort_list(cri_namz_q850)
+sort_cri_namz_q500 = sort_list(cri_namz_q500)
+sort_cri_namz_q200 = sort_list(cri_namz_q200)
 
 sort_cri_namz = np.array([sort_cri_namz_pr, sort_cri_namz_ps, sort_cri_namz_t850, sort_cri_namz_t500, sort_cri_namz_t200, sort_cri_namz_u850, sort_cri_namz_u500, sort_cri_namz_u200, sort_cri_namz_v850, sort_cri_namz_v500, sort_cri_namz_u200, sort_cri_namz_q850, sort_cri_namz_q500, sort_cri_namz_q200])
+
+sort_cri_samz_pr = sort_list(cri_samz_pr)
+sort_cri_samz_ps = sort_list(cri_samz_ps)
+sort_cri_samz_t850 = sort_list(cri_samz_t850)
+sort_cri_samz_t500 = sort_list(cri_samz_t500)
+sort_cri_samz_t200 = sort_list(cri_samz_t200)
+sort_cri_samz_u850 = sort_list(cri_samz_u850)
+sort_cri_samz_u500 = sort_list(cri_samz_u500)
+sort_cri_samz_u200 = sort_list(cri_samz_u200)
+sort_cri_samz_v850 = sort_list(cri_samz_v850)
+sort_cri_samz_v500 = sort_list(cri_samz_v500)
+sort_cri_samz_v200 = sort_list(cri_samz_v200)
+sort_cri_samz_q850 = sort_list(cri_samz_q850)
+sort_cri_samz_q500 = sort_list(cri_samz_q500)
+sort_cri_samz_q200 = sort_list(cri_samz_q200)
+
+sort_cri_samz = np.array([sort_cri_samz_pr, sort_cri_samz_ps, sort_cri_samz_t850, sort_cri_samz_t500, sort_cri_samz_t200, sort_cri_samz_u850, sort_cri_samz_u500, sort_cri_samz_u200, sort_cri_samz_v850, sort_cri_samz_v500, sort_cri_samz_u200, sort_cri_samz_q850, sort_cri_samz_q500, sort_cri_samz_q200])
+
+sort_cri_sam_pr = sort_list(cri_sam_pr)
+sort_cri_sam_ps = sort_list(cri_sam_ps)
+sort_cri_sam_t850 = sort_list(cri_sam_t850)
+sort_cri_sam_t500 = sort_list(cri_sam_t500)
+sort_cri_sam_t200 = sort_list(cri_sam_t200)
+sort_cri_sam_u850 = sort_list(cri_sam_u850)
+sort_cri_sam_u500 = sort_list(cri_sam_u500)
+sort_cri_sam_u200 = sort_list(cri_sam_u200)
+sort_cri_sam_v850 = sort_list(cri_sam_v850)
+sort_cri_sam_v500 = sort_list(cri_sam_v500)
+sort_cri_sam_v200 = sort_list(cri_sam_v200)
+sort_cri_sam_q850 = sort_list(cri_sam_q850)
+sort_cri_sam_q500 = sort_list(cri_sam_q500)
+sort_cri_sam_q200 = sort_list(cri_sam_q200)
+
+sort_cri_sam = np.array([sort_cri_sam_pr, sort_cri_sam_ps, sort_cri_sam_t850, sort_cri_sam_t500, sort_cri_sam_t200, sort_cri_sam_u850, sort_cri_sam_u500, sort_cri_sam_u200, sort_cri_sam_v850, sort_cri_sam_v500, sort_cri_sam_u200, sort_cri_sam_q850, sort_cri_sam_q500, sort_cri_sam_q200])
+
+sort_cri_neb_pr = sort_list(cri_neb_pr)
+sort_cri_neb_ps = sort_list(cri_neb_ps)
+sort_cri_neb_t850 = sort_list(cri_neb_t850)
+sort_cri_neb_t500 = sort_list(cri_neb_t500)
+sort_cri_neb_t200 = sort_list(cri_neb_t200)
+sort_cri_neb_u850 = sort_list(cri_neb_u850)
+sort_cri_neb_u500 = sort_list(cri_neb_u500)
+sort_cri_neb_u200 = sort_list(cri_neb_u200)
+sort_cri_neb_v850 = sort_list(cri_neb_v850)
+sort_cri_neb_v500 = sort_list(cri_neb_v500)
+sort_cri_neb_v200 = sort_list(cri_neb_v200)
+sort_cri_neb_q850 = sort_list(cri_neb_q850)
+sort_cri_neb_q500 = sort_list(cri_neb_q500)
+sort_cri_neb_q200 = sort_list(cri_neb_q200)
+
+sort_cri_neb = np.array([sort_cri_neb_pr, sort_cri_neb_ps, sort_cri_neb_t850, sort_cri_neb_t500, sort_cri_neb_t200, sort_cri_neb_u850, sort_cri_neb_u500, sort_cri_neb_u200, sort_cri_neb_v850, sort_cri_neb_v500, sort_cri_neb_u200, sort_cri_neb_q850, sort_cri_neb_q500, sort_cri_neb_q200])
+
+sort_cri_lpb_pr = sort_list(cri_lpb_pr)
+sort_cri_lpb_ps = sort_list(cri_lpb_ps)
+sort_cri_lpb_t850 = sort_list(cri_lpb_t850)
+sort_cri_lpb_t500 = sort_list(cri_lpb_t500)
+sort_cri_lpb_t200 = sort_list(cri_lpb_t200)
+sort_cri_lpb_u850 = sort_list(cri_lpb_u850)
+sort_cri_lpb_u500 = sort_list(cri_lpb_u500)
+sort_cri_lpb_u200 = sort_list(cri_lpb_u200)
+sort_cri_lpb_v850 = sort_list(cri_lpb_v850)
+sort_cri_lpb_v500 = sort_list(cri_lpb_v500)
+sort_cri_lpb_v200 = sort_list(cri_lpb_v200)
+sort_cri_lpb_q850 = sort_list(cri_lpb_q850)
+sort_cri_lpb_q500 = sort_list(cri_lpb_q500)
+sort_cri_lpb_q200 = sort_list(cri_lpb_q200)
+
+sort_cri_lpb = np.array([sort_cri_lpb_pr, sort_cri_lpb_ps, sort_cri_lpb_t850, sort_cri_lpb_t500, sort_cri_lpb_t200, sort_cri_lpb_u850, sort_cri_lpb_u500, sort_cri_lpb_u200, sort_cri_lpb_v850, sort_cri_lpb_v500, sort_cri_lpb_u200, sort_cri_lpb_q850, sort_cri_lpb_q500, sort_cri_lpb_q200])
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(10, 12))
 
 norm_m1 = colors.BoundaryNorm(boundaries=np.arange(0, 18, 1), ncolors=256)
-color_m1 = cm.Greys
+color_m1 = cm.jet
 
 xlabels = legend
 ylabels = ['Q200', 'Q500', 'Q850', 'V200', 'V500', 'V850', 'U200', 'U500', 'U850', 'T200', 'T500', 'T850', 'SP', 'Pr']
@@ -827,7 +1138,7 @@ ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 
 ax = fig.add_subplot(3, 2, 2)  
-pcm = ax.pcolormesh(sort_cri_namz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
+pcm = ax.pcolormesh(sort_cri_samz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
 ax.set_title(u'(b)', loc='left', fontweight='bold', fontsize=8)
 ax.set_ylabel('SAMZ', fontsize=8)
 ax.set_xticks(np.arange(sort_cri_namz.shape[1]) + 0.5)
@@ -836,7 +1147,7 @@ ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
  
 ax = fig.add_subplot(3, 2, 3)  
-pcm = ax.pcolormesh(sort_cri_namz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
+pcm = ax.pcolormesh(sort_cri_sam, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
 ax.set_title(u'(c)', loc='left', fontweight='bold', fontsize=8)
 ax.set_ylabel('SAM', fontsize=8)
 ax.set_xticks(np.arange(sort_cri_namz.shape[1]) + 0.5)
@@ -845,31 +1156,27 @@ ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 
 ax = fig.add_subplot(3, 2, 4)  
-pcm = ax.pcolormesh(sort_cri_namz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
-ax.set_xlabel('CRI', fontsize=8)
+pcm = ax.pcolormesh(sort_cri_neb, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
 ax.set_title(u'(d)', loc='left', fontweight='bold', fontsize=8)
 ax.set_ylabel('NEB', fontsize=8)
 ax.set_xticks(np.arange(sort_cri_namz.shape[1]) + 0.5)
 ax.set_yticks(np.arange(sort_cri_namz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.15, 0.15, 0.3, 0.02]), orientation='horizontal')
+clb = fig.colorbar(pcm, cax=fig.add_axes([0.32, 0.06, 0.4, 0.014]), orientation='horizontal')
 clb.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(3, 2, 5)  
-pcm = ax.pcolormesh(sort_cri_namz, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
+pcm = ax.pcolormesh(sort_cri_lpb, edgecolors='white', linewidths=2., norm=norm_m1, cmap=color_m1)
 ax.set_title(u'(e)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xlabel('CRI', fontsize=8)
 ax.set_ylabel('LPB', fontsize=8)
 ax.set_xticks(np.arange(sort_cri_namz.shape[1]) + 0.5)
 ax.set_yticks(np.arange(sort_cri_namz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
-clb = fig.colorbar(pcm, cax=fig.add_axes([0.2, 0.2, 0.3, 0.02]), orientation='horizontal')
-clb.ax.tick_params(labelsize=8)
 
 # Path out to save figure
-path_out = '{0}/figs'.format(path)
+path_out = '{0}/figs/paper_cmip6'.format(path)
 name_out = 'pyplt_portrait_rank_cmip6_obs_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
