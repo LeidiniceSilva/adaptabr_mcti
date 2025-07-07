@@ -1161,6 +1161,10 @@ cri_sam_vars_rank = sort_list(cri_sam_vars)
 cri_lpb_vars = np.nanmean(sort_cri_lpb, axis=0)
 cri_lpb_vars_rank = sort_list(cri_lpb_vars) 
 
+sort_cri_br = np.array([cri_namz_vars_rank, cri_samz_vars_rank, cri_sam_vars_rank, cri_neb_vars_rank, cri_lpb_vars_rank])
+sort_cri_br_vars = np.nanmean(sort_cri_br, axis=0)
+sort_cri_br_rank = sort_list(sort_cri_br_vars) 
+
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(9, 7))
 cm = plt.get_cmap('jet')
@@ -1207,8 +1211,8 @@ ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
 ax.yaxis.grid(True)
 
 ax = fig.add_subplot(236, polar=True)
-theta = np.arange(0, 2*np.pi, 2*np.pi/len(cri_lpb_vars_rank)) 
-bars = ax.bar(theta, cri_lpb_vars_rank, color=colors, width=0.4)
+theta = np.arange(0, 2*np.pi, 2*np.pi/len(sort_cri_br_rank)) 
+bars = ax.bar(theta, sort_cri_br_rank, color=colors, width=0.4)
 ax.set_title(u'(f) BR', loc='left', fontsize=8, fontweight='bold')
 ax.set_xticks(theta)
 ax.set_xticklabels(range(1, len(theta)+1), fontsize=8)
