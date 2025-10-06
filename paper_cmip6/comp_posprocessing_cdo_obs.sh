@@ -9,17 +9,18 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'msl' 'mtpr' 'ps' 'q' 't2m' 't' 'u' 'v' 'z' )     
+var_list=( 'u' )     
+#var_list=( 'ps' 'q' 'tp' 't' 'u' 'v' )     
 
 # Database
-type='era5'
+type='ERA5'
 
 # Date
 dt='197901-201412'
 
 for var in ${var_list[@]}; do
 
-	path="/afs/ictp.it/home/m/mda_silv/Documents/CMIP6/database/obs/"
+	path="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/paper_cmip6/obs"
 	cd ${path}
 
 	echo
@@ -28,33 +29,17 @@ for var in ${var_list[@]}; do
 
 	echo
 	echo "1. Select levels"
-	if [ ${var} == 'q' ]
+	if [ ${var} == 'q' ] || [ ${var} == 't' ] || [ ${var} == 'u' ] || [ ${var} == 'v' ]
 	then
-	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-	
-	elif [ ${var} == 't' ]
-	then
-	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-	
-	elif [ ${var} == 'u' ]
-	then
-	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-	
-	elif [ ${var} == 'v' ]
-	then
-	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-	
-	elif [ ${var} == 'z' ]
-	then
-	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-	
+	cdo sellevel,850,500,200 u_ERA5_mon_197901-201401.nc ${var}_${type}_mon_${dt}_new.nc
+
 	else
 	cp ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
 	fi
 		
 	echo
 	echo "2. Conventing grade"
-	/home/nice/Documentos/github_projects/shell/regcm_pos/./regrid ${var}_${type}_mon_${dt}_new.nc -60,15,0.25 -100,-20,0.25 bil
+	/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shell/ufrn/regcm_post/./regrid ${var}_${type}_mon_${dt}_new.nc -60,15,1 -100,-20,1 bil
 
 	echo
 	echo "3. Conventing calendar"
@@ -62,41 +47,29 @@ for var in ${var_list[@]}; do
 
 	echo 
 	echo "4. Conventing unit"
-	if [ ${var} == 'mslp' ]
+	if [ ${var} == 'ps' ]
 	then
 	cdo -b f32 divc,100 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
-	elif [ ${var} == 'mtpr' ]
-	then
-	cdo -b f32 mulc,86400 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-		
-	elif [ ${var} == 'ps' ]
-	then
-	cdo -b f32 divc,100 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
+
 	elif [ ${var} == 'q' ]
 	then
 	cdo -b f32 mulc,1000 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
-	elif [ ${var} == 't2m' ]
+
+	elif [ ${var} == 'tp' ]
 	then
-	cdo -b f32 subc,273.15 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
+	cdo -b f32 mulc,1000 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
+		
 	elif [ ${var} == 't' ]
 	then
 	cdo -b f32 subc,273.15 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
-	elif [ ${var} == 'z' ]
-	then
-	cdo -b f32 divc,10 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
-	
+
 	else
 	cp ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
 	fi
 		
 	echo 
 	echo "5. Deleting file"
-	rm ${var}_${type}_mon_${dt}.nc
+	#rm ${var}_${type}_mon_${dt}.nc
 	rm ${var}_${type}_mon_${dt}_new.nc
 	rm ${var}_${type}_mon_${dt}_new_lonlat.nc 
 	rm ${var}_${type}_mon_${dt}_new_lonlat_std.nc
