@@ -26,22 +26,22 @@ path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 
-	mean_850 = np.nanmean(var[:][:,2,:,:], axis=0)
+	mean_850 = np.nanmean(var[:][:,0,:,:], axis=0)
 	mean_500 = np.nanmean(var[:][:,1,:,:], axis=0)
-	mean_200 = np.nanmean(var[:][:,0,:,:], axis=0)
+	mean_200 = np.nanmean(var[:][:,2,:,:], axis=0)
 			
 	return lat, lon, mean_850, mean_500, mean_200
 
 
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -77,28 +77,28 @@ lat, lon, v_850_obs, v_500_obs, v_200_obs = import_obs_srf('v', 'sa')
 
 lat, lon, q_850_mdl1b, q_500_mdl1b, q_200_mdl1b = import_cmip_srf('hus', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
 lat, lon, q_850_mdl2b, q_500_mdl2b, q_200_mdl2b = import_cmip_srf('hus', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, q_850_mdl3b, q_500_mdl3b, q_200_mdl3b = import_cmip_srf('hus', 'sa', 'NorESM2-MM', 'r1i1p1f1_gn')
+lat, lon, q_850_mdl3b, q_500_mdl3b, q_200_mdl3b = import_cmip_srf('hus', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
 lat, lon, q_850_mdl1w, q_500_mdl1w, q_200_mdl1w = import_cmip_srf('hus', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, q_850_mdl2w, q_500_mdl2w, q_200_mdl2w = import_cmip_srf('hus', 'sa', 'NESM3', 'r1i1p1f1_gn')
-lat, lon, q_850_mdl3w, q_500_mdl3w, q_200_mdl3w = import_cmip_srf('hus', 'sa', 'MIROC-ES2L', 'r1i1p1f2_gn')
+lat, lon, q_850_mdl2w, q_500_mdl2w, q_200_mdl2w = import_cmip_srf('hus', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, q_850_mdl3w, q_500_mdl3w, q_200_mdl3w = import_cmip_srf('hus', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
 lat, lon, u_850_mdl1b, u_500_mdl1b, u_200_mdl1b = import_cmip_srf('ua', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
 lat, lon, u_850_mdl2b, u_500_mdl2b, u_200_mdl2b = import_cmip_srf('ua', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, u_850_mdl3b, u_500_mdl3b, u_200_mdl3b = import_cmip_srf('ua', 'sa', 'NorESM2-MM', 'r1i1p1f1_gn')
+lat, lon, u_850_mdl3b, u_500_mdl3b, u_200_mdl3b = import_cmip_srf('ua', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
 lat, lon, u_850_mdl1w, u_500_mdl1w, u_200_mdl1w = import_cmip_srf('ua', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, u_850_mdl2w, u_500_mdl2w, u_200_mdl2w = import_cmip_srf('ua', 'sa', 'NESM3', 'r1i1p1f1_gn')
-lat, lon, u_850_mdl3w, u_500_mdl3w, u_200_mdl3w = import_cmip_srf('ua', 'sa', 'MIROC-ES2L', 'r1i1p1f2_gn')
+lat, lon, u_850_mdl2w, u_500_mdl2w, u_200_mdl2w = import_cmip_srf('ua', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, u_850_mdl3w, u_500_mdl3w, u_200_mdl3w = import_cmip_srf('ua', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
 lat, lon, v_850_mdl1b, v_500_mdl1b, v_200_mdl1b = import_cmip_srf('va', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
 lat, lon, v_850_mdl2b, v_500_mdl2b, v_200_mdl2b = import_cmip_srf('va', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, v_850_mdl3b, v_500_mdl3b, v_200_mdl3b = import_cmip_srf('va', 'sa', 'NorESM2-MM', 'r1i1p1f1_gn')
+lat, lon, v_850_mdl3b, v_500_mdl3b, v_200_mdl3b = import_cmip_srf('va', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
 lat, lon, v_850_mdl1w, v_500_mdl1w, v_200_mdl1w = import_cmip_srf('va', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, v_850_mdl2w, v_500_mdl2w, v_200_mdl2w = import_cmip_srf('va', 'sa', 'NESM3', 'r1i1p1f1_gn')
-lat, lon, v_850_mdl3w, v_500_mdl3w, v_200_mdl3w = import_cmip_srf('va', 'sa', 'MIROC-ES2L', 'r1i1p1f2_gn')
-
+lat, lon, v_850_mdl2w, v_500_mdl2w, v_200_mdl2w = import_cmip_srf('va', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, v_850_mdl3w, v_500_mdl3w, v_200_mdl3w = import_cmip_srf('va', 'sa', 'NESM3', 'r1i1p1f1_gn')   
+    
 q_850_mme_best = np.nanmean([q_850_mdl1b, q_850_mdl2b, q_850_mdl3b], axis=0)
 q_500_mme_best = np.nanmean([q_500_mdl1b, q_500_mdl2b, q_500_mdl3b], axis=0)
 q_200_mme_best = np.nanmean([q_200_mdl1b, q_200_mdl2b, q_200_mdl3b], axis=0)
@@ -190,7 +190,7 @@ ax9.set_xlabel('MME-worst', fontsize=font_size, fontweight='bold')
 configure_subplot(ax9)
 
 # Path out to save figure
-path_out = '{0}/figs/paper_cmip6'.format(path)
+path_out = '{0}/figs'.format(path)
 name_out = 'pyplt_maps_atm_cmip6_obs_quv_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()

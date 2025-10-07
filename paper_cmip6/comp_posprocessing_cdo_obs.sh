@@ -16,8 +16,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'q' 't' 'v' )     
-#var_list=( 'ps' 'q' 'tp' 't' 'u' 'v' )     
+var_list=( 'ps' 'q' 'tp' 't' 'u' 'v' )     
 
 # Database
 type='ERA5'
@@ -27,7 +26,7 @@ dt='197901-201412'
 
 for var in ${var_list[@]}; do
 
-	path="/home/mda_silv/users/AdaptaBr_MCTI/database/paper_cmip6/obs"
+	path="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/obs"
 	cd ${path}
 
 	echo
@@ -45,7 +44,7 @@ for var in ${var_list[@]}; do
 		
 	echo
 	echo "2. Conventing grade"
-	/home/mda_silv/github_projects/shell/ufrn/regcm_post/./regrid ${var}_${type}_mon_${dt}_new.nc -60,15,1 -100,-20,1 bil
+	/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shell/ufrn/regcm_post/./regrid ${var}_${type}_mon_${dt}_new.nc -60,15,1 -100,-20,1 bil
 
 	echo
 	echo "3. Conventing calendar"

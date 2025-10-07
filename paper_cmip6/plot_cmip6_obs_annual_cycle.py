@@ -24,7 +24,7 @@ path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
@@ -42,7 +42,7 @@ def import_obs_srf(param, area):
 
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -75,21 +75,21 @@ def comp_mme(subdomain, best_models):
     
     
 # Import obs database and cmip models
-namz_obs_pr_ac = import_obs_srf('mtpr', 'namz')
-samz_obs_pr_ac = import_obs_srf('mtpr', 'samz')
-sam_obs_pr_ac = import_obs_srf('mtpr', 'sam')
-neb_obs_pr_ac = import_obs_srf('mtpr', 'neb')
-lpb_obs_pr_ac = import_obs_srf('mtpr', 'lpb')
+namz_obs_pr_ac = import_obs_srf('tp', 'namz')
+samz_obs_pr_ac = import_obs_srf('tp', 'samz')
+sam_obs_pr_ac = import_obs_srf('tp', 'sam')
+neb_obs_pr_ac = import_obs_srf('tp', 'neb')
+lpb_obs_pr_ac = import_obs_srf('tp', 'lpb')
 
-best_models_by_domain = {'namz': ['MRI-ESM2-0', 'GFDL-ESM4', 'NorESM2-MM'],
+best_models_by_domain = {'namz': ['MRI-ESM2-0', 'GFDL-ESM4', 'MPI-ESM1-2-HR'],
     'samz': ['MRI-ESM2-0', 'MPI-ESM1-2-HR', 'NorESM2-MM'],
-    'neb': ['CNRM-CM6-1', 'MRI-ESM2-0', 'MPI-ESM1-2-HR'],
-    'sam': ['MRI-ESM2-0', 'ACCESS-CM2', 'GFDL-ESM4'],
-    'lpb': ['ACCESS-CM2', 'MPI-ESM1-2-HR', 'MIROC-ES2L']}
+    'neb': ['MRI-ESM2-0', 'ACCESS-CM2', 'MPI-ESM1-2-HR'],
+    'sam': ['GFDL-ESM4', 'MRI-ESM2-0', 'ACCESS-CM2'],
+    'lpb': ['ACCESS-CM2', 'MPI-ESM1-2-HR', 'GFDL-ESM4']}
 
-worse_models_by_domain = {'namz': ['KIOST-ESM', 'NESM3', 'CMCC-ESM2'],
-    'samz': ['CMCC-ESM2', 'KIOST-ESM', 'MIROC6'],
-    'neb': ['KIOST-ESM', 'CNRM-ESM2-1', 'CMCC-ESM2'],
+worse_models_by_domain = {'namz': ['KIOST-ESM', 'CMCC-ESM2', 'NESM3'],
+    'samz': ['CMCC-ESM2', 'KIOST-ESM', 'INM-CM4-8'],
+    'neb': ['KIOST-ESM', 'MIROC6', 'CNRM-ESM2-1'],
     'sam': ['NESM3', 'KIOST-ESM', 'INM-CM4-8'],
     'lpb': ['KIOST-ESM', 'MIROC6', 'NESM3']}
 
@@ -306,7 +306,7 @@ plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
 
 # Path out to save figure
-path_out = '{0}/figs/paper_cmip6'.format(path)
+path_out = '{0}/figs'.format(path)
 name_out = 'pyplt_annual_cycle_cmip6_obs_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()

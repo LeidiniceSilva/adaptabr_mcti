@@ -51,7 +51,7 @@ def latlon(dataset):
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
@@ -70,19 +70,19 @@ def import_obs_srf(param, area):
 def import_obs_atm(param, area):
 	
 	
-	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_era5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 
-	mean_850 = np.nanmean(var[:][:,2,:,:], axis=0)
+	mean_850 = np.nanmean(var[:][:,0,:,:], axis=0)
 	mean_500 = np.nanmean(var[:][:,1,:,:], axis=0)
-	mean_200 = np.nanmean(var[:][:,0,:,:], axis=0)
+	mean_200 = np.nanmean(var[:][:,2,:,:], axis=0)
 	
-	mean_850_ts = np.nanmean(np.nanmean(var[:][:,2,:,:], axis=1), axis=1)
+	mean_850_ts = np.nanmean(np.nanmean(var[:][:,0,:,:], axis=1), axis=1)
 	mean_500_ts = np.nanmean(np.nanmean(var[:][:,1,:,:], axis=1), axis=1)
-	mean_200_ts = np.nanmean(np.nanmean(var[:][:,0,:,:], axis=1), axis=1)
+	mean_200_ts = np.nanmean(np.nanmean(var[:][:,2,:,:], axis=1), axis=1)
 
 	xy_ts_850 = latlon(mean_850)
 	xy_ts_500 = latlon(mean_500)
@@ -93,15 +93,15 @@ def import_obs_atm(param, area):
 	ac_ts_200 = annual_cycle(mean_200_ts)
 
 	yr_ts_850 = year_mean(mean_850_ts)
-	yr_ts_500 = year_mean(mean_850_ts)
-	yr_ts_200 = year_mean(mean_850_ts)
+	yr_ts_500 = year_mean(mean_500_ts)
+	yr_ts_200 = year_mean(mean_200_ts)
 		
 	return xy_ts_850, xy_ts_500, xy_ts_200, ac_ts_850, ac_ts_500, ac_ts_200, yr_ts_850, yr_ts_500, yr_ts_200
 	
 		
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -120,7 +120,7 @@ def import_cmip_srf(param, area, model, exp):
 def import_cmip_atm(param, area, model, exp):
 	
 	
-	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -143,42 +143,42 @@ def import_cmip_atm(param, area, model, exp):
 	ac_ts_200 = annual_cycle(mean_200_ts)
 
 	yr_ts_850 = year_mean(mean_850_ts)
-	yr_ts_500 = year_mean(mean_850_ts)
-	yr_ts_200 = year_mean(mean_850_ts)
+	yr_ts_500 = year_mean(mean_500_ts)
+	yr_ts_200 = year_mean(mean_200_ts)
 		
 	return xy_ts_850, xy_ts_500, xy_ts_200, ac_ts_850, ac_ts_500, ac_ts_200, yr_ts_850, yr_ts_500, yr_ts_200
 	
 	      
 # Import obs database and cmip models
-namz_obs_pr_xy, namz_obs_pr_ac, namz_obs_pr_yr = import_obs_srf('mtpr', 'namz')
+namz_obs_pr_xy, namz_obs_pr_ac, namz_obs_pr_yr = import_obs_srf('tp', 'namz')
 namz_obs_ps_xy, namz_obs_ps_ac, namz_obs_ps_yr = import_obs_srf('sp', 'namz')
 namz_obs_t850_xy, namz_obs_t500_xy, namz_obs_t200_xy, namz_obs_t850_ac, namz_obs_t500_ac, namz_obs_t200_ac, namz_obs_t850_yr, namz_obs_t500_yr, namz_obs_t200_yr = import_obs_atm('t', 'namz')
 namz_obs_u850_xy, namz_obs_u500_xy, namz_obs_u200_xy, namz_obs_u850_ac, namz_obs_u500_ac, namz_obs_u200_ac, namz_obs_u850_yr, namz_obs_u500_yr, namz_obs_u200_yr = import_obs_atm('u', 'namz')
 namz_obs_v850_xy, namz_obs_v500_xy, namz_obs_v200_xy, namz_obs_v850_ac, namz_obs_v500_ac, namz_obs_v200_ac, namz_obs_v850_yr, namz_obs_v500_yr, namz_obs_v200_yr = import_obs_atm('v', 'namz')
 namz_obs_q850_xy, namz_obs_q500_xy, namz_obs_q200_xy, namz_obs_q850_ac, namz_obs_q500_ac, namz_obs_q200_ac, namz_obs_q850_yr, namz_obs_q500_yr, namz_obs_q200_yr = import_obs_atm('q', 'namz')
 
-samz_obs_pr_xy, samz_obs_pr_ac, samz_obs_pr_yr = import_obs_srf('mtpr', 'samz')
+samz_obs_pr_xy, samz_obs_pr_ac, samz_obs_pr_yr = import_obs_srf('tp', 'samz')
 samz_obs_ps_xy, samz_obs_ps_ac, samz_obs_ps_yr = import_obs_srf('sp', 'samz')
 samz_obs_t850_xy, samz_obs_t500_xy, samz_obs_t200_xy, samz_obs_t850_ac, samz_obs_t500_ac, samz_obs_t200_ac, samz_obs_t850_yr, samz_obs_t500_yr, samz_obs_t200_yr = import_obs_atm('t', 'samz')
 samz_obs_u850_xy, samz_obs_u500_xy, samz_obs_u200_xy, samz_obs_u850_ac, samz_obs_u500_ac, samz_obs_u200_ac, samz_obs_u850_yr, samz_obs_u500_yr, samz_obs_u200_yr = import_obs_atm('u', 'samz')
 samz_obs_v850_xy, samz_obs_v500_xy, samz_obs_v200_xy, samz_obs_v850_ac, samz_obs_v500_ac, samz_obs_v200_ac, samz_obs_v850_yr, samz_obs_v500_yr, samz_obs_v200_yr = import_obs_atm('v', 'samz')
 samz_obs_q850_xy, samz_obs_q500_xy, samz_obs_q200_xy, samz_obs_q850_ac, samz_obs_q500_ac, samz_obs_q200_ac, samz_obs_q850_yr, samz_obs_q500_yr, samz_obs_q200_yr = import_obs_atm('q', 'samz')
 
-sam_obs_pr_xy, sam_obs_pr_ac, sam_obs_pr_yr = import_obs_srf('mtpr', 'sam')
+sam_obs_pr_xy, sam_obs_pr_ac, sam_obs_pr_yr = import_obs_srf('tp', 'sam')
 sam_obs_ps_xy, sam_obs_ps_ac, sam_obs_ps_yr = import_obs_srf('sp', 'sam')
 sam_obs_t850_xy, sam_obs_t500_xy, sam_obs_t200_xy, sam_obs_t850_ac, sam_obs_t500_ac, sam_obs_t200_ac, sam_obs_t850_yr, sam_obs_t500_yr, sam_obs_t200_yr = import_obs_atm('t', 'sam')
 sam_obs_u850_xy, sam_obs_u500_xy, sam_obs_u200_xy, sam_obs_u850_ac, sam_obs_u500_ac, sam_obs_u200_ac, sam_obs_u850_yr, sam_obs_u500_yr, sam_obs_u200_yr = import_obs_atm('u', 'sam')
 sam_obs_v850_xy, sam_obs_v500_xy, sam_obs_v200_xy, sam_obs_v850_ac, sam_obs_v500_ac, sam_obs_v200_ac, sam_obs_v850_yr, sam_obs_v500_yr, sam_obs_v200_yr = import_obs_atm('v', 'sam')
 sam_obs_q850_xy, sam_obs_q500_xy, sam_obs_q200_xy, sam_obs_q850_ac, sam_obs_q500_ac, sam_obs_q200_ac, sam_obs_q850_yr, sam_obs_q500_yr, sam_obs_q200_yr = import_obs_atm('q', 'sam')
 
-neb_obs_pr_xy, neb_obs_pr_ac, neb_obs_pr_yr = import_obs_srf('mtpr', 'neb')
+neb_obs_pr_xy, neb_obs_pr_ac, neb_obs_pr_yr = import_obs_srf('tp', 'neb')
 neb_obs_ps_xy, neb_obs_ps_ac, neb_obs_ps_yr = import_obs_srf('sp', 'neb')
 neb_obs_t850_xy, neb_obs_t500_xy, neb_obs_t200_xy, neb_obs_t850_ac, neb_obs_t500_ac, neb_obs_t200_ac, neb_obs_t850_yr, neb_obs_t500_yr, neb_obs_t200_yr = import_obs_atm('t', 'neb')
 neb_obs_u850_xy, neb_obs_u500_xy, neb_obs_u200_xy, neb_obs_u850_ac, neb_obs_u500_ac, neb_obs_u200_ac, neb_obs_u850_yr, neb_obs_u500_yr, neb_obs_u200_yr = import_obs_atm('u', 'neb')
 neb_obs_v850_xy, neb_obs_v500_xy, neb_obs_v200_xy, neb_obs_v850_ac, neb_obs_v500_ac, neb_obs_v200_ac, neb_obs_v850_yr, neb_obs_v500_yr, neb_obs_v200_yr = import_obs_atm('v', 'neb')
 neb_obs_q850_xy, neb_obs_q500_xy, neb_obs_q200_xy, neb_obs_q850_ac, neb_obs_q500_ac, neb_obs_q200_ac, neb_obs_q850_yr, neb_obs_q500_yr, neb_obs_q200_yr = import_obs_atm('q', 'neb')
 
-lpb_obs_pr_xy, lpb_obs_pr_ac, lpb_obs_pr_yr = import_obs_srf('mtpr', 'lpb')
+lpb_obs_pr_xy, lpb_obs_pr_ac, lpb_obs_pr_yr = import_obs_srf('tp', 'lpb')
 lpb_obs_ps_xy, lpb_obs_ps_ac, lpb_obs_ps_yr = import_obs_srf('sp', 'lpb')
 lpb_obs_t850_xy, lpb_obs_t500_xy, lpb_obs_t200_xy, lpb_obs_t850_ac, lpb_obs_t500_ac, lpb_obs_t200_ac, lpb_obs_t850_yr, lpb_obs_t500_yr, lpb_obs_t200_yr = import_obs_atm('t', 'lpb')
 lpb_obs_u850_xy, lpb_obs_u500_xy, lpb_obs_u200_xy, lpb_obs_u850_ac, lpb_obs_u500_ac, lpb_obs_u200_ac, lpb_obs_u850_yr, lpb_obs_u500_yr, lpb_obs_u200_yr = import_obs_atm('u', 'lpb')
@@ -807,7 +807,7 @@ clb = fig.colorbar(pcm, cax=fig.add_axes([0.72, 0.06, 0.18, 0.01]), orientation=
 clb.ax.tick_params(labelsize=8)
 
 # Path out to save figure
-path_out = '{0}/figs/paper_cmip6'.format(path)
+path_out = '{0}/figs'.format(path)
 name_out = 'pyplt_portrait_stats_metrics_cmip6_obs_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
