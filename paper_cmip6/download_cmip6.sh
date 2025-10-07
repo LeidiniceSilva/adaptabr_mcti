@@ -9,8 +9,8 @@
 
 #model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
-model_list=( 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
-var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va')     
+model_list=( 'MRI-ESM2-0' ) 
+var_list=( 'hus' 'ta' 'ua' 'va')     
 exp='historical'
 
 echo "Starting download"
@@ -151,8 +151,11 @@ for mdl in ${model_list[@]}; do
 	     version='v20190308'
 	     declare -a YEARS=('195001-199912' '199001-200912' '201001-201412')
              if [ ${var} == 'hus' ] || [ ${var} == 'ta' ] || [ ${var} == 'ua' ] || [ ${var} == 'va' ]; then
-	         declare -a YEARS=('195001-195912' '200001-201412')
+                 version='v20190308'
+	         declare -a YEARS=('195001-199912')
+	         #declare -a YEARS=('195001-199912' '200001-201412')
 	     else
+                 version='v20190222'
 	         declare -a YEARS=('185001-201412')
 	     fi
 
@@ -168,12 +171,12 @@ for mdl in ${model_list[@]}; do
 	     type='gn'
 	     member='r1i1p1f1'
 	     version='v20191108'
-	     declare -a YEARS=('195001-195912' '196001-196912' '197001-197912' '198001-198912' '199001-199912' '200001-200912' '201001-201412')
+	     declare -a YEARS=('197001-197912' '198001-198912' '199001-199912' '200001-200912' '201001-201412')
 
 	fi
 	
 	base_url="https://data.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${mdl_family}/${mdl}/${exp}/${member}/Amon/${var}/${type}/${version}"
-	dir="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/paper_cmip6/cmip6/${mdl}"
+	dir="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/cmip6/${mdl}"
 	
 	for year in "${YEARS[@]}"; do
 
