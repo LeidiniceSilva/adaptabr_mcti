@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "June 10, 2024"
-__description__ = "This script plot portrait of cmip6 models"
+__description__ = "This script plot annual cycle of cmip6 models"
 
 import os
 import netCDF4
@@ -19,12 +19,12 @@ from dict_cmip6_models_name import cmip6
 from comp_stats_metrics import compute_nrmse, compute_tss, compute_corr, compute_ivs
 
 dt = '197901-201412'
-path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
+path  = '/home/mda_silv/users/AdaptaBr_MCTI'
 		    
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
@@ -42,7 +42,7 @@ def import_obs_srf(param, area):
 
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
@@ -306,7 +306,7 @@ plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
 
 # Path out to save figure
-path_out = '{0}/figs'.format(path)
+path_out = '{0}/figs/paper_cmip6'.format(path)
 name_out = 'pyplt_annual_cycle_cmip6_obs_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()

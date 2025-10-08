@@ -9,17 +9,16 @@ echo
 echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 
 # Models list
-model_list=( 'INM-CM5-0' ) 
-#model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
+model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 # Variables list
-var_list=( 'va' )     
-#var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' )     
+var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' )        
+ 
 
 for model in ${model_list[@]}; do
 
 	for var in ${var_list[@]}; do
 
-		path="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/cmip6/"${model}
+		path="/home/mda_silv/users/AdaptaBr_MCTI/database/paper_cmip6/cmip6/"${model}
 		cd ${path}
 
 		# Experiment name
@@ -61,7 +60,7 @@ for model in ${model_list[@]}; do
 
 		echo
 		echo "2. Conventing grade"
-		/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shell/ufrn/regcm_post/./regrid ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc -60,15,1 -100,-20,1 bil
+		/home/mda_silv/github_projects/shell/ufrn/regcm_post/./regrid ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc -60,15,1 -100,-20,1 bil
 
 		echo
 		echo "3. Conventing calendar"

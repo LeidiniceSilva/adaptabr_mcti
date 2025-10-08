@@ -19,7 +19,7 @@ dt='197901-201412'
 
 for var in ${var_list[@]}; do
 
-	path="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/obs"
+	path="/home/mda_silv/users/AdaptaBr_MCTI/database/paper_cmip6/obs"
 	cd ${path}
 	echo ${path}
 
