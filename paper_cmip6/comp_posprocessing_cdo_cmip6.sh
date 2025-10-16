@@ -10,9 +10,11 @@ echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 
 # Models list
 model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
+
 # Variables list
-var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' )        
- 
+var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' )                
+
+freq='day' 
 
 for model in ${model_list[@]}; do
 
@@ -47,48 +49,48 @@ for model in ${model_list[@]}; do
 
 		echo
 		echo ${path}
-		echo ${var}_Amon_${model}_${exp}_${member}_${dt}.nc
+		echo ${var}_${freq}_${model}_${exp}_${member}_${dt}.nc
 
 		echo
 		echo "1. Select levels"
 		if [ ${var} == 'hus' ] || [ ${var} == 'ta' ] || [ ${var} == 'ua' ] || [ ${var} == 'va' ]; then
-		cdo sellevel,85000,50000,20000 ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cdo sellevel,85000,50000,20000 ${var}_${freq}_${model}_${exp}_${member}_${dt}.nc ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc
 		
 		else
-		cp ${var}_Amon_${model}_${exp}_${member}_${dt}.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
+		cp ${var}_${freq}_${model}_${exp}_${member}_${dt}.nc ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc
 		fi
 
 		echo
 		echo "2. Conventing grade"
-		/home/mda_silv/github_projects/shell/ufrn/regcm_post/./regrid ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc -60,15,1 -100,-20,1 bil
+		/home/mda_silv/github_projects/shell/ufrn/regcm_post/./regrid ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc -60,15,1 -100,-20,1 bil
 
 		echo
 		echo "3. Conventing calendar"
-		cdo setcalendar,standard ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat.nc ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
+		cdo setcalendar,standard ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat.nc ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
 
 		echo 
 		echo "4. Conventing unit"
 		if [ ${var} == 'hus' ]; then
-		cdo -b f32 mulc,1000 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 mulc,1000 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
 		elif [ ${var} == 'pr' ]; then
-		cdo -b f32 mulc,86400 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 mulc,86400 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 
 		elif [ ${var} == 'ps' ]; then
-		cdo -b f32 divc,100 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 divc,100 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
 		elif [ ${var} == 'ta' ]; then
-		cdo -b f32 subc,273.15 ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cdo -b f32 subc,273.15 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
 		else
-		cp ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_Amon_${model}_${exp}_${member}_${dt}_lonlat.nc
+		cp ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		fi
 
 		echo 
 		echo "5. Deleting file"
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new.nc
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat.nc 
-		rm ${var}_Amon_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
+		rm ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc
+		rm ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat.nc 
+		rm ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc
 	
 	done
 done
