@@ -16,7 +16,6 @@ import cartopy.feature as cfeature
 
 from matplotlib.patches import Patch
 from dict_cmip6_models_name import cmip6
-from comp_stats_metrics import compute_nrmse, compute_tss, compute_corr, compute_ivs
 
 dt = '197901-201412'
 path  = '/home/mda_silv/users/AdaptaBr_MCTI'
@@ -56,7 +55,17 @@ def comp_mme(value_i, value_ii, value_iii):
 	mme = np.nanmean(arrays_equal, axis=0)
 
 	return mme
-	
+
+
+def comp_mme_(value_):
+
+	arrays_ = [value_[0], value_[1], value_[2], value_[3], value_[4], value_[5], value_[6], value_[7], value_[8], value_[9], value_[10], value_[11], value_[12], value_[13], value_[14], value_[15], value_[16]]
+	min_time_ = min(arr.shape[0] for arr in arrays_)
+	arrays_equal_ = [arr[:min_time_, :, :] for arr in arrays_]
+	mme_ = np.nanmean(arrays_equal_, axis=0)
+
+	return mme_
+		
   
 def comp_pdf(value):
 
@@ -86,6 +95,20 @@ samz_obs_pr = import_obs_srf('tp', 'samz')
 sam_obs_pr = import_obs_srf('tp', 'sam')
 neb_obs_pr = import_obs_srf('tp', 'neb')
 lpb_obs_pr = import_obs_srf('tp', 'lpb')
+
+clim_namz_cmip6, clim_samz_cmip6, clim_neb_cmip6, clim_sam_cmip6, clim_lpb_cmip6 = [], [], [], [], []
+for i in range(1, 18):
+	clim_namz_cmip6.append(import_cmip_srf('pr', 'namz', cmip6[i][0]))	
+	clim_samz_cmip6.append(import_cmip_srf('pr', 'samz', cmip6[i][0]))
+	clim_neb_cmip6.append(import_cmip_srf('pr', 'neb', cmip6[i][0]))
+	clim_sam_cmip6.append(import_cmip_srf('pr', 'sam', cmip6[i][0]))
+	clim_lpb_cmip6.append(import_cmip_srf('pr', 'lpb', cmip6[i][0]))
+
+clim_namz_cmip6_ = comp_mme_(clim_namz_cmip6)
+clim_samz_cmip6_ = comp_mme_(clim_samz_cmip6)
+clim_sam_cmip6_ = comp_mme_(clim_sam_cmip6)
+clim_neb_cmip6_ = comp_mme_(clim_neb_cmip6)
+clim_lpb_cmip6_ = comp_mme_(clim_lpb_cmip6)
 
 # Best
 namz_cmip_pr_best1 = import_cmip_srf('pr', 'namz', 'MRI-ESM2-0')
@@ -146,6 +169,12 @@ sam_obs_pr_pdf = comp_pdf(sam_obs_pr)
 neb_obs_pr_pdf = comp_pdf(neb_obs_pr)
 lpb_obs_pr_pdf = comp_pdf(lpb_obs_pr)
 
+namz_cmip_pr_pdf = comp_pdf(clim_namz_cmip6_)
+samz_cmip_pr_pdf = comp_pdf(clim_samz_cmip6_)
+sam_cmip_pr_pdf = comp_pdf(clim_sam_cmip6_)
+neb_cmip_pr_pdf = comp_pdf(clim_neb_cmip6_)
+lpb_cmip_pr_pdf = comp_pdf(clim_lpb_cmip6_)
+
 namz_cmip_pr_best_pdf = comp_pdf(namz_cmip_pr_best_mme)
 samz_cmip_pr_best_pdf = comp_pdf(samz_cmip_pr_best_mme)
 neb_cmip_pr_best_pdf = comp_pdf(neb_cmip_pr_best_mme)
@@ -164,15 +193,18 @@ time = np.arange(0.5, 12 + 0.5)
 
 ax = fig.add_subplot(2, 3, 1)  
 pdf_plot = ax.plot(namz_obs_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.75, linestyle='None', label='ERA5')
+pdf_plot = ax.plot(namz_cmip_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.5, linestyle='None', label='MME')
 pdf_plot = ax.plot(namz_cmip_pr_best_pdf, marker='o', markersize=4, mfc='blue', mec='blue', alpha=0.75, linestyle='None', label='MME-best')
 pdf_plot = ax.plot(namz_cmip_pr_worst_pdf, marker='o', markersize=4, mfc='red', mec='red', alpha=0.75, linestyle='None', label='MME-worst')
 plt.title(u'(a) NAMZ', loc='left', fontsize=8, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=8, fontweight='bold')
 plt.grid(linestyle='--')
 ax.set_yscale('log')
+plt.legend(ncol=2, loc=1, fontsize=8)
 
 ax = fig.add_subplot(2, 3, 2)  
 pdf_plot = ax.plot(samz_obs_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.75, linestyle='None', label='ERA5')
+pdf_plot = ax.plot(samz_cmip_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.5, linestyle='None', label='MME')
 pdf_plot = ax.plot(samz_cmip_pr_best_pdf, marker='o', markersize=4, mfc='blue', mec='blue', alpha=0.75, linestyle='None', label='MME-best')
 pdf_plot = ax.plot(samz_cmip_pr_worst_pdf, marker='o', markersize=4, mfc='red', mec='red', alpha=0.75, linestyle='None', label='MME-worst')
 plt.title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
@@ -181,6 +213,7 @@ ax.set_yscale('log')
 
 ax = fig.add_subplot(2, 3, 3)  
 pdf_plot = ax.plot(neb_obs_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.75, linestyle='None', label='ERA5')
+pdf_plot = ax.plot(neb_cmip_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.5, linestyle='None', label='MME')
 pdf_plot = ax.plot(neb_cmip_pr_best_pdf, marker='o', markersize=4, mfc='blue', mec='blue', alpha=0.75, linestyle='None', label='MME-best')
 pdf_plot = ax.plot(neb_cmip_pr_worst_pdf, marker='o', markersize=4, mfc='red', mec='red', alpha=0.75, linestyle='None', label='MME-worst')
 plt.title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
@@ -190,6 +223,7 @@ ax.set_yscale('log')
 
 ax = fig.add_subplot(2, 3, 4)  
 pdf_plot = ax.plot(sam_obs_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.75, linestyle='None', label='ERA5')
+pdf_plot = ax.plot(sam_cmip_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.5, linestyle='None', label='MME')
 pdf_plot = ax.plot(sam_cmip_pr_best_pdf, marker='o', markersize=4, mfc='blue', mec='blue', alpha=0.75, linestyle='None', label='MME-best')
 pdf_plot = ax.plot(sam_cmip_pr_worst_pdf, marker='o', markersize=4, mfc='red', mec='red', alpha=0.75, linestyle='None', label='MME-worst')
 plt.title(u'(d) SAM', loc='left', fontsize=8, fontweight='bold')
@@ -200,6 +234,7 @@ ax.set_yscale('log')
 
 ax = fig.add_subplot(2, 3, 5)  
 pdf_plot = ax.plot(lpb_obs_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.75, linestyle='None', label='ERA5')
+pdf_plot = ax.plot(lpb_cmip_pr_pdf, marker='o', markersize=4, mfc='black', mec='black', alpha=0.5, linestyle='None', label='MME')
 pdf_plot = ax.plot(lpb_cmip_pr_best_pdf, marker='o', markersize=4, mfc='blue', mec='blue', alpha=0.75, linestyle='None', label='MME-best')
 pdf_plot = ax.plot(lpb_cmip_pr_worst_pdf, marker='o', markersize=4, mfc='red', mec='red', alpha=0.75, linestyle='None', label='MME-worst')
 plt.title(u'(e) LPB', loc='left', fontsize=8, fontweight='bold')

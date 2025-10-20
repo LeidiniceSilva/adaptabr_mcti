@@ -129,26 +129,33 @@ for i in range(1, 18):
 	clim_sam_cmip6.append(import_cmip_srf('pr', 'sam', cmip6[i][0], cmip6[i][1]))
 	clim_lpb_cmip6.append(import_cmip_srf('pr', 'lpb', cmip6[i][0], cmip6[i][1]))
 
+clim_namz_cmip6_ = np.nanmean(np.array(clim_namz_cmip6), axis=0)
+clim_samz_cmip6_ = np.nanmean(np.array(clim_samz_cmip6), axis=0)
+clim_sam_cmip6_ = np.nanmean(np.array(clim_sam_cmip6), axis=0)
+clim_neb_cmip6_ = np.nanmean(np.array(clim_neb_cmip6), axis=0)
+clim_lpb_cmip6_ = np.nanmean(np.array(clim_lpb_cmip6), axis=0)
+
 fig = plt.figure(figsize=(14, 6))
 time = np.arange(0.5, 12 + 0.5)
 
 ax = fig.add_subplot(2, 3, 1)  
-annual_cycle = ax.plot(time, namz_obs_pr_ac, time, namz_mme_best, time, namz_mme_worse, time, clim_namz_cmip6[0], 
-time, clim_namz_cmip6[1], time, clim_namz_cmip6[2], time, clim_namz_cmip6[3], time, clim_namz_cmip6[4], 
-time, clim_namz_cmip6[5], time, clim_namz_cmip6[6], time, clim_namz_cmip6[7], time, clim_namz_cmip6[8], 
-time, clim_namz_cmip6[9], time, clim_namz_cmip6[10], time, clim_namz_cmip6[11], time, clim_namz_cmip6[12], 
-time, clim_namz_cmip6[13], time, clim_namz_cmip6[14], time, clim_namz_cmip6[15], time, clim_namz_cmip6[16])
+annual_cycle = ax.plot(time, namz_obs_pr_ac, time, clim_namz_cmip6_, time, namz_mme_best, time, namz_mme_worse, 
+time, clim_namz_cmip6[0], time, clim_namz_cmip6[1], time, clim_namz_cmip6[2], time, clim_namz_cmip6[3], 
+time, clim_namz_cmip6[4], time, clim_namz_cmip6[5], time, clim_namz_cmip6[6], time, clim_namz_cmip6[7], 
+time, clim_namz_cmip6[8], time, clim_namz_cmip6[9], time, clim_namz_cmip6[10], time, clim_namz_cmip6[11], 
+time, clim_namz_cmip6[12], time, clim_namz_cmip6[13], time, clim_namz_cmip6[14], time, clim_namz_cmip6[15], 
+time, clim_namz_cmip6[16])
 plt.title(u'(a) NAMZ', loc='left', fontsize=8, fontweight='bold')
 plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
 plt.yticks(np.arange(0, 16, 2), fontsize=8)
 plt.ylim(0, 14)
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
 plt.grid(linestyle='--')
-l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20 = annual_cycle
+l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21 = annual_cycle
 plt.setp(l1, color='black')
-plt.setp(l2, color='blue')
-plt.setp(l3, color='red')
-plt.setp(l4, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l2, color='black', alpha=0.5)
+plt.setp(l3, color='blue')
+plt.setp(l4, color='red')
 plt.setp(l5, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l6, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l7, color='gray', linewidth=0.5, alpha=0.5)
@@ -165,26 +172,28 @@ plt.setp(l17, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l18, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l21, color='gray', linewidth=0.5, alpha=0.5)
 
-legend = ['ERA5', 'MME-best', 'MME-worst']
-plt.legend(annual_cycle, legend, ncol=3, loc=1, fontsize=8)
+legend = ['ERA5', 'MME', 'MME-best', 'MME-worst']
+plt.legend(annual_cycle, legend, ncol=2, loc=1, fontsize=8)
 
 ax = fig.add_subplot(2, 3, 2)  
-annual_cycle = ax.plot(time, samz_obs_pr_ac, time, samz_mme_best, time, samz_mme_worse, time, clim_samz_cmip6[0], 
-time, clim_samz_cmip6[1], time, clim_samz_cmip6[2], time, clim_samz_cmip6[3], time, clim_samz_cmip6[4], 
-time, clim_samz_cmip6[5], time, clim_samz_cmip6[6], time, clim_samz_cmip6[7], time, clim_samz_cmip6[8], 
-time, clim_samz_cmip6[9], time, clim_samz_cmip6[10], time, clim_samz_cmip6[11], time, clim_samz_cmip6[12], 
-time, clim_samz_cmip6[13], time, clim_samz_cmip6[14], time, clim_samz_cmip6[15], time, clim_samz_cmip6[16])
+annual_cycle = ax.plot(time, samz_obs_pr_ac, time, samz_mme_best, time, clim_samz_cmip6_, time, samz_mme_worse, 
+time, clim_samz_cmip6[0], time, clim_samz_cmip6[1], time, clim_samz_cmip6[2], time, clim_samz_cmip6[3], 
+time, clim_samz_cmip6[4], time, clim_samz_cmip6[5], time, clim_samz_cmip6[6], time, clim_samz_cmip6[7], 
+time, clim_samz_cmip6[8], time, clim_samz_cmip6[9], time, clim_samz_cmip6[10], time, clim_samz_cmip6[11], 
+time, clim_samz_cmip6[12], time, clim_samz_cmip6[13], time, clim_samz_cmip6[14], time, clim_samz_cmip6[15], 
+time, clim_samz_cmip6[16])
 plt.title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
 plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
 plt.yticks(np.arange(0, 16, 2), fontsize=8)
 plt.ylim(0, 14)
 plt.grid(linestyle='--')
-l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20 = annual_cycle
+l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21 = annual_cycle
 plt.setp(l1, color='black')
-plt.setp(l2, color='blue')
-plt.setp(l3, color='red')
-plt.setp(l4, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l2, color='black', alpha=0.5)
+plt.setp(l3, color='blue')
+plt.setp(l4, color='red')
 plt.setp(l5, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l6, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l7, color='gray', linewidth=0.5, alpha=0.5)
@@ -201,24 +210,26 @@ plt.setp(l17, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l18, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l21, color='gray', linewidth=0.5, alpha=0.5)
 
 ax = fig.add_subplot(2, 3, 3)  
-annual_cycle = ax.plot(time, neb_obs_pr_ac, time, neb_mme_best, time, neb_mme_worse, time, clim_neb_cmip6[0], 
-time, clim_neb_cmip6[1], time, clim_neb_cmip6[2], time, clim_neb_cmip6[3], time, clim_neb_cmip6[4], 
-time, clim_neb_cmip6[5], time, clim_neb_cmip6[6], time, clim_neb_cmip6[7], time, clim_neb_cmip6[8], 
-time, clim_neb_cmip6[9], time, clim_neb_cmip6[10], time, clim_neb_cmip6[11], time, clim_neb_cmip6[12], 
-time, clim_neb_cmip6[13], time, clim_neb_cmip6[14], time, clim_neb_cmip6[15], time, clim_neb_cmip6[16])
+annual_cycle = ax.plot(time, neb_obs_pr_ac, time, clim_neb_cmip6_, time, neb_mme_best, time, neb_mme_worse, 
+time, clim_neb_cmip6[0], time, clim_neb_cmip6[1], time, clim_neb_cmip6[2], time, clim_neb_cmip6[3], 
+time, clim_neb_cmip6[4], time, clim_neb_cmip6[5], time, clim_neb_cmip6[6], time, clim_neb_cmip6[7], 
+time, clim_neb_cmip6[8], time, clim_neb_cmip6[9], time, clim_neb_cmip6[10], time, clim_neb_cmip6[11], 
+time, clim_neb_cmip6[12], time, clim_neb_cmip6[13], time, clim_neb_cmip6[14], time, clim_neb_cmip6[15], 
+time, clim_neb_cmip6[16])
 plt.title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
 plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
 plt.yticks(np.arange(0, 16, 2), fontsize=8)
 plt.ylim(0, 14)
 plt.xlabel('Months', fontsize=8, fontweight='bold')
 plt.grid(linestyle='--')
-l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20 = annual_cycle
+l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21 = annual_cycle
 plt.setp(l1, color='black')
-plt.setp(l2, color='blue')
-plt.setp(l3, color='red')
-plt.setp(l4, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l2, color='black', alpha=0.5)
+plt.setp(l3, color='blue')
+plt.setp(l4, color='red')
 plt.setp(l5, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l6, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l7, color='gray', linewidth=0.5, alpha=0.5)
@@ -235,13 +246,15 @@ plt.setp(l17, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l18, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l21, color='gray', linewidth=0.5, alpha=0.5)
 
 ax = fig.add_subplot(2, 3, 4)  
-annual_cycle = ax.plot(time, sam_obs_pr_ac, time, sam_mme_worse, time, sam_mme_best, time, clim_sam_cmip6[0], 
-time, clim_sam_cmip6[1], time, clim_sam_cmip6[2], time, clim_sam_cmip6[3], time, clim_sam_cmip6[4], 
-time, clim_sam_cmip6[5], time, clim_sam_cmip6[6], time, clim_sam_cmip6[7], time, clim_sam_cmip6[8], 
-time, clim_sam_cmip6[9], time, clim_sam_cmip6[10], time, clim_sam_cmip6[11], time, clim_sam_cmip6[12], 
-time, clim_sam_cmip6[13], time, clim_sam_cmip6[14], time, clim_sam_cmip6[15], time, clim_sam_cmip6[16])
+annual_cycle = ax.plot(time, sam_obs_pr_ac, time, clim_sam_cmip6_, time, sam_mme_worse, time, sam_mme_best, 
+time, clim_sam_cmip6[0], time, clim_sam_cmip6[1], time, clim_sam_cmip6[2], time, clim_sam_cmip6[3], 
+time, clim_sam_cmip6[4], time, clim_sam_cmip6[5], time, clim_sam_cmip6[6], time, clim_sam_cmip6[7], 
+time, clim_sam_cmip6[8], time, clim_sam_cmip6[9], time, clim_sam_cmip6[10], time, clim_sam_cmip6[11], 
+time, clim_sam_cmip6[12], time, clim_sam_cmip6[13], time, clim_sam_cmip6[14], time, clim_sam_cmip6[15], 
+time, clim_sam_cmip6[16])
 plt.title(u'(d) SAM', loc='left', fontsize=8, fontweight='bold')
 plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
 plt.yticks(np.arange(0, 16, 2), fontsize=8)
@@ -249,11 +262,11 @@ plt.ylim(0, 14)
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
 plt.xlabel('Months', fontsize=8, fontweight='bold')
 plt.grid(linestyle='--')
-l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20 = annual_cycle
+l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21 = annual_cycle
 plt.setp(l1, color='black')
-plt.setp(l2, color='blue')
-plt.setp(l3, color='red')
-plt.setp(l4, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l2, color='black', alpha=0.5)
+plt.setp(l3, color='blue')
+plt.setp(l4, color='red')
 plt.setp(l5, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l6, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l7, color='gray', linewidth=0.5, alpha=0.5)
@@ -270,24 +283,26 @@ plt.setp(l17, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l18, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l21, color='gray', linewidth=0.5, alpha=0.5)
 
 ax = fig.add_subplot(2, 3, 5)  
-annual_cycle = ax.plot(time, lpb_obs_pr_ac, time, lpb_mme_best, time, lpb_mme_worse, time, clim_lpb_cmip6[0], 
-time, clim_lpb_cmip6[1], time, clim_lpb_cmip6[2], time, clim_lpb_cmip6[3], time, clim_lpb_cmip6[4], 
-time, clim_lpb_cmip6[5], time, clim_lpb_cmip6[6], time, clim_lpb_cmip6[7], time, clim_lpb_cmip6[8], 
-time, clim_lpb_cmip6[9], time, clim_lpb_cmip6[10], time, clim_lpb_cmip6[11], time, clim_lpb_cmip6[12], 
-time, clim_lpb_cmip6[13], time, clim_lpb_cmip6[14], time, clim_lpb_cmip6[15], time, clim_lpb_cmip6[16])
+annual_cycle = ax.plot(time, lpb_obs_pr_ac, time, clim_lpb_cmip6_, time, lpb_mme_best, time, lpb_mme_worse, 
+time, clim_lpb_cmip6[0], time, clim_lpb_cmip6[1], time, clim_lpb_cmip6[2], time, clim_lpb_cmip6[3], 
+time, clim_lpb_cmip6[4], time, clim_lpb_cmip6[5], time, clim_lpb_cmip6[6], time, clim_lpb_cmip6[7], 
+time, clim_lpb_cmip6[8], time, clim_lpb_cmip6[9], time, clim_lpb_cmip6[10], time, clim_lpb_cmip6[11], 
+time, clim_lpb_cmip6[12], time, clim_lpb_cmip6[13], time, clim_lpb_cmip6[14], time, clim_lpb_cmip6[15], 
+time, clim_lpb_cmip6[16])
 plt.title(u'(e) LPB', loc='left', fontsize=8, fontweight='bold')
 plt.xticks(time, ('J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'), fontsize=8)
 plt.yticks(np.arange(0, 16, 2), fontsize=8)
 plt.ylim(0, 14)
 plt.xlabel('Months', fontsize=8, fontweight='bold')
 plt.grid(linestyle='--')
-l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20 = annual_cycle
+l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21 = annual_cycle
 plt.setp(l1, color='black')
-plt.setp(l2, color='blue')
-plt.setp(l3, color='red')
-plt.setp(l4, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l2, color='black', alpha=0.5)
+plt.setp(l3, color='blue')
+plt.setp(l4, color='red')
 plt.setp(l5, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l6, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l7, color='gray', linewidth=0.5, alpha=0.5)
@@ -304,6 +319,7 @@ plt.setp(l17, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l18, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l19, color='gray', linewidth=0.5, alpha=0.5)
 plt.setp(l20, color='gray', linewidth=0.5, alpha=0.5)
+plt.setp(l21, color='gray', linewidth=0.5, alpha=0.5)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cmip6'.format(path)
