@@ -8,6 +8,7 @@ __description__ = "This script plot portrait of cmip6 models"
 import os
 import netCDF4
 import numpy as np
+import matplotlib.colors
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -20,40 +21,49 @@ from comp_stats_metrics import compute_nrmse, compute_tss, compute_corr, compute
 
 dt = '197901-201412'
 latlon = [-100, -20, -60, 15]
+font_size=9
 
-path  = '/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI'
+path  = '/home/mda_silv/users/AdaptaBr_MCTI'
 		    
 			    
 def import_obs_srf(param, area):
 
-	arq  = '{0}/database/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
+	arq  = '{0}/database/paper_cmip6/obs/{1}_{2}_ERA5_mon_{3}_lonlat.nc'.format(path, param, area, dt)	
 	data = netCDF4.Dataset(arq)
 	var  = data.variables[param][:] 
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
-
-	mean_850 = np.nanmean(var[:][:,0,:,:], axis=0)
-	mean_500 = np.nanmean(var[:][:,1,:,:], axis=0)
-	mean_200 = np.nanmean(var[:][:,2,:,:], axis=0)
-			
-	return lat, lon, mean_850, mean_500, mean_200
+	
+	time = data.variables['valid_time'][:]
+	ntime = len(time)
+	nyears = ntime // 12
+	var_reshaped = var[:nyears*12].reshape(nyears, 12, len(lat), len(lon))
+	annual_mean = np.nanmean(var_reshaped, axis=1)
+	climatology = np.nanmean(annual_mean, axis=0)
+	data.close()
+	
+	return lat, lon, annual_mean
 
 
 def import_cmip_srf(param, area, model, exp):
 	
-	arq   = '{0}/database/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
+	arq   = '{0}/database/paper_cmip6/cmip6/{3}/{1}_{2}_Amon_{3}_historical_{4}_{5}_lonlat.nc'.format(path, param, area, model, exp, dt)			
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
 	lat   = data.variables['lat'][:]
 	lon   = data.variables['lon'][:]
-
-	mean_850 = np.nanmean(var[:][:,0,:,:], axis=0)
-	mean_500 = np.nanmean(var[:][:,1,:,:], axis=0)
-	mean_200 = np.nanmean(var[:][:,2,:,:], axis=0)
-			
-	return lat, lon, mean_850, mean_500, mean_200
+	
+	time = data.variables['time'][:]
+	ntime = len(time)
+	nyears = ntime // 12
+	var_reshaped = var[:nyears*12].reshape(nyears, 12, len(lat), len(lon))
+	annual_mean = np.nanmean(var_reshaped, axis=1)  
+	climatology = np.nanmean(annual_mean, axis=0)
+	data.close()
+	
+	return lat, lon, annual_mean
     
-
+	
 def configure_subplot(ax):
 
 	ax.set_extent(latlon, crs=ccrs.PlateCarree())
@@ -61,7 +71,7 @@ def configure_subplot(ax):
 	ax.set_yticks(np.arange(latlon[2], latlon[3], 20), crs=ccrs.PlateCarree())
 
 	for label in ax.get_xticklabels() + ax.get_yticklabels():
-		label.set_fontsize(6)
+		label.set_fontsize(font_size)
 
 	ax.xaxis.set_major_formatter(LongitudeFormatter())
 	ax.yaxis.set_major_formatter(LatitudeFormatter())
@@ -71,128 +81,120 @@ def configure_subplot(ax):
 	
 		
 # Import obs database and cmip models
-lat, lon, q_850_obs, q_500_obs, q_200_obs = import_obs_srf('q', 'sa')
-lat, lon, u_850_obs, u_500_obs, u_200_obs = import_obs_srf('u', 'sa')
-lat, lon, v_850_obs, v_500_obs, v_200_obs = import_obs_srf('v', 'sa')
+lat, lon, pr_obs_ = import_obs_srf('tp', 'sa')
+lat, lon, ps_obs_ = import_obs_srf('sp', 'sa')
 
-lat, lon, q_850_mdl1b, q_500_mdl1b, q_200_mdl1b = import_cmip_srf('hus', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
-lat, lon, q_850_mdl2b, q_500_mdl2b, q_200_mdl2b = import_cmip_srf('hus', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, q_850_mdl3b, q_500_mdl3b, q_200_mdl3b = import_cmip_srf('hus', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
+pr_obs = np.nanmean(pr_obs_, axis=0)
+ps_obs = np.nanmean(ps_obs_, axis=0)
 
-lat, lon, q_850_mdl1w, q_500_mdl1w, q_200_mdl1w = import_cmip_srf('hus', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, q_850_mdl2w, q_500_mdl2w, q_200_mdl2w = import_cmip_srf('hus', 'sa', 'CanESM5', 'r1i1p1f1_gn')
-lat, lon, q_850_mdl3w, q_500_mdl3w, q_200_mdl3w = import_cmip_srf('hus', 'sa', 'NESM3', 'r1i1p1f1_gn')
+lat, lon, pr_mdl1b = import_cmip_srf('pr', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
+lat, lon, pr_mdl2b = import_cmip_srf('pr', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
+lat, lon, pr_mdl3b = import_cmip_srf('pr', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
-lat, lon, u_850_mdl1b, u_500_mdl1b, u_200_mdl1b = import_cmip_srf('ua', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
-lat, lon, u_850_mdl2b, u_500_mdl2b, u_200_mdl2b = import_cmip_srf('ua', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, u_850_mdl3b, u_500_mdl3b, u_200_mdl3b = import_cmip_srf('ua', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
+lat, lon, ps_mdl1b = import_cmip_srf('ps', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
+lat, lon, ps_mdl2b = import_cmip_srf('ps', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
+lat, lon, ps_mdl3b = import_cmip_srf('ps', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
-lat, lon, u_850_mdl1w, u_500_mdl1w, u_200_mdl1w = import_cmip_srf('ua', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, u_850_mdl2w, u_500_mdl2w, u_200_mdl2w = import_cmip_srf('ua', 'sa', 'CanESM5', 'r1i1p1f1_gn')
-lat, lon, u_850_mdl3w, u_500_mdl3w, u_200_mdl3w = import_cmip_srf('ua', 'sa', 'NESM3', 'r1i1p1f1_gn')
+lat, lon, pr_mdl1w = import_cmip_srf('pr', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
+lat, lon, pr_mdl2w = import_cmip_srf('pr', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, pr_mdl3w = import_cmip_srf('pr', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
-lat, lon, v_850_mdl1b, v_500_mdl1b, v_200_mdl1b = import_cmip_srf('va', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
-lat, lon, v_850_mdl2b, v_500_mdl2b, v_200_mdl2b = import_cmip_srf('va', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, v_850_mdl3b, v_500_mdl3b, v_200_mdl3b = import_cmip_srf('va', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
+lat, lon, ps_mdl1w = import_cmip_srf('ps', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
+lat, lon, ps_mdl2w = import_cmip_srf('ps', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, ps_mdl3w = import_cmip_srf('ps', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
-lat, lon, v_850_mdl1w, v_500_mdl1w, v_200_mdl1w = import_cmip_srf('va', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, v_850_mdl2w, v_500_mdl2w, v_200_mdl2w = import_cmip_srf('va', 'sa', 'CanESM5', 'r1i1p1f1_gn')
-lat, lon, v_850_mdl3w, v_500_mdl3w, v_200_mdl3w = import_cmip_srf('va', 'sa', 'NESM3', 'r1i1p1f1_gn')   
-    
-q_850_mme_best = np.nanmean([q_850_mdl1b, q_850_mdl2b, q_850_mdl3b], axis=0)
-q_500_mme_best = np.nanmean([q_500_mdl1b, q_500_mdl2b, q_500_mdl3b], axis=0)
-q_200_mme_best = np.nanmean([q_200_mdl1b, q_200_mdl2b, q_200_mdl3b], axis=0)
+pr_mme_best = np.nanmean(np.nanmean([pr_mdl1b, pr_mdl2b, pr_mdl3b], axis=0), axis=0)
+pr_mme_worse = np.nanmean(np.nanmean([pr_mdl1w, pr_mdl2w, pr_mdl3w], axis=0), axis=0)
 
-q_850_mme_worse = np.nanmean([q_850_mdl1w, q_850_mdl2w, q_850_mdl3w], axis=0)
-q_500_mme_worse = np.nanmean([q_500_mdl1w, q_500_mdl2w, q_500_mdl3w], axis=0)
-q_200_mme_worse = np.nanmean([q_200_mdl1w, q_200_mdl2w, q_200_mdl3w], axis=0)
+ps_mme_best = np.nanmean(np.nanmean([ps_mdl1b, ps_mdl2b, ps_mdl3b], axis=0), axis=0)
+ps_mme_worse = np.nanmean(np.nanmean([ps_mdl1w, ps_mdl2w, ps_mdl3w], axis=0), axis=0)
 
-u_850_mme_best = np.nanmean([u_850_mdl1b, u_850_mdl2b, u_850_mdl3b], axis=0)
-u_500_mme_best = np.nanmean([u_500_mdl1b, u_500_mdl2b, u_500_mdl3b], axis=0)
-u_200_mme_best = np.nanmean([u_200_mdl1b, u_200_mdl2b, u_200_mdl3b], axis=0)
+pr_clim_, ps_clim_  = [], []
+for i in range(1, 18):
+	lat, lon, pr_clim = import_cmip_srf('pr', 'sa', cmip6[i][0], cmip6[i][1])
+	pr_clim_.append(pr_clim)
+	
+	lat, lon, ps_clim = import_cmip_srf('ps', 'sa', cmip6[i][0], cmip6[i][1])
+	ps_clim_.append(ps_clim)
 
-u_850_mme_worse = np.nanmean([u_850_mdl1w, u_850_mdl2w, u_850_mdl3w], axis=0)
-u_500_mme_worse = np.nanmean([u_500_mdl1w, u_500_mdl2w, u_500_mdl3w], axis=0)
-u_200_mme_worse = np.nanmean([u_200_mdl1w, u_200_mdl2w, u_200_mdl3w], axis=0)
+pr_mme = np.nanmean(np.nanmean([pr_clim_[0], pr_clim_[1], pr_clim_[2], pr_clim_[3], pr_clim_[4],
+pr_clim_[5], pr_clim_[6], pr_clim_[7], pr_clim_[8], pr_clim_[9], pr_clim_[10], pr_clim_[11],
+pr_clim_[12], pr_clim_[13], pr_clim_[14], pr_clim_[15], pr_clim_[16]], axis=0), axis=0)
 
-v_850_mme_best = np.nanmean([v_850_mdl1b, v_850_mdl2b, v_850_mdl3b], axis=0)
-v_500_mme_best = np.nanmean([v_500_mdl1b, v_500_mdl2b, v_500_mdl3b], axis=0)
-v_200_mme_best = np.nanmean([v_200_mdl1b, v_200_mdl2b, v_200_mdl3b], axis=0)
-
-v_850_mme_worse = np.nanmean([v_850_mdl1w, v_850_mdl2w, v_850_mdl3w], axis=0)
-v_500_mme_worse = np.nanmean([v_500_mdl1w, v_500_mdl2w, v_500_mdl3w], axis=0)
-v_200_mme_worse = np.nanmean([v_200_mdl1w, v_200_mdl2w, v_200_mdl3w], axis=0)
+ps_mme = np.nanmean(np.nanmean([ps_clim_[0], ps_clim_[1], ps_clim_[2], ps_clim_[3], ps_clim_[4],
+ps_clim_[5], ps_clim_[6], ps_clim_[7], ps_clim_[8], ps_clim_[9], ps_clim_[10], ps_clim_[11],
+ps_clim_[12], ps_clim_[13], ps_clim_[14], ps_clim_[15], ps_clim_[16]], axis=0), axis=0)
 
 # Plot figure
-fig, axes = plt.subplots(3, 3, figsize=(12, 10), subplot_kw={'projection': ccrs.PlateCarree()})
-(ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = axes
-cmap_color=cm.hsv
-font_size=8
+fig, axes = plt.subplots(2, 4, figsize=(14, 8), subplot_kw={'projection': ccrs.PlateCarree()})
+(ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8) = axes
+color=['#ffffffff','#d7f0fcff','#ade0f7ff','#86c4ebff','#60a5d6ff','#4794b3ff','#49a67cff','#55b848ff','#9ecf51ff','#ebe359ff','#f7be4aff','#f58433ff','#ed5a28ff','#de3728ff','#cc1f27ff','#b01a1fff','#911419ff']
 
-cf1 = ax1.contourf(lon, lat, q_850_obs, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax1.streamplot(lon, lat, u_850_obs[:,:], v_850_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax1.set_title('(a) ', loc='left', fontsize=font_size, fontweight='bold')
-ax1.set_ylabel('850 hPa', fontsize=font_size, fontweight='bold')
+cf1 = ax1.contourf(lon, lat, pr_obs, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+ct1 = ax1.contour(lon, lat, pr_obs, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
+ax1.clabel(ct1, fontsize=font_size, colors='black')
+ax1.set_title('(a)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
-cbar = plt.colorbar(cf1, cax=fig.add_axes([0.89, 0.3, 0.015, 0.4]))
-cbar.set_label('Specific humidity 850 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size)
 
-cf2 = ax2.contourf(lon, lat, q_850_mme_best, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax2.streamplot(lon, lat, u_850_mme_best[:,:], v_850_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax2.set_title('(b) ', loc='left', fontsize=font_size, fontweight='bold')
+cf2 = ax2.contourf(lon, lat, pr_mme, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+ct2 = ax2.contour(lon, lat, pr_mme, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
+ax2.clabel(ct2, fontsize=font_size, colors='black')
+ax2.set_title('(b)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-cf3 = ax3.contourf(lon, lat, q_850_mme_worse, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax3.streamplot(lon, lat, u_850_mme_worse[:,:], v_850_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
+cf3 = ax3.contourf(lon, lat, pr_mme_best, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+ct3 = ax3.contour(lon, lat, pr_mme_best, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
+ax3.clabel(ct3, fontsize=font_size, colors='black')
 ax3.set_title('(c)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax3)
 
-cf4 = ax4.contourf(lon, lat, q_500_obs, levels=np.arange(0, 5.125, 0.125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax4.streamplot(lon, lat, u_500_obs[:,:], v_500_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax4.set_title('(d) ', loc='left', fontsize=font_size, fontweight='bold')
-ax4.set_ylabel('500 hPa', fontsize=font_size, fontweight='bold')
+cf4 = ax4.contourf(lon, lat, pr_mme_worse, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+ct4 = ax4.contour(lon, lat, pr_mme_worse, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
+ax4.clabel(ct3, fontsize=font_size, colors='black')
+ax4.set_title('(d)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
-cbar = plt.colorbar(cf4, cax=fig.add_axes([0.96, 0.3, 0.015, 0.4]))
-cbar.set_label('Specific humidity 500 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size)
 
-cf5 = ax5.contourf(lon, lat, q_500_mme_best, levels=np.arange(0, 5.125, 0.125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax5.streamplot(lon, lat, u_500_mme_best[:,:], v_500_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax5.set_title('(e) ', loc='left', fontsize=font_size, fontweight='bold')
+cbar = plt.colorbar(cf3, cax=fig.add_axes([0.15, 0.5, 0.7, 0.02]), orientation='horizontal')
+cbar.set_label('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
+cbar.ax.tick_params(labelsize=font_size, direction='in')
+
+cf5 = ax5.contourf(lon, lat, ps_obs, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct5 = ax5.contour(lon, lat, ps_obs, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+ax5.clabel(ct1, fontsize=font_size, colors='black')
+ax5.set_title('(e)', loc='left', fontsize=font_size, fontweight='bold')
+ax5.set_xlabel('ERA5', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-cf6 = ax6.contourf(lon, lat, q_500_mme_worse, levels=np.arange(0, 5.125, 0.125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax6.streamplot(lon, lat, u_500_mme_worse[:,:], v_500_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
+cf6 = ax6.contourf(lon, lat, ps_mme, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct6 = ax6.contour(lon, lat, ps_mme, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+ax6.clabel(ct5, fontsize=font_size, colors='black')
 ax6.set_title('(f) ', loc='left', fontsize=font_size, fontweight='bold')
+ax6.set_xlabel('MME', fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-cf7 = ax7.contourf(lon, lat, q_200_obs, levels=np.arange(0, 0.1, 0.001), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax7.streamplot(lon, lat, u_200_obs[:,:], v_200_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax7.set_title('(g) ', loc='left', fontsize=font_size, fontweight='bold')
-ax7.set_xlabel('ERA5', fontsize=font_size, fontweight='bold')
-ax7.set_ylabel('200 hPa', fontsize=font_size, fontweight='bold')
+cf7 = ax7.contourf(lon, lat, ps_mme_best, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct7 = ax7.contour(lon, lat, ps_mme_best, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+ax7.clabel(ct7, fontsize=font_size, colors='black')
+ax7.set_title('(g)', loc='left', fontsize=font_size, fontweight='bold')
+ax7.set_xlabel('MME-best', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
-cbar = plt.colorbar(cf7, cax=fig.add_axes([1.03, 0.3, 0.015, 0.4]))
-cbar.set_label('Specific humidity 200 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size)
 
-cf8 = ax8.contourf(lon, lat, q_200_mme_best, levels=np.arange(0, 0.1, 0.001), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax8.streamplot(lon, lat, u_200_mme_best[:,:], v_200_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
+cf8 = ax8.contourf(lon, lat, ps_mme_worse, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct8 = ax8.contour(lon, lat, ps_mme_worse, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+ax8.clabel(ct8, fontsize=font_size, colors='black')
 ax8.set_title('(h)', loc='left', fontsize=font_size, fontweight='bold')
-ax8.set_xlabel('MME-best', fontsize=font_size, fontweight='bold')
+ax8.set_xlabel('MME-worst', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
 
-cf9 = ax9.contourf(lon, lat, q_200_mme_worse, levels=np.arange(0, 0.1, 0.001), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st = ax9.streamplot(lon, lat, u_200_mme_worse[:,:], v_200_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax9.set_title('(i) ', loc='left', fontsize=font_size, fontweight='bold')
-ax9.set_xlabel('MME-worst', fontsize=font_size, fontweight='bold')
-configure_subplot(ax9)
+cbar = plt.colorbar(cf6, cax=fig.add_axes([0.15, 0.07, 0.7, 0.02]), orientation='horizontal')
+cbar.set_label('Surface pressure (hPa)', fontsize=font_size, fontweight='bold')
+cbar.ax.tick_params(labelsize=font_size, direction='in')
 
 # Path out to save figure
-path_out = '{0}/figs'.format(path)
-name_out = 'pyplt_maps_atm_cmip6_obs_quv_{0}.png'.format(dt)
+path_out = '{0}/figs/paper_cmip6'.format(path)
+name_out = 'pyplt_maps_atm_cmip6_obs_pr_{0}.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
+
 
