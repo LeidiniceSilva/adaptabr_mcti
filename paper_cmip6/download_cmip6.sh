@@ -7,10 +7,9 @@
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=mda_silv@ictp.it
 
-#model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
+model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
-model_list=( 'MRI-ESM2-0' ) 
-var_list=( 'hus' 'ta' 'ua' 'va')     
+var_list=( 'zg')     
 exp='historical'
 
 echo "Starting download"
@@ -176,13 +175,13 @@ for mdl in ${model_list[@]}; do
 	fi
 	
 	base_url="https://data.ceda.ac.uk/badc/cmip6/data/CMIP6/CMIP/${mdl_family}/${mdl}/${exp}/${member}/Amon/${var}/${type}/${version}"
-	dir="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/cmip6/${mdl}"
+	dir="/home/mda_silv/users/AdaptaBr_MCTI/database/paper_cmip6/cmip6/${mdl}"
 	
 	for year in "${YEARS[@]}"; do
 
 	    filename="${var}_Amon_${mdl}_${exp}_${member}_${type}_${year}.nc"
 	    url="${base_url}/${filename}"
-	    file_dir="/afs/ictp.it/home/m/mda_silv/Documents/AdaptaBr_MCTI/database/paper_cmip6/cmip6/${mdl}/${filename}"
+	    file_dir="/home/mda_silv/users/AdaptaBr_MCTI/database/paper_cmip6/cmip6/${mdl}/${filename}"
 
 	    if [ -f "$file_dir" ]; then
 		echo "File exists: ${filename}"
