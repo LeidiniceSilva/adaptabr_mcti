@@ -12,9 +12,9 @@ echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
-var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' )                
+var_list=( 'hus' 'pr' 'ps' 'psl' 'ta' 'ua' 'va' ) 
 
-freq='day' 
+freq='Amon' 
 
 for model in ${model_list[@]}; do
 
@@ -55,7 +55,6 @@ for model in ${model_list[@]}; do
 		echo "1. Select levels"
 		if [ ${var} == 'hus' ] || [ ${var} == 'ta' ] || [ ${var} == 'ua' ] || [ ${var} == 'va' ]; then
 		cdo sellevel,85000,50000,20000 ${var}_${freq}_${model}_${exp}_${member}_${dt}.nc ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc
-		
 		else
 		cp ${var}_${freq}_${model}_${exp}_${member}_${dt}.nc ${var}_${freq}_${model}_${exp}_${member}_${dt}_new.nc
 		fi
@@ -73,14 +72,14 @@ for model in ${model_list[@]}; do
 		if [ ${var} == 'hus' ]; then
 		cdo -b f32 mulc,1000 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
+		elif [ ${var} == 'ta' ]; then
+		cdo -b f32 subc,273.15 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
+		
 		elif [ ${var} == 'pr' ]; then
 		cdo -b f32 mulc,86400 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 
-		elif [ ${var} == 'ps' ]; then
+		elif [ ${var} == 'ps' ] || [ ${var} == 'psl' ]; then
 		cdo -b f32 divc,100 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
-		
-		elif [ ${var} == 'ta' ]; then
-		cdo -b f32 subc,273.15 ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc
 		
 		else
 		cp ${var}_${freq}_${model}_${exp}_${member}_${dt}_new_lonlat_std.nc ${var}_sa_${freq}_${model}_${exp}_${member}_${dt}_lonlat.nc

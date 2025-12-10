@@ -16,7 +16,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'ps' 'q' 'tp' 't' 'u' 'v' )     
+var_list=( 'msl' 'ps' 'q' 'tp', 't', 'u', 'v' )     
 
 # Database
 type='ERA5'
@@ -37,7 +37,6 @@ for var in ${var_list[@]}; do
 	echo "1. Select levels"
 	if [ ${var} == 'q' ] || [ ${var} == 't' ] || [ ${var} == 'u' ] || [ ${var} == 'v' ]; then
 	cdo sellevel,850,500,200 ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
-
 	else
 	cp ${var}_${type}_mon_${dt}.nc ${var}_${type}_mon_${dt}_new.nc
 	fi
@@ -48,11 +47,11 @@ for var in ${var_list[@]}; do
 
 	echo
 	echo "3. Conventing calendar"
-	cdo setcalendar,standard ${var}_${type}_mon_${dt}_new_lonlat.nc ${var}_${type}_mon_${dt}_new_lonlat_std.nc
+	cdo setcalendar,standard ${var}_${type}_mon_${dt}_new.nc ${var}_${type}_mon_${dt}_new_lonlat_std.nc
 
 	echo 
 	echo "4. Conventing unit"
-	if [ ${var} == 'ps' ]; then
+	if [ ${var} == 'msl' ] || [ ${var} == 'ps' ]; then
 	cdo -b f32 divc,100 ${var}_${type}_mon_${dt}_new_lonlat_std.nc ${var}_sa_${type}_mon_${dt}_lonlat.nc
 
 	elif [ ${var} == 'q' ]; then

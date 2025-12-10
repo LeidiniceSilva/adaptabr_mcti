@@ -12,8 +12,7 @@ echo "--------------- INIT POSPROCESSING CMIP6 MODELS ----------------"
 model_list=( 'ACCESS-CM2' 'BCC-CSM2-MR' 'CanESM5' 'CMCC-ESM2' 'CNRM-CM6-1' 'CNRM-ESM2-1' 'GFDL-ESM4' 'INM-CM4-8' 'INM-CM5-0' 'KIOST-ESM' 'MIROC6' 'MIROC-ES2L' 'MPI-ESM1-2-HR' 'MPI-ESM1-2-LR' 'MRI-ESM2-0' 'NESM3' 'NorESM2-MM' ) 
 
 # Variables list
-var_list=( 'pr' )        
-#var_list=( 'hus' 'pr' 'ps' 'ta' 'ua' 'va' ) 
+var_list=( 'hus' 'pr' 'ps' 'psl' 'ta' 'ua' 'va' ) 
        
 freq='Amon'
 

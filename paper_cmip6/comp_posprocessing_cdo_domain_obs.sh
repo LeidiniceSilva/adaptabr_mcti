@@ -9,7 +9,7 @@ echo
 echo "--------------- INIT POSPROCESSING OBS ----------------" 
 
 # Variables list
-var_list=( 'tp' 'sp' 'q' 't' 'u' 'v' )     
+var_list=( 'tp' 'sp' 'msl' 'q' 't' 'u' 'v' )     
 
 # Database
 dataset='ERA5'
@@ -17,7 +17,7 @@ dataset='ERA5'
 # Date
 dt='197901-201412'
 
-freq='day'
+freq='mon'
 
 for var in ${var_list[@]}; do
 

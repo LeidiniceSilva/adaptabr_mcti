@@ -82,7 +82,7 @@ def configure_subplot(ax):
 		
 # Import obs database and cmip models
 lat, lon, pr_obs_ = import_obs_srf('tp', 'sa')
-lat, lon, ps_obs_ = import_obs_srf('sp', 'sa')
+lat, lon, ps_obs_ = import_obs_srf('msl', 'sa')
 
 pr_obs = np.nanmean(pr_obs_, axis=0)
 ps_obs = np.nanmean(ps_obs_, axis=0)
@@ -91,17 +91,17 @@ lat, lon, pr_mdl1b = import_cmip_srf('pr', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
 lat, lon, pr_mdl2b = import_cmip_srf('pr', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
 lat, lon, pr_mdl3b = import_cmip_srf('pr', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
-lat, lon, ps_mdl1b = import_cmip_srf('ps', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
-lat, lon, ps_mdl2b = import_cmip_srf('ps', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
-lat, lon, ps_mdl3b = import_cmip_srf('ps', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
+lat, lon, ps_mdl1b = import_cmip_srf('psl', 'sa', 'MRI-ESM2-0', 'r1i1p1f1_gn')
+lat, lon, ps_mdl2b = import_cmip_srf('psl', 'sa', 'MPI-ESM1-2-HR', 'r1i1p1f1_gn')
+lat, lon, ps_mdl3b = import_cmip_srf('psl', 'sa', 'ACCESS-CM2', 'r1i1p1f1_gn')
 
 lat, lon, pr_mdl1w = import_cmip_srf('pr', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
 lat, lon, pr_mdl2w = import_cmip_srf('pr', 'sa', 'CanESM5', 'r1i1p1f1_gn')
 lat, lon, pr_mdl3w = import_cmip_srf('pr', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
-lat, lon, ps_mdl1w = import_cmip_srf('ps', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
-lat, lon, ps_mdl2w = import_cmip_srf('ps', 'sa', 'CanESM5', 'r1i1p1f1_gn')
-lat, lon, ps_mdl3w = import_cmip_srf('ps', 'sa', 'NESM3', 'r1i1p1f1_gn')
+lat, lon, ps_mdl1w = import_cmip_srf('psl', 'sa', 'KIOST-ESM', 'r1i1p1f1_gr1')
+lat, lon, ps_mdl2w = import_cmip_srf('psl', 'sa', 'CanESM5', 'r1i1p1f1_gn')
+lat, lon, ps_mdl3w = import_cmip_srf('psl', 'sa', 'NESM3', 'r1i1p1f1_gn')
 
 pr_mme_best = np.nanmean(np.nanmean([pr_mdl1b, pr_mdl2b, pr_mdl3b], axis=0), axis=0)
 pr_mme_worse = np.nanmean(np.nanmean([pr_mdl1w, pr_mdl2w, pr_mdl3w], axis=0), axis=0)
@@ -114,7 +114,7 @@ for i in range(1, 18):
 	lat, lon, pr_clim = import_cmip_srf('pr', 'sa', cmip6[i][0], cmip6[i][1])
 	pr_clim_.append(pr_clim)
 	
-	lat, lon, ps_clim = import_cmip_srf('ps', 'sa', cmip6[i][0], cmip6[i][1])
+	lat, lon, ps_clim = import_cmip_srf('psl', 'sa', cmip6[i][0], cmip6[i][1])
 	ps_clim_.append(ps_clim)
 
 pr_mme = np.nanmean(np.nanmean([pr_clim_[0], pr_clim_[1], pr_clim_[2], pr_clim_[3], pr_clim_[4],
@@ -130,25 +130,25 @@ fig, axes = plt.subplots(2, 4, figsize=(14, 8), subplot_kw={'projection': ccrs.P
 (ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8) = axes
 color=['#ffffffff','#d7f0fcff','#ade0f7ff','#86c4ebff','#60a5d6ff','#4794b3ff','#49a67cff','#55b848ff','#9ecf51ff','#ebe359ff','#f7be4aff','#f58433ff','#ed5a28ff','#de3728ff','#cc1f27ff','#b01a1fff','#911419ff']
 
-cf1 = ax1.contourf(lon, lat, pr_obs, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+cf1 = ax1.contourf(lon, lat, pr_obs, levels=np.arange(0, 18, 1), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
 ct1 = ax1.contour(lon, lat, pr_obs, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
 ax1.clabel(ct1, fontsize=font_size, colors='black')
 ax1.set_title('(a)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 
-cf2 = ax2.contourf(lon, lat, pr_mme, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+cf2 = ax2.contourf(lon, lat, pr_mme, levels=np.arange(0, 18, 1), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
 ct2 = ax2.contour(lon, lat, pr_mme, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
 ax2.clabel(ct2, fontsize=font_size, colors='black')
 ax2.set_title('(b)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-cf3 = ax3.contourf(lon, lat, pr_mme_best, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+cf3 = ax3.contourf(lon, lat, pr_mme_best, levels=np.arange(0, 18, 1), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
 ct3 = ax3.contour(lon, lat, pr_mme_best, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
 ax3.clabel(ct3, fontsize=font_size, colors='black')
 ax3.set_title('(c)', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax3)
 
-cf4 = ax4.contourf(lon, lat, pr_mme_worse, levels=np.arange(0, 18.5, 0.5), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
+cf4 = ax4.contourf(lon, lat, pr_mme_worse, levels=np.arange(0, 18, 1), transform=ccrs.PlateCarree(), extend='max', cmap=matplotlib.colors.ListedColormap(color))
 ct4 = ax4.contour(lon, lat, pr_mme_worse, levels=np.arange(0, 25, 5), linewidths=0.6, colors='black')
 ax4.clabel(ct3, fontsize=font_size, colors='black')
 ax4.set_title('(d)', loc='left', fontsize=font_size, fontweight='bold')
@@ -158,36 +158,36 @@ cbar = plt.colorbar(cf3, cax=fig.add_axes([0.15, 0.5, 0.7, 0.02]), orientation='
 cbar.set_label('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size, direction='in')
 
-cf5 = ax5.contourf(lon, lat, ps_obs, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
-ct5 = ax5.contour(lon, lat, ps_obs, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+cf5 = ax5.contourf(lon, lat, ps_obs, levels=np.arange(990, 1026, 2), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct5 = ax5.contour(lon, lat, ps_obs, levels=np.arange(990, 1034, 4), linewidths=0.6, colors='black')
 ax5.clabel(ct1, fontsize=font_size, colors='black')
 ax5.set_title('(e)', loc='left', fontsize=font_size, fontweight='bold')
 ax5.set_xlabel('ERA5', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-cf6 = ax6.contourf(lon, lat, ps_mme, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
-ct6 = ax6.contour(lon, lat, ps_mme, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+cf6 = ax6.contourf(lon, lat, ps_mme, levels=np.arange(990, 1026, 2), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct6 = ax6.contour(lon, lat, ps_mme, levels=np.arange(990, 1034, 4), linewidths=0.6, colors='black')
 ax6.clabel(ct5, fontsize=font_size, colors='black')
 ax6.set_title('(f) ', loc='left', fontsize=font_size, fontweight='bold')
 ax6.set_xlabel('MME', fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-cf7 = ax7.contourf(lon, lat, ps_mme_best, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
-ct7 = ax7.contour(lon, lat, ps_mme_best, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+cf7 = ax7.contourf(lon, lat, ps_mme_best, levels=np.arange(990, 1026, 2), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct7 = ax7.contour(lon, lat, ps_mme_best, levels=np.arange(990, 1034, 4), linewidths=0.6, colors='black')
 ax7.clabel(ct7, fontsize=font_size, colors='black')
 ax7.set_title('(g)', loc='left', fontsize=font_size, fontweight='bold')
 ax7.set_xlabel('MME-best', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-cf8 = ax8.contourf(lon, lat, ps_mme_worse, levels=np.arange(900, 1080, 10), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
-ct8 = ax8.contour(lon, lat, ps_mme_worse, levels=np.arange(900, 1080, 40), linewidths=0.6, colors='black')
+cf8 = ax8.contourf(lon, lat, ps_mme_worse, levels=np.arange(990, 1026, 2), transform=ccrs.PlateCarree(), extend='max', cmap=cm.PuOr)
+ct8 = ax8.contour(lon, lat, ps_mme_worse, levels=np.arange(990, 1034, 4), linewidths=0.6, colors='black')
 ax8.clabel(ct8, fontsize=font_size, colors='black')
 ax8.set_title('(h)', loc='left', fontsize=font_size, fontweight='bold')
 ax8.set_xlabel('MME-worst', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
 
 cbar = plt.colorbar(cf6, cax=fig.add_axes([0.15, 0.07, 0.7, 0.02]), orientation='horizontal')
-cbar.set_label('Surface pressure (hPa)', fontsize=font_size, fontweight='bold')
+cbar.set_label('Mean sea level pressure (hPa)', fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size, direction='in')
 
 # Path out to save figure
