@@ -1186,7 +1186,7 @@ ax.set_yticks(np.arange(sort_cri_namz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 clb = fig.colorbar(pcm, cax=fig.add_axes([0.32, 0.06, 0.4, 0.014]), orientation='horizontal')
-clb.set_label('IVS', fontsize=8)
+clb.set_label('CRI', fontsize=8)
 clb.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(3, 2, 5)  
