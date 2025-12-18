@@ -22,9 +22,12 @@ def compute_nrmse(model, obs):
     Return: Root Mean Square Error
     """
     
-    p1 = np.nanmean(np.square(np.subtract(obs, model)))
-    p2 = math.sqrt(p1)
-    p3 = max(obs) - min(obs)
+    model = np.array(model)
+    obs = np.array(obs)
+    
+    p1 = np.nanmean((model - obs)**2)
+    p2 = np.sqrt(p1)
+    p3 = np.nanmax(obs) - np.nanmin(obs)
     nrmse = p2 / p3
 
     return nrmse
