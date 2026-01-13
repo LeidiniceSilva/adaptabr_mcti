@@ -190,90 +190,105 @@ v_200_mme = np.nanmean(np.nanmean([v_200_clim_[0], v_200_clim_[1], v_200_clim_[2
 v_200_clim_[5], v_200_clim_[6], v_200_clim_[7], v_200_clim_[8], v_200_clim_[9], v_200_clim_[10], v_200_clim_[11],
 v_200_clim_[12], v_200_clim_[13], v_200_clim_[14], v_200_clim_[15], v_200_clim_[16]], axis=0), axis=0)
 
+uv_850_obs = np.sqrt(u_850_obs**2+v_850_obs**2)
+uv_500_obs = np.sqrt(u_500_obs**2+v_500_obs**2)
+uv_200_obs = np.sqrt(u_200_obs**2+v_200_obs**2)
+
+uv_850_mme = np.sqrt(u_850_mme**2+v_850_mme**2)
+uv_500_mme = np.sqrt(u_500_mme**2+v_500_mme**2)
+uv_200_mme = np.sqrt(u_200_mme**2+v_200_mme**2)
+
+# Bias
+bias_mme_obs_q_850 = q_850_mme - q_850_obs
+bias_mme_obs_q_500 = q_500_mme - q_500_obs
+bias_mme_obs_q_200 = q_200_mme - q_200_obs
+
+bias_mme_best_obs_q_850 = q_850_mme_best - q_850_obs
+bias_mme_best_obs_q_500 = q_500_mme_best - q_500_obs
+bias_mme_best_obs_q_200 = q_200_mme_best - q_200_obs
+
+bias_mme_worse_obs_q_850 = q_850_mme_worse - q_850_obs
+bias_mme_worse_obs_q_500 = q_500_mme_worse - q_500_obs
+bias_mme_worse_obs_q_200 = q_200_mme_worse - q_200_obs
+
+# Corr
+corr_mme_obs_q_850 = np.corrcoef(q_850_mme.flatten(), q_850_obs.flatten())[0, 1]
+corr_mme_obs_q_500 = np.corrcoef(q_500_mme.flatten(), q_500_obs.flatten())[0, 1]
+corr_mme_obs_q_200 = np.corrcoef(q_200_mme.flatten(), q_200_obs.flatten())[0, 1]
+
+corr_mme_best_obs_q_850 = np.corrcoef(q_850_mme_best.flatten(), q_850_obs.flatten())[0, 1]
+corr_mme_best_obs_q_500 = np.corrcoef(q_500_mme_best.flatten(), q_500_obs.flatten())[0, 1]
+corr_mme_best_obs_q_200 = np.corrcoef(q_200_mme_best.flatten(), q_200_obs.flatten())[0, 1]
+
+corr_mme_worse_obs_q_850 = np.corrcoef(q_850_mme_worse.flatten(), q_850_obs.flatten())[0, 1]
+corr_mme_worse_obs_q_500 = np.corrcoef(q_500_mme_worse.flatten(), q_500_obs.flatten())[0, 1]
+corr_mme_worse_obs_q_200 = np.corrcoef(q_200_mme_worse.flatten(), q_200_obs.flatten())[0, 1]
+
 # Plot figure
-fig, axes = plt.subplots(3, 4, figsize=(14, 12), subplot_kw={'projection': ccrs.PlateCarree()})
-(ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12) = axes
-cmap_color=cm.hsv
+fig, axes = plt.subplots(3, 3, figsize=(12, 13), subplot_kw={'projection': ccrs.PlateCarree()})
+(ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = axes
+cmap_color=cm.rainbow
 
-cf1 = ax1.contourf(lon, lat, q_850_obs, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st1 = ax1.streamplot(lon, lat, u_850_obs[:,:], v_850_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax1.set_title('(a) ', loc='left', fontsize=font_size, fontweight='bold')
-ax1.set_ylabel('850 hPa', fontsize=font_size, fontweight='bold')
+cf1 = ax1.contourf(lon, lat, bias_mme_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax1.set_title('(a) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+ax1.set_ylabel('200 hPa', fontsize=font_size, fontweight='bold')
+ax1.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_200, 2)), transform=ax1.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
-cbar = plt.colorbar(cf1, cax=fig.add_axes([0.25, 0.634, 0.5, 0.02]), orientation='horizontal')
-cbar.set_label('Specific humidity 850 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size, direction='in')
-
-cf2 = ax2.contourf(lon, lat, q_850_mme, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st2 = ax2.streamplot(lon, lat, u_850_mme[:,:], v_850_mme[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax2.set_title('(b) ', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax2)
-
-cf3 = ax3.contourf(lon, lat, q_850_mme_best, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st3 = ax3.streamplot(lon, lat, u_850_mme_best[:,:], v_850_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax3.set_title('(c)', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax3)
-
-cf4 = ax4.contourf(lon, lat, q_850_mme_worse, levels=np.arange(0, 20.25, 0.25), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st4 = ax4.streamplot(lon, lat, u_850_mme_worse[:,:], v_850_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax4.set_title('(d) ', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax4)
-
-cf5 = ax5.contourf(lon, lat, q_500_obs, levels=np.arange(0, 5.0625, 0.0625), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st5 = ax5.streamplot(lon, lat, u_500_obs[:,:], v_500_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax5.set_title('(e) ', loc='left', fontsize=font_size, fontweight='bold')
-ax5.set_ylabel('500 hPa', fontsize=font_size, fontweight='bold')
-configure_subplot(ax5)
-cbar = plt.colorbar(cf5, cax=fig.add_axes([0.25, 0.363, 0.5, 0.02]), orientation='horizontal')
-cbar.set_label('Specific humidity 500 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size, direction='in')
-
-cf6 = ax6.contourf(lon, lat, q_500_mme, levels=np.arange(0, 5.0625, 0.0625), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st6 = ax6.streamplot(lon, lat, u_500_mme[:,:], v_500_mme[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax6.set_title('(f) ', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax6)
-
-cf7 = ax7.contourf(lon, lat, q_500_mme_best, levels=np.arange(0, 5.0625, 0.0625), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st7 = ax7.streamplot(lon, lat, u_500_mme_best[:,:], v_500_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax7.set_title('(g) ', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax7)
-
-cf8 = ax8.contourf(lon, lat, q_500_mme_worse, levels=np.arange(0, 5.0625, 0.0625), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st8 = ax8.streamplot(lon, lat, u_500_mme_worse[:,:], v_500_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax8.set_title('(h)', loc='left', fontsize=font_size, fontweight='bold')
-configure_subplot(ax8)
-
-cf9 = ax9.contourf(lon, lat, q_200_obs, levels=np.arange(0, 0.1, 0.00125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st9 = ax9.streamplot(lon, lat, u_200_obs[:,:], v_200_obs[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax9.set_title('(i) ', loc='left', fontsize=font_size, fontweight='bold')
-ax9.set_xlabel('ERA5', fontsize=font_size, fontweight='bold')
-ax9.set_ylabel('200 hPa', fontsize=font_size, fontweight='bold')
-configure_subplot(ax9)
-cbar = plt.colorbar(cf9, cax=fig.add_axes([0.25, 0.075, 0.5, 0.02]), orientation='horizontal')
+cbar = plt.colorbar(cf1, cax=fig.add_axes([0.25, 0.634, 0.5, 0.015]), orientation='horizontal')
 cbar.set_label('Specific humidity 200 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size, direction='in')
 
-cf10 = ax10.contourf(lon, lat, q_200_mme, levels=np.arange(0, 0.1, 0.00125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st10 = ax10.streamplot(lon, lat, u_200_mme[:,:], v_200_mme[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax10.set_title('(j) ', loc='left', fontsize=font_size, fontweight='bold')
-ax10.set_xlabel('MME', fontsize=font_size, fontweight='bold')
-configure_subplot(ax10)
+cf2 = ax2.contourf(lon, lat, bias_mme_best_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax2.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_200, 2)), transform=ax2.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax2.set_title('(b) MME-best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax2)
 
-cf11 = ax11.contourf(lon, lat, q_200_mme_best, levels=np.arange(0, 0.1, 0.00125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st11 = ax11.streamplot(lon, lat, u_200_mme_best[:,:], v_200_mme_best[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax11.set_title('(k) ', loc='left', fontsize=font_size, fontweight='bold')
-ax11.set_xlabel('MME-best', fontsize=font_size, fontweight='bold')
-configure_subplot(ax11)
+cf3 = ax3.contourf(lon, lat, bias_mme_worse_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax3.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_200, 2)), transform=ax3.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax3.set_title('(c) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax3)
 
-cf12 = ax12.contourf(lon, lat, q_200_mme_worse, levels=np.arange(0, 0.1, 0.00125), transform=ccrs.PlateCarree(), extend='max', cmap=cmap_color)
-st12 = ax12.streamplot(lon, lat, u_200_mme_worse[:,:], v_200_mme_worse[:,:], arrowsize=1, arrowstyle='->', color='black', density=2, linewidth=0.5)
-ax12.set_title('(l) ', loc='left', fontsize=font_size, fontweight='bold')
-ax12.set_xlabel('MME-worst', fontsize=font_size, fontweight='bold')
-configure_subplot(ax12)
+cf4 = ax4.contourf(lon, lat, bias_mme_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax4.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_500, 2)), transform=ax4.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax4.set_title('(d) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+ax4.set_ylabel('500 hPa', fontsize=font_size, fontweight='bold')
+configure_subplot(ax4)
+
+cf5 = ax5.contourf(lon, lat, bias_mme_best_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax5.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_500, 2)), transform=ax5.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax5.set_title('(e) MME_best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax5)
+cbar = plt.colorbar(cf5, cax=fig.add_axes([0.25, 0.363, 0.5, 0.015]), orientation='horizontal')
+cbar.set_label('Specific humidity 500 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
+cbar.ax.tick_params(labelsize=font_size, direction='in')
+
+cf6 = ax6.contourf(lon, lat, bias_mme_worse_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax6.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_500, 2)), transform=ax6.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax6.set_title('(f) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax6)
+
+cf7 = ax7.contourf(lon, lat, bias_mme_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax7.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_850, 2)), transform=ax7.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax7.set_title('(g) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+ax7.set_ylabel('850 hPa', fontsize=font_size, fontweight='bold')
+configure_subplot(ax7)
+
+cf8 = ax8.contourf(lon, lat, bias_mme_best_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax8.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_850, 2)), transform=ax8.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax8.set_title('(h) MME-best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax8)
+
+cf9 = ax9.contourf(lon, lat, bias_mme_worse_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ax9.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_850, 2)), transform=ax9.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax9.set_title('(i) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax9)
+cbar = plt.colorbar(cf9, cax=fig.add_axes([0.25, 0.092, 0.5, 0.015]), orientation='horizontal')
+cbar.set_label('Specific humidity 850 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
+cbar.ax.tick_params(labelsize=font_size, direction='in')
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cmip6'.format(path)
-name_out = 'pyplt_maps_atm_cmip6_obs_quv_{0}.png'.format(dt)
+name_out = 'pyplt_maps_atm_cmip6_obs_quv_{0}_bias.png'.format(dt)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
