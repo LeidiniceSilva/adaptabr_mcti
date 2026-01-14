@@ -198,6 +198,14 @@ uv_850_mme = np.sqrt(u_850_mme**2+v_850_mme**2)
 uv_500_mme = np.sqrt(u_500_mme**2+v_500_mme**2)
 uv_200_mme = np.sqrt(u_200_mme**2+v_200_mme**2)
 
+uv_850_mme_best = np.sqrt(u_850_mme_best**2+v_850_mme**2)
+uv_500_mme_best = np.sqrt(u_500_mme_best**2+v_500_mme**2)
+uv_200_mme_best = np.sqrt(u_200_mme_best**2+v_200_mme**2)
+
+uv_850_mme_worse = np.sqrt(u_850_mme_worse**2+v_850_mme**2)
+uv_500_mme_worse = np.sqrt(u_500_mme_worse**2+v_500_mme**2)
+uv_200_mme_worse = np.sqrt(u_200_mme_worse**2+v_200_mme**2)
+
 # Bias
 bias_mme_obs_q_850 = q_850_mme - q_850_obs
 bias_mme_obs_q_500 = q_500_mme - q_500_obs
@@ -210,6 +218,18 @@ bias_mme_best_obs_q_200 = q_200_mme_best - q_200_obs
 bias_mme_worse_obs_q_850 = q_850_mme_worse - q_850_obs
 bias_mme_worse_obs_q_500 = q_500_mme_worse - q_500_obs
 bias_mme_worse_obs_q_200 = q_200_mme_worse - q_200_obs
+
+bias_mme_obs_uv_850 = uv_850_mme - uv_850_obs
+bias_mme_obs_uv_500 = uv_500_mme - uv_500_obs
+bias_mme_obs_uv_200 = uv_200_mme - uv_200_obs
+
+bias_mme_best_obs_uv_850 = uv_850_mme_best - uv_850_obs
+bias_mme_best_obs_uv_500 = uv_500_mme_best - uv_500_obs
+bias_mme_best_obs_uv_200 = uv_200_mme_best - uv_200_obs
+
+bias_mme_worse_obs_uv_850 = uv_850_mme_worse - uv_850_obs
+bias_mme_worse_obs_uv_500 = uv_500_mme_worse - uv_500_obs
+bias_mme_worse_obs_uv_200 = uv_200_mme_worse - uv_200_obs
 
 # Corr
 corr_mme_obs_q_850 = np.corrcoef(q_850_mme.flatten(), q_850_obs.flatten())[0, 1]
@@ -224,62 +244,92 @@ corr_mme_worse_obs_q_850 = np.corrcoef(q_850_mme_worse.flatten(), q_850_obs.flat
 corr_mme_worse_obs_q_500 = np.corrcoef(q_500_mme_worse.flatten(), q_500_obs.flatten())[0, 1]
 corr_mme_worse_obs_q_200 = np.corrcoef(q_200_mme_worse.flatten(), q_200_obs.flatten())[0, 1]
 
+corr_mme_obs_uv_850 = np.corrcoef(uv_850_mme.flatten(), uv_850_obs.flatten())[0, 1]
+corr_mme_obs_uv_500 = np.corrcoef(uv_500_mme.flatten(), uv_500_obs.flatten())[0, 1]
+corr_mme_obs_uv_200 = np.corrcoef(uv_200_mme.flatten(), uv_200_obs.flatten())[0, 1]
+
+corr_mme_best_obs_uv_850 = np.corrcoef(uv_850_mme_best.flatten(), uv_850_obs.flatten())[0, 1]
+corr_mme_best_obs_uv_500 = np.corrcoef(uv_500_mme_best.flatten(), uv_500_obs.flatten())[0, 1]
+corr_mme_best_obs_uv_200 = np.corrcoef(uv_200_mme_best.flatten(), uv_200_obs.flatten())[0, 1]
+
+corr_mme_worse_obs_uv_850 = np.corrcoef(uv_850_mme_worse.flatten(), uv_850_obs.flatten())[0, 1]
+corr_mme_worse_obs_uv_500 = np.corrcoef(uv_500_mme_worse.flatten(), uv_500_obs.flatten())[0, 1]
+corr_mme_worse_obs_uv_200 = np.corrcoef(uv_200_mme_worse.flatten(), uv_200_obs.flatten())[0, 1]
+
 # Plot figure
 fig, axes = plt.subplots(3, 3, figsize=(12, 13), subplot_kw={'projection': ccrs.PlateCarree()})
 (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = axes
-cmap_color=cm.rainbow
+cmap_color=cm.rainbow_r
 
-cf1 = ax1.contourf(lon, lat, bias_mme_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+cf1 = ax1.contourf(lon, lat, bias_mme_obs_q_200, levels=np.arange(-0.02, 0.021, 0.001), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct1 = ax1.contour(lon, lat, bias_mme_obs_uv_200, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax1.clabel(ct1, fontsize=font_size, colors='black')
 ax1.set_title('(a) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax1.set_ylabel('200 hPa', fontsize=font_size, fontweight='bold')
-ax1.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_200, 2)), transform=ax1.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+ax1.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_obs_q_200, 2), round(corr_mme_obs_uv_200, 2)), transform=ax1.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 cbar = plt.colorbar(cf1, cax=fig.add_axes([0.25, 0.634, 0.5, 0.015]), orientation='horizontal')
 cbar.set_label('Specific humidity 200 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size, direction='in')
 
-cf2 = ax2.contourf(lon, lat, bias_mme_best_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax2.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_200, 2)), transform=ax2.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf2 = ax2.contourf(lon, lat, bias_mme_best_obs_q_200, levels=np.arange(-0.02, 0.021, 0.001), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct2 = ax2.contour(lon, lat, bias_mme_best_obs_uv_200, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax2.clabel(ct2, fontsize=font_size, colors='black')
+ax2.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_best_obs_q_200, 2), round(corr_mme_best_obs_uv_200, 2)), transform=ax2.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax2.set_title('(b) MME-best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-cf3 = ax3.contourf(lon, lat, bias_mme_worse_obs_q_200, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax3.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_200, 2)), transform=ax3.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf3 = ax3.contourf(lon, lat, bias_mme_worse_obs_q_200, levels=np.arange(-0.02, 0.021, 0.001), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct3 = ax3.contour(lon, lat, bias_mme_worse_obs_uv_200, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax3.clabel(ct3, fontsize=font_size, colors='black')
+ax3.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_worse_obs_q_200, 2), round(corr_mme_worse_obs_uv_200, 2)), transform=ax3.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax3.set_title('(c) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax3)
 
-cf4 = ax4.contourf(lon, lat, bias_mme_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax4.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_500, 2)), transform=ax4.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf4 = ax4.contourf(lon, lat, bias_mme_obs_q_500, levels=np.arange(-2, 2.10, 0.10), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct4 = ax4.contour(lon, lat, bias_mme_obs_uv_500, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax4.clabel(ct4, fontsize=font_size, colors='black')
+ax4.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_obs_q_500, 2), round(corr_mme_obs_uv_500, 2)), transform=ax4.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax4.set_title('(d) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax4.set_ylabel('500 hPa', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
 
-cf5 = ax5.contourf(lon, lat, bias_mme_best_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax5.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_500, 2)), transform=ax5.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf5 = ax5.contourf(lon, lat, bias_mme_best_obs_q_500, levels=np.arange(-2, 2.10, 0.10), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct5 = ax5.contour(lon, lat, bias_mme_best_obs_uv_500, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax5.clabel(ct5, fontsize=font_size, colors='black')
+ax5.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_best_obs_q_500, 2), round(corr_mme_best_obs_uv_500, 2)), transform=ax5.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax5.set_title('(e) MME_best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 cbar = plt.colorbar(cf5, cax=fig.add_axes([0.25, 0.363, 0.5, 0.015]), orientation='horizontal')
 cbar.set_label('Specific humidity 500 hPa (g kg$^-$$^1$)', fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size, direction='in')
 
-cf6 = ax6.contourf(lon, lat, bias_mme_worse_obs_q_500, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax6.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_500, 2)), transform=ax6.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf6 = ax6.contourf(lon, lat, bias_mme_worse_obs_q_500, levels=np.arange(-2, 2.10, 0.10), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct6 = ax6.contour(lon, lat, bias_mme_best_obs_uv_500, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax6.clabel(ct6, fontsize=font_size, colors='black')
+ax6.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_worse_obs_q_500, 2), round(corr_mme_worse_obs_uv_200, 2)), transform=ax6.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax6.set_title('(f) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-cf7 = ax7.contourf(lon, lat, bias_mme_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax7.text(0.91, 0.04, '{0}'.format(round(corr_mme_obs_q_850, 2)), transform=ax7.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf7 = ax7.contourf(lon, lat, bias_mme_obs_q_850, levels=np.arange(-4, 4.20, 0.20), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct7 = ax7.contour(lon, lat, bias_mme_obs_uv_850, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax7.clabel(ct7, fontsize=font_size, colors='black')
+ax7.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_obs_q_850, 2), round(corr_mme_obs_uv_850, 2)), transform=ax7.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax7.set_title('(g) MME - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax7.set_ylabel('850 hPa', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-cf8 = ax8.contourf(lon, lat, bias_mme_best_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax8.text(0.91, 0.04, '{0}'.format(round(corr_mme_best_obs_q_850, 2)), transform=ax8.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf8 = ax8.contourf(lon, lat, bias_mme_best_obs_q_850, levels=np.arange(-4, 4.20, 0.20), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct8 = ax8.contour(lon, lat, bias_mme_best_obs_uv_850, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax8.clabel(ct8, fontsize=font_size, colors='black')
+ax8.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_best_obs_q_850, 2), round(corr_mme_best_obs_uv_850, 2)), transform=ax8.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax8.set_title('(h) MME-best - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
 
-cf9 = ax9.contourf(lon, lat, bias_mme_worse_obs_q_850, levels=np.arange(-9, 10, 1), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
-ax9.text(0.91, 0.04, '{0}'.format(round(corr_mme_worse_obs_q_850, 2)), transform=ax9.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
+cf9 = ax9.contourf(lon, lat, bias_mme_worse_obs_q_850, levels=np.arange(-4, 4.20, 0.20), transform=ccrs.PlateCarree(), extend='both', cmap=cmap_color)
+ct9 = ax9.contour(lon, lat, bias_mme_worse_obs_uv_850, levels=np.arange(-10, 10, 1), linewidths=0.6, colors='black')
+ax9.clabel(ct9, fontsize=font_size, colors='black')
+ax9.text(0.91, 0.04, '{0} ({1})'.format(round(corr_mme_worse_obs_q_850, 2), round(corr_mme_worse_obs_uv_850, 2)), transform=ax9.transAxes, ha='right', va='bottom', fontsize=font_size, fontweight='bold')
 ax9.set_title('(i) MME-worst - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax9)
 cbar = plt.colorbar(cf9, cax=fig.add_axes([0.25, 0.092, 0.5, 0.015]), orientation='horizontal')
